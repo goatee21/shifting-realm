@@ -883,7 +883,7 @@ body {
   <div class="login-sigil">🏰</div>
   <div class="login-title">SHIFTING <span>REALM</span></div>
   <div class="login-sub">THE DARKNESS WAITS · WILL YOU SURVIVE</div>
-  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v50</div>
+  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v51</div>
   <div class="login-divider"></div>
   <div class="who-are-you">Who ventures forth?</div>
   <div class="player-select">
@@ -1595,6 +1595,49 @@ async function login(name) {
   if(!localStorage.getItem(introKey) && G.day <= 1) {
     localStorage.setItem(introKey, '1');
     showScreen('screen-intro');
+    return;
+  }
+
+  // Check if this player already picked a direction today but hasn't finished —
+  // restore their map and drop them back at camp with a narrative explanation
+  const myDir = Object.entries(G.claimedDirs).find(([dir, who]) => who === name);
+  if(myDir && !G.playedToday[name]) {
+    const dir = myDir[0];
+    G.direction = dir;
+    G.carryMax = carryMax();
+    G.pack = { wood:0, stone:0, bone:0, hide:0, bloodstone:0 };
+    const fireBonus = G.buildings['fire'] && G.playedToday.fire_stoked ? 2 : 0;
+    G.stamina = G.maxStamina + fireBonus;
+    G.playerHP = G.playerMaxHP;
+    G.abilityCD = 0;
+    G.ultimateCharge = 0;
+    G.lootPiles = [];
+    generateMap();
+    G.playerPos = { r: G.castlePos.r, c: G.castlePos.c };
+    G.prevPos = { ...G.playerPos };
+
+    const caps = dir.charAt(0).toUpperCase() + dir.slice(1);
+    document.getElementById('exp-title').textContent = `Venturing ${caps}`;
+    const badge = document.getElementById('exp-badge');
+    badge.textContent = caps.toUpperCase();
+    badge.className = `explore-dir-badge badge-${dir}`;
+
+    renderMap();
+    updateStats();
+    updateResourceStrip();
+    showScreen('screen-explore');
+
+    // Show return narrative after a short delay so map renders first
+    setTimeout(() => {
+      showNarrativeScreen({
+        icon: '🕳️',
+        eyebrow: '— Back at Camp —',
+        title: 'Lost Time',
+        body: "You paused your journey in the wilderness. You aren't sure why — a moment of doubt, a flash of fear. You find yourself back at camp. Parts of the day's journey escape you, the paths unclear in your mind. But the realm still waits.",
+        btnText: 'PRESS ON',
+        zIndex: 600,
+      });
+    }, 300);
     return;
   }
 
