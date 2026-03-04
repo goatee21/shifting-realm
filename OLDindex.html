@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="format-detection" content="telephone=no,address=no,email=no,date=no,url=no">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
@@ -447,7 +446,7 @@ body {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   gap: 1px;
-  /* Size by available height, not width — that is what was overflowing */
+  /* Size by available height, not width — that's what was overflowing */
   height: 100%;
   width: 100%;
   max-height: min(calc(100dvh - 130px), calc(100vw - 12px));
@@ -544,9 +543,9 @@ body {
 .tile.visited { background: #1c1814; border-color: #262018; }
 .tile.resource-wood { background: #130e07; border-color: #2d1e0a; }
 .tile.resource-stone { background: #111110; border-color: #2a2820; }
-.tile.resource-bone { background: #130f0a; border-color: #2d1e10; }
-.tile.resource-hide { background: #110c08; border-color: #2a1a0a; }
-.tile.resource-bloodstone { background: #120808; border-color: #38080a; }
+.tile.resource-iron { background: #0d1018; border-color: #1e2535; }
+.tile.resource-gold { background: #130f05; border-color: #352808; }
+.tile.resource-crystal { background: #080d14; border-color: #142038; }
 .tile.enemy { background: #130808; border-color: #3a1010; cursor: pointer; }
 .tile.boss { background: #120810; border-color: #5a0e3a; cursor: pointer; }
 .tile.event-tile { background: #0a100a; border-color: #1e3018; cursor: pointer; }
@@ -829,8 +828,8 @@ body {
 /* TOAST */
 .toast {
   position: fixed;
-  top: 50%; left: 50%;
-  transform: translateX(-50%) translateY(calc(-50% + 80px));
+  bottom: 56px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
   background: var(--dark-3);
   border: 1px solid var(--iron);
   border-left: 2px solid var(--ember);
@@ -843,13 +842,8 @@ body {
   transition: transform 0.3s ease;
   white-space: nowrap;
   pointer-events: none;
-  background: rgba(10,9,8,0.92);
-  backdrop-filter: blur(2px);
-  max-width: 280px;
-  text-align: center;
-  white-space: normal;
 }
-.toast.show { transform: translateX(-50%) translateY(-50%); }
+.toast.show { transform: translateX(-50%) translateY(0); }
 
 /* RETURN PROMPT */
 .return-bar {
@@ -883,8 +877,8 @@ body {
 <div class="screen active" id="screen-login">
   <div class="login-sigil">🏰</div>
   <div class="login-title">SHIFTING <span>REALM</span></div>
-  <div class="login-sub">THE DARKNESS WAITS · WILL YOU SURVIVE</div>
-  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v37</div>
+  <div class="login-sub">THE KINGDOM ENDURES · THE REALM SHIFTS</div>
+  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v33</div>
   <div class="login-divider"></div>
   <div class="who-are-you">Who ventures forth?</div>
   <div class="player-select">
@@ -895,7 +889,7 @@ body {
       <span class="player-icon">⚔️</span> Scott
     </button>
   </div>
-  <div class="login-lore">The darkness waits. Venture out. Come back with something.</div>
+  <div class="login-lore">Each dawn the kingdom is cast into a new dimension. Scout what you can. Return before the dark takes you.</div>
 </div>
 
 </div>
@@ -910,9 +904,9 @@ body {
     <div style="width:100%;max-width:300px;border:1px solid var(--iron);padding:20px;background:var(--dark-3);margin-bottom:24px;text-align:left;position:relative">
       <div style="position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:2px solid var(--ember);border-left:2px solid var(--ember)"></div>
       <div style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-bottom:2px solid var(--ember);border-right:2px solid var(--ember)"></div>
-      <p style="font-size:15px;line-height:1.8;color:var(--bone);margin-bottom:14px">You and your companion survive together. The dark shifts each night. The camp — little more than a scrape in the earth — endures.</p>
-      <p style="font-size:15px;line-height:1.8;color:var(--bone);margin-bottom:14px">Each night the nightmare resets — new terrain, new dangers. What you scratch out of the dark endures.</p>
-      <p style="font-size:15px;line-height:1.8;color:var(--bone)">The dark is vast. You will explore it one step at a time — each step costs <span style="color:var(--gold-light)">1 stamina</span>. Do not stray too far from camp.</p>
+      <p style="font-size:15px;line-height:1.8;color:var(--bone);margin-bottom:14px">You and your companion will work together to raise a great kingdom.</p>
+      <p style="font-size:15px;line-height:1.8;color:var(--bone);margin-bottom:14px">Each night at midnight your kingdom is transported to a new realm. Face new dangers, gather resources, and keep building.</p>
+      <p style="font-size:15px;line-height:1.8;color:var(--bone)">The realm is vast. You'll explore it tile by tile — <span style="color:var(--gold-light)">1 stamina</span> to move through revealed ground, <span style="color:var(--ember)">2 stamina</span> to push into the unknown. Don't stray too far.</p>
     </div>
 
     <div style="width:100%;max-width:300px;display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
@@ -922,11 +916,11 @@ body {
       </div>
       <div style="display:flex;align-items:center;gap:10px;background:var(--dark-3);border:1px solid var(--iron);padding:10px 14px">
         <span style="font-size:18px">🏰</span>
-        <span style="font-size:13px;color:var(--ash);font-style:italic">Return to camp to deposit what you find</span>
+        <span style="font-size:13px;color:var(--ash);font-style:italic">Return to the castle to bank your resources</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px;background:var(--dark-3);border:1px solid var(--iron);padding:10px 14px">
         <span style="font-size:18px">💀</span>
-        <span style="font-size:13px;color:var(--ash);font-style:italic">Collapse in combat or run out of stamina — your pack drops where you fell. Get back before the dark resets</span>
+        <span style="font-size:13px;color:var(--ash);font-style:italic">Fall in combat or run out of stamina — your loot drops where you fell. Get back for it before midnight</span>
       </div>
     </div>
 
@@ -941,15 +935,15 @@ body {
   <div class="dir-header">
     <div class="dir-top">
       <div class="dir-greeting">
-        Back again,
+        Welcome back,
         <strong id="dir-player-name">Traveler</strong>
       </div>
       <div style="text-align:right">
         <div class="day-info">
           <div class="day-num" id="dir-day">Day 1 <span class="sync-dot" id="sync-dot" style="display:none"></span></div>
-          <div class="day-reset" id="dir-reset">The nightmare resets at midnight</div>
+          <div class="day-reset" id="dir-reset">Realm shifts at midnight</div>
         </div>
-
+        <button onclick="goToDoneScreen()" style="margin-top:4px;background:transparent;border:none;font-family:Cinzel,serif;font-size:8px;letter-spacing:0.1em;color:var(--iron-light);cursor:pointer;text-decoration:underline;">SWITCH PLAYER</button>
       </div>
     </div>
     <div id="realm-pill-wrap">
@@ -960,7 +954,7 @@ body {
     </div>
   </div>
   <div class="dir-body">
-    <div class="dir-prompt">Where do you go?</div>
+    <div class="dir-prompt">Choose your direction to scout</div>
     <div class="compass" id="compass">
       <div class="dir-card" data-dir="north" onclick="chooseDirection('north')">
         <span class="dir-compass-icon">🧭</span>
@@ -984,7 +978,7 @@ body {
       </div>
     </div>
     <div class="kingdom-summary">
-      <div class="ks-title">Camp — Stockpile</div>
+      <div class="ks-title">Kingdom Stockpile</div>
       <div class="ks-resources" id="ks-resources"></div>
     </div>
   </div>
@@ -995,12 +989,12 @@ body {
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:32px 24px;text-align:center;">
     <div style="font-size:48px;margin-bottom:16px;filter:drop-shadow(0 0 12px rgba(196,80,26,0.4))">🏕️</div>
     <div style="font-family:Cinzel,serif;font-size:22px;font-weight:900;letter-spacing:0.2em;color:var(--bone);margin-bottom:6px" id="done-name-display">Scott</div>
-    <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:0.25em;color:var(--ember);margin-bottom:24px">RESTING AT CAMP</div>
+    <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:0.25em;color:var(--ember);margin-bottom:24px">DONE FOR TODAY</div>
     <div style="font-size:14px;color:var(--ash);font-style:italic;max-width:260px;line-height:1.7;margin-bottom:32px">
-      Rest at camp. What you brought back is safe. The nightmare resets at midnight.
+      Your scouting is done. The kingdom holds what you brought back. The realm shifts at midnight.
     </div>
     <div style="width:100%;max-width:280px;display:flex;flex-direction:column;gap:10px;">
-      <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.2em;color:var(--ash);margin-bottom:4px">OTHER SURVIVOR</div>
+      <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.2em;color:var(--ash);margin-bottom:4px">SWITCH EXPLORER</div>
       <button class="btn-player" onclick="switchPlayer('Denielle')" id="done-btn-denielle">
         <span class="player-icon">🌙</span> Denielle
       </button>
@@ -1021,7 +1015,7 @@ body {
 <div class="screen" id="screen-explore">
   <div class="explore-header">
     <div class="explore-top">
-      <div class="explore-title" id="exp-title">Venturing North</div>
+      <div class="explore-title" id="exp-title">Scouting North</div>
       <div class="explore-dir-badge" id="exp-badge">NORTH</div>
     </div>
     <div class="stats-row">
@@ -1036,7 +1030,7 @@ body {
         <span class="stat-icon">❤️</span>
         <div class="stat-info">
           <div class="stat-label">HP</div>
-          <div class="stat-val"><span id="stat-hp">5</span>/<span id="stat-hp-max">5</span></div>
+          <div class="stat-val"><span id="stat-hp">30</span>/30</div>
         </div>
       </div>
       <div class="stat-pill">
@@ -1056,8 +1050,8 @@ body {
   </div>
 
   <div class="action-bar">
-    <button class="btn-action" onclick="showKingdom()">🔥 CAMP</button>
-    <button class="btn-action primary" onclick="returnToHole()">⬆ RETURN TO CAMP</button>
+    <button class="btn-action" onclick="showKingdom()">🏰 KINGDOM</button>
+    <button class="btn-action primary" onclick="returnToKingdom()" id="btn-return-home">✓ DONE FOR TODAY</button>
     <button class="btn-action" onclick="debugResetRealm()" style="border-color:#5a1010;color:#aa4040;font-size:7px">⚠ RESET DAY</button>
   </div>
 </div>
@@ -1081,7 +1075,7 @@ body {
           <div class="combatant-icon">🧙</div>
           <div class="combatant-name">YOU</div>
           <div class="hp-bar"><div class="hp-fill p" id="c-p-bar" style="width:100%"></div></div>
-          <div class="hp-text"><b id="c-p-hp">5</b>/<span id="c-p-maxhp">5</span></div>
+          <div class="hp-text"><b id="c-p-hp">30</b>/30</div>
         </div>
         <div class="vs-text">VS</div>
         <div class="combatant">
@@ -1156,8 +1150,8 @@ body {
   <div class="panel" style="max-height:85vh; overflow-y:auto;">
     <div class="panel-head">
       <div>
-        <div class="panel-label">🔥 CAMP</div>
-        <div class="panel-title">Stockpile & Works</div>
+        <div class="panel-label">🏰 THE KINGDOM</div>
+        <div class="panel-title">Stockpile & Buildings</div>
       </div>
     </div>
     <div class="panel-body">
@@ -1170,46 +1164,22 @@ body {
   </div>
 </div>
 
-
-<!-- PACK SWAP -->
-<div class="overlay" id="ov-packswap">
-  <div class="panel">
-    <div class="panel-head">
-      <div>
-        <div class="panel-label">🎒 PACK FULL</div>
-        <div class="panel-title">Swap Items</div>
-        <div class="panel-sub">Drop something to make room</div>
-      </div>
-    </div>
-    <div class="panel-body">
-      <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--ash);margin-bottom:8px">YOUR PACK</div>
-      <div id="ps-pack-list" style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px"></div>
-      <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--ash);margin-bottom:8px">ON THE GROUND</div>
-      <div id="ps-ground-list" style="display:flex;flex-direction:column;gap:4px"></div>
-    </div>
-    <div class="panel-footer">
-      <button class="btn-action primary" onclick="confirmPackSwap()">DONE</button>
-      <button class="btn-action" onclick="cancelPackSwap()">LEAVE IT ALL</button>
-    </div>
-  </div>
-</div>
-
 <!-- STRANDED / DEATH -->
 <div class="overlay" id="ov-death" style="z-index:500">
   <div class="panel">
     <div class="panel-head">
       <div>
-        <div class="panel-label">💀 YOU COLLAPSE</div>
-        <div class="panel-title">The Dark Wins This Round</div>
-        <div class="panel-sub" id="death-sub">The nightmare continues</div>
+        <div class="panel-label">💀 ADVENTURER LOST</div>
+        <div class="panel-title">Another Falls</div>
+        <div class="panel-sub" id="death-sub">The kingdom sends another soul</div>
       </div>
       <div class="panel-icon">💀</div>
     </div>
     <div class="panel-body">
-      <div class="death-warning" id="death-warning">You collapse. The nightmare continues without you for a moment.</div>
+      <div class="death-warning" id="death-warning">This adventurer has fallen. The kingdom sends another soul in their place.</div>
     </div>
     <div class="panel-footer">
-      <button class="btn-action primary" onclick="respawnAtCastle()">CRAWL BACK TO CAMP</button>
+      <button class="btn-action primary" onclick="respawnAtCastle()">SEND THE NEXT ADVENTURER</button>
     </div>
   </div>
 </div>
@@ -1234,7 +1204,7 @@ body {
 
 <!-- LOW STAMINA WARNING -->
 <div class="return-bar" id="return-bar">
-  <div class="return-text" id="return-bar-text">⚠ LOW STAMINA — Camp may be too far</div>
+  <div class="return-text" id="return-bar-text">⚠ LOW STAMINA — You may not make it back</div>
 </div>
 
 <!-- TOAST -->
@@ -1245,116 +1215,90 @@ body {
 // GAME DATA
 // ================================================================
 const REALM_MODS = [
-  { icon:'🔥', name:'The Ashen Dark', effect:'Cinderhounds stronger · Bone yields up', bonus:'bone' },
-  { icon:'🌿', name:'The Overgrowth', effect:'Wood nodes doubled · Slow creatures', bonus:'wood' },
-  { icon:'❄️', name:'The Long Cold', effect:'Stamina costs +1 · Stone yields up', bonus:'stone' },
-  { icon:'⚡', name:'The Storm Night', effect:'Creatures strike first · Hide yields up', bonus:'hide' },
-  { icon:'🌑', name:'The Void Hour', effect:'Bloodstone surfaces · All creatures stronger', bonus:'bloodstone' },
+  { icon:'🔥', name:'Ember Realm', effect:'Fire enemies stronger · Iron yields up', bonus:'iron' },
+  { icon:'🌿', name:'Overgrown Realm', effect:'Wood nodes doubled · Slow enemies', bonus:'wood' },
+  { icon:'❄️', name:'Frozen Realm', effect:'Stamina costs +1 · Stone yields up', bonus:'stone' },
+  { icon:'⚡', name:'Storm Realm', effect:'Enemies strike first · Gold yields up', bonus:'gold' },
+  { icon:'🌑', name:'Void Realm', effect:'Crystal common · All enemies stronger', bonus:'crystal' },
 ];
 
 const DIR_FLAVOR = {
-  north: ['Something dragged itself north recently. The trail is still wet.', 'The cold here is wrong. It comes from below.', 'You hear what sounds like children laughing. It is not.'],
-  south: ['Ash falls from a sky with no clouds.', 'The ground to the south is warm. Not from the sun.', 'Something died out there recently. Maybe more than one something.'],
-  east:  ['The east smells like old blood and something sweeter. Wrong.', 'Bones arranged in a pattern you do not understand.', 'You hear singing from the east. It stops when you listen for it.'],
-  west:  ['The trees to the west grow toward the ground.', 'Something large moved through here. It did not use the paths.', 'The west is quiet. Everything avoids it.'],
+  north: ['The cold bites from the north', 'Pale mist rolls in', 'Something watches from the dark trees'],
+  south: ['Heat shimmers on the horizon', 'Ash falls like snow', 'The ground is cracked and ancient'],
+  east:  ['Dawn breaks over strange ruins', 'The land hums with old energy', 'Bones of a forgotten army'],
+  west:  ['Dense forest swallows the light', 'The trees here are wrong', 'Something large moved through recently'],
 };
 
 const ENEMIES = [
-  { id:'skrim',     name:'Skrim',         short:'SKRIM',    icon:'🦂', tier:'Scorpion-dead · barbed tail, armored hide',  hp:10, atk:4, def:2, loot:{type:'bone',       min:3, max:7}  },
-  { id:'morrowhip', name:'Morrowhip',     short:'MWHIP',    icon:'🦇', tier:'Bat-thing · fast, attacks twice, goes for eyes', hp:8,  atk:5, def:1, loot:{type:'hide',       min:2, max:5}  },
-  { id:'hollowed',  name:'The Hollowed',  short:'HOLLWD',   icon:'👤', tier:'No face · no sound · wrong',                hp:14, atk:7, def:1, loot:{type:'bloodstone',  min:1, max:2}  },
-  { id:'cinderhound',name:'Cinderhound', short:'CHOUND',   icon:'🐕', tier:'Ash-dog · leaves burns, thick hide',         hp:20, atk:6, def:4, loot:{type:'bone',       min:5, max:12} },
-  { id:'warden',    name:'The Pale Warden', short:'WARDEN', icon:'🕯️', tier:'⚠ Apex · Massive · Inevitable',            hp:35, atk:10,def:5, loot:{type:'bloodstone',  min:3, max:5}  },
+  { id:'goblin',  name:'Goblin Scout',  short:'GOBLIN',  icon:'👺', tier:'Lurker · fast but frail',      hp:8,  atk:4, def:1, loot:{type:'gold',    min:3, max:8}  },
+  { id:'golem',   name:'Stone Golem',   short:'GOLEM',   icon:'🗿', tier:'Immovable defender',           hp:18, atk:5, def:4, loot:{type:'stone',   min:8, max:15} },
+  { id:'mage',    name:'Ember Mage',    short:'MAGE',    icon:'🧨', tier:'Channeler of flame',           hp:12, atk:7, def:1, loot:{type:'crystal', min:1, max:3}  },
+  { id:'wolf',    name:'Dire Wolf',     short:'WOLF',    icon:'🐺', tier:'Pack hunter',                  hp:14, atk:8, def:2, loot:{type:'iron',    min:4, max:8}  },
+  { id:'warden',  name:'Realm Warden',  short:'WARDEN',  icon:'👁️', tier:'⚠ Mini-Boss · Guardian',      hp:30, atk:9, def:5, loot:{type:'crystal', min:3, max:6}  },
 ];
 
 const RESOURCES = [
-  { id:'wood',       name:'Timber',          icon:'🪵', min:3, max:8,  desc:'Dead wood from the dark. It burns.' },
-  { id:'stone',      name:'Stone',           icon:'🪨', min:3, max:7,  desc:'Pulled from the ground. Cold always.' },
-  { id:'bone',       name:'Bone',            icon:'🦴', min:2, max:5,  desc:'Something left these behind. Recently.' },
-  { id:'hide',       name:'Hide',            icon:'🟫', min:2, max:5,  desc:'Scraped and rough. Still warm when you find it.' },
-  { id:'bloodstone', name:'Bloodstone',      icon:'🔴', min:1, max:2,  desc:'Nobody knows what it is. It glows faintly at night.' },
+  { id:'wood',    name:'Wood Cache',    icon:'🪵', min:3,  max:8,  desc:'Ancient timber from the realm' },
+  { id:'stone',   name:'Stone Deposit', icon:'🪨', min:3,  max:7,  desc:'Weathered rock of the deep realm' },
+  { id:'iron',    name:'Iron Vein',     icon:'⚙️', min:2,  max:5,  desc:'Dark iron seeping from the earth' },
+  { id:'gold',    name:'Gold Seam',     icon:'🪙', min:2,  max:5,  desc:'Corrupted coin, old as the realm' },
+  { id:'crystal', name:'Crystal Node',  icon:'💎', min:1,  max:2,  desc:'Rare shard, hums with void energy' },
 ];
 
 const EVENTS = [
   {
-    icon:'👤', title:'The Eyeless Man',
-    text:'A figure sits in the open. No eyes. No wound where they should be — just skin, smooth and wrong. He holds out his hand. In it: a folded piece of something that might be a map.',
+    icon:'🧭', title:'The Wanderer',
+    text:'A cloaked figure emerges from the fog. They offer a map fragment in exchange for iron.',
     choices:[
-      { label:'Take the map. Give him 4 bone.', fn: () => {
-        if((G.pack.bone||0) + (G.kingdom.bone||0) < 4) { toast('Not enough bone'); return false; }
-        if((G.pack.bone||0) >= 4) G.pack.bone -= 4; else G.kingdom.bone -= 4;
-        revealRadius(G.playerPos, 3); toast('The map shows you more of this dark place'); return true;
+      { label:'Trade 5 iron for map fragment (reveals 8 nearby tiles)', fn: () => {
+        if(G.pack.iron < 5 && G.kingdom.iron < 5) { toast('Not enough iron'); return false; }
+        if(G.pack.iron >= 5) G.pack.iron -= 5; else { G.kingdom.iron -= 5; }
+        revealRadius(G.playerPos, 3); toast('Map fragment reveals the path ahead'); return true;
       }},
-      { label:'Walk past without looking at him.', fn: () => { toast('He says nothing. You hear him stand up behind you.'); return true; }},
+      { label:'Refuse and move on', fn: () => { toast('The wanderer fades into the mist'); return true; }},
     ]
   },
   {
-    icon:'💀', title:'Someone Elses Dead',
-    text:'Another body. Not old. The pack is still on them, mostly intact. You recognize the look of someone who got too far out.',
+    icon:'💀', title:'Fallen Hero',
+    text:'The remains of an explorer. Their pack still holds supplies — though taking from the dead feels wrong.',
     choices:[
-      { label:'Take what you can. (+6 wood, +4 stone)', fn: () => {
-        addToPack('wood',6); addToPack('stone',4); toast('You take what you need and do not think about it'); return true;
+      { label:'Take the supplies (+8 wood, +5 stone)', fn: () => {
+        addToPack('wood',8); addToPack('stone',5); toast('You take what you need'); return true;
       }},
-      { label:'Leave it. Mark the spot and move on. (+3 hide)', fn: () => {
-        addToPack('hide',3); toast('Something about leaving it feels right. You find hide nearby.'); return true;
+      { label:'Leave undisturbed (+4 gold, the realm rewards restraint)', fn: () => {
+        addToPack('gold',4); toast('+4 gold'); return true;
       }},
     ]
   },
   {
-    icon:'🌀', title:'The Crack',
-    text:'A split in the ground that goes down further than it should. Warm air rises from it. You can hear something breathing below — slow, enormous, asleep.',
+    icon:'🌀', title:'Rift Opening',
+    text:'A void rift pulses before you. Step through for unknown reward — or seal it for a modest gain.',
     choices:[
-      { label:'Lower yourself in. (reward or 8 damage)', fn: () => {
-        if(Math.random() > 0.4) {
+      { label:'Step through (random: great reward or take damage)', fn: () => {
+        if(Math.random() > 0.45) {
           const r = RESOURCES[Math.floor(Math.random()*RESOURCES.length)];
           const amt = r.min*2 + Math.floor(Math.random()*r.min);
-          addToPack(r.id, amt); toast(`You find something in the dark. +${amt} ${r.id}.`);
+          addToPack(r.id, amt); toast(`Rift grants +${amt} ${r.id}!`);
         } else {
-          const dmg = 8 + Math.floor(Math.random()*6);
+          const dmg = 6 + Math.floor(Math.random()*6);
           G.playerHP = Math.max(1, G.playerHP - dmg);
-          updateStats(); toast(`Something down there notices you. ${dmg} damage.`);
+          updateStats(); toast(`The rift tears at you for ${dmg} damage`);
         }
         return true;
       }},
-      { label:'Seal it with stone. (+2 bloodstone)', fn: () => { addToPack('bloodstone',2); toast('The breathing stops. You find bloodstone in the rubble.'); return true; }},
-    ]
-  },
-  {
-    icon:'🏚️', title:'The Empty Camp',
-    text:'A camp. Fire still warm. Food still in the pot. No sign of struggle. No sign of where they went. The pot is still warm.',
-    choices:[
-      { label:'Eat the food. (+6 HP restored)', fn: () => {
-        G.playerHP = Math.min(G.playerMaxHP, G.playerHP + 6);
-        updateStats(); toast('It tastes fine. That almost makes it worse.'); return true;
-      }},
-      { label:'Take what supplies remain. (+4 wood, +2 hide)', fn: () => {
-        addToPack('wood',4); addToPack('hide',2); toast('You take the supplies and leave quickly.'); return true;
-      }},
-    ]
-  },
-  {
-    icon:'🪨', title:'The Stone That Moved',
-    text:'You could swear it was further away a moment ago. A large stone, smooth, and there is something carved into the side facing you now that was not there before.',
-    choices:[
-      { label:'Read the carving. (random effect)', fn: () => {
-        const roll = Math.random();
-        if(roll > 0.6) { G.stamina = Math.min(G.maxStamina, G.stamina+3); updateStats(); toast('The words make sense somehow. +3 stamina.'); }
-        else if(roll > 0.3) { addToPack('bloodstone',1); toast('A bloodstone sits at the base of the stone. You take it.'); }
-        else { const dmg=4; G.playerHP=Math.max(1,G.playerHP-dmg); updateStats(); toast('Reading it costs you something. '+dmg+' damage.'); }
-        return true;
-      }},
-      { label:'Walk away from it. Fast.', fn: () => { toast('Smart.'); return true; }},
+      { label:'Seal the rift (+3 crystal)', fn: () => { addToPack('crystal',3); toast('+3 crystal'); return true; }},
     ]
   },
 ];
 
 const BUILDINGS = [
-  { id:'pit',        name:'The Pit',        icon:'⛏️', desc:'Dig out and shore up your camp. Widen it. Reinforce the walls. This is the anchor of everything.', effect:'Unlocks all else', cost:{wood:2}, phase:1 },
-  { id:'fire',       name:'Fire',           icon:'🔥', desc:'Fire gives light and warmth. Stoke daily with 2 wood for +2 stamina. The light carries far out here. Things notice.', effect:'+2 stamina if lit', cost:{wood:3}, phase:1 },
-  { id:'boneshelter',name:'Bone Shelter',   icon:'🦴', desc:'Walls of bone and hide scraped together. Less terrible than the pit. Barely.', effect:'Structural anchor', cost:{bone:8, hide:4}, phase:1 },
-  { id:'crudesack',  name:'Crude Sack',     icon:'🎒', desc:'Hide stitched with sinew. Carry a little more back to camp.', effect:'Carry +8', cost:{hide:6}, phase:1 },
-  { id:'processing', name:'Processing Area',icon:'🔩', desc:'Bones and stones arranged into something almost useful. Unlocks crafting.', effect:'Unlocks crafting', cost:{bone:10, stone:8}, phase:1 },
-  { id:'totem',      name:'Ward Totem',     icon:'🗿', desc:'Built at the edge of the dark. Each survivor must raise their own. Something will notice.', effect:'Phase 1 completion', cost:{bone:5, hide:3, bloodstone:2}, phase:1 },
+  { id:'campfire',  name:'Campfire',    icon:'🔥', desc:'Build once · Stoke daily with 2 wood for +2 gold', effect:'+2 gold/day', cost:{gold:8} },
+  { id:'storage',   name:'Storage',     icon:'📦', desc:'Increases kingdom resource cap',   effect:'Cap +100',          cost:{wood:20, stone:10} },
+  { id:'quarry',    name:'Quarry',      icon:'⛏️', desc:'Passive +3 stone/day',             effect:'+3 stone/day',      cost:{wood:15, iron:5} },
+  { id:'sawmill',   name:'Sawmill',     icon:'🪚', desc:'Passive +3 wood/day',              effect:'+3 wood/day',       cost:{stone:15, iron:5} },
+  { id:'barracks',  name:'Barracks',    icon:'⚔️', desc:'Hero attack +3',                   effect:'Attack +3',         cost:{wood:20, iron:10} },
+  { id:'packframe', name:'Pack Frame',  icon:'🎒', desc:'Carry capacity +10',               effect:'Carry +10',         cost:{wood:15, iron:8} },
+  { id:'guildhall', name:'Guild Hall',  icon:'🏛️', desc:'Unlocks co-op boss encounters',    effect:'Boss raids active',  cost:{wood:30, stone:30, crystal:5} },
 ];
 
 // ================================================================
@@ -1372,9 +1316,13 @@ const SB_HEADERS = {
 // Pull shared kingdom state from Supabase
 async function sbLoad() {
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
     const res = await fetch(`${SB_URL}/rest/v1/sr_kingdom?id=eq.main`, {
       headers: SB_HEADERS,
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
     const rows = await res.json();
     if(!rows || !rows.length) return null;
     return rows[0];
@@ -1431,17 +1379,17 @@ const G = {
   playerPos: { r:4, c:4 }, // 0-indexed, castle is center (row 4, col 4 on 0-9 grid)
   stamina: 10,
   maxStamina: 10,
-  playerHP: 5,
-  playerMaxHP: 5,
+  playerHP: 30,
+  playerMaxHP: 30,
   abilityCD: 0,
   ultimateCharge: 0,
 
   // Pack (carried during exploration, lost on death)
-  pack: { wood:0, stone:0, bone:0, hide:0, bloodstone:0 },
+  pack: { wood:0, stone:0, iron:0, gold:0, crystal:0 },
   carryMax: 15,
 
   // Kingdom (persists)
-  kingdom: { wood:0, stone:0, bone:0, hide:0, bloodstone:0 },
+  kingdom: { wood:0, stone:0, iron:0, gold:0, crystal:0 },
   buildings: {},
   realmSeed: 0,
 
@@ -1490,11 +1438,11 @@ function addToPack(type, amt) {
 }
 
 function carryMax() {
-  return G.buildings['crudesack'] ? 23 : 15;
+  return G.buildings['packframe'] ? 25 : 15;
 }
 
 function playerAtk() {
-  return 6; // Base attack — combat upgrades in Phase 2
+  return G.buildings['barracks'] ? 9 : 6;
 }
 
 // ================================================================
@@ -1514,20 +1462,24 @@ async function login(name) {
   if(row === null) {
     loreEl.textContent = '⚠ Offline — playing with local state only';
     setTimeout(() => {
-      loreEl.textContent = 'The nightmare recurs each night. The camp endures. Venture out, gather what you can, and come back.';
+      loreEl.textContent = 'Each dawn the kingdom is cast into a new dimension. Scout what you can. Return before the dark takes you.';
     }, 2000);
   }
 
   if(row) {
-    // Check if it is a new day — reset daily state if so
+    // Check if it's a new day — reset daily state if so
     if(row.realm_day_key !== today) {
       const isExplicitReset = row.realm_day_key === '';
       const bld = row.buildings || {};
       const res = row.resources || {};
       if(!isExplicitReset) {
-        // Fire bonus stamina handled at explore start via G.playedToday.fire_stoked
+        if(bld.sawmill)  res.wood  = (res.wood||0)  + 3;
+        if(bld.quarry)   res.stone = (res.stone||0) + 3;
+        // Campfire: +2 gold only if stoked yesterday
+        const pt = row.played_today || {};
+        if(bld.campfire && pt.campfire_stoked) res.gold = (res.gold||0) + 2;
       }
-      G.kingdom   = isExplicitReset ? { wood:0, stone:0, bone:0, hide:0, bloodstone:0 } : res;
+      G.kingdom   = isExplicitReset ? { wood:0, stone:0, iron:0, gold:0, crystal:0 } : res;
       G.buildings = isExplicitReset ? {} : bld;
       G.claimedDirs  = {};
       G.playedToday  = {};
@@ -1536,7 +1488,7 @@ async function login(name) {
       await sbSave();
     } else {
       // Same day — load as-is
-      G.kingdom    = row.resources   || { wood:0, stone:0, bone:0, hide:0, bloodstone:0 };
+      G.kingdom    = row.resources   || { wood:0, stone:0, iron:0, gold:0, crystal:0 };
       G.buildings  = row.buildings   || {};
       G.claimedDirs  = row.claimed_dirs || {};
       G.playedToday  = row.played_today || {};
@@ -1551,16 +1503,8 @@ async function login(name) {
 
   const daysSinceEpoch = Math.floor(Date.now() / 86400000);
   G.realmMod = REALM_MODS[daysSinceEpoch % REALM_MODS.length];
-  // G.day was set from Supabase above — validate it is a real game day not a buggy value
+  // G.day was set from Supabase above — validate it's a real game day not a buggy value
   if(!G.day || G.day < 1 || G.day > 365) G.day = 1;
-  // Load persisted maxHP from localStorage
-  const savedHP = localStorage.getItem(`sr_maxhp_${name}`);
-  if(savedHP) {
-    G.playerMaxHP = Math.min(30, Math.max(5, parseInt(savedHP) || 5));
-  } else {
-    G.playerMaxHP = 5;
-  }
-  G.playerHP = G.playerMaxHP;
   G.carryMax = carryMax();
 
   document.getElementById('dir-player-name').textContent = name;
@@ -1582,7 +1526,10 @@ async function login(name) {
   document.getElementById('screen-login').querySelector('.login-lore').textContent =
     'Each dawn the kingdom is cast into a new dimension. Scout what you can. Return before the dark takes you.';
 
-  // No daily lock — players can always venture out
+  if(G.playedToday[name]) {
+    goToDoneScreen();
+    return;
+  }
 
   // Show intro screen on very first login ever (once per player, tracked locally)
   const introKey = `sr_intro_seen_${name}`;
@@ -1620,7 +1567,7 @@ function updateDirCards() {
 
 function renderKingdomSummary() {
   const el = document.getElementById('ks-resources');
-  el.innerHTML = ['wood','stone','bone','hide','bloodstone'].map(k => {
+  el.innerHTML = ['wood','stone','iron','gold','crystal'].map(k => {
     const r = RESOURCES.find(x=>x.id===k);
     return `<div class="ks-res">${r.icon} <b>${G.kingdom[k]||0}</b> <span>${k}</span></div>`;
   }).join('');
@@ -1631,17 +1578,15 @@ function renderKingdomSummary() {
 // ================================================================
 function chooseDirection(dir) {
   if(G.claimedDirs[dir]) return;
-
+  if(G.playedToday[G.player]) { toast('You\'ve already scouted today'); return; }
   G.claimedDirs[dir] = G.player;
   G.direction = dir;
   setSyncing(true);
   sbSave().then(()=>setSyncing(false));
 
   // Reset exploration state
-  G.pack = { wood:0, stone:0, bone:0, hide:0, bloodstone:0 };
-  // Fire bonus: +2 stamina if stoked
-  const fireBonus = G.buildings['fire'] && G.playedToday.fire_stoked ? 2 : 0;
-  G.stamina = G.maxStamina + fireBonus;
+  G.pack = { wood:0, stone:0, iron:0, gold:0, crystal:0 };
+  G.stamina = G.maxStamina;
   G.playerHP = G.playerMaxHP;
   G.abilityCD = 0;
   G.ultimateCharge = 0;
@@ -1657,7 +1602,7 @@ function chooseDirection(dir) {
 
   // Header
   const caps = dir.charAt(0).toUpperCase()+dir.slice(1);
-  document.getElementById('exp-title').textContent = `Venturing ${caps}`;
+  document.getElementById('exp-title').textContent = `Scouting ${caps}`;
   const badge = document.getElementById('exp-badge');
   badge.textContent = caps.toUpperCase();
   badge.className = `explore-dir-badge badge-${dir}`;
@@ -1672,13 +1617,13 @@ const TILE_WEIGHTS = [
   { type:'empty',           w:28 },
   { type:'resource-wood',   w:12 },
   { type:'resource-stone',  w:10 },
-  { type:'resource-bone',   w:8 },
-  { type:'resource-hide',   w:7 },
-  { type:'resource-bloodstone',w:3 },
-  { type:'enemy-skrim',    w:8 },
-  { type:'enemy-cinderhound',     w:5 },
-  { type:'enemy-hollowed',      w:5 },
-  { type:'enemy-morrowhip',      w:4 },
+  { type:'resource-iron',   w:8 },
+  { type:'resource-gold',   w:7 },
+  { type:'resource-crystal',w:3 },
+  { type:'enemy-goblin',    w:8 },
+  { type:'enemy-golem',     w:5 },
+  { type:'enemy-mage',      w:5 },
+  { type:'enemy-wolf',      w:4 },
   { type:'enemy-warden',    w:1 },
   { type:'event',           w:2 },
   { type:'rest',            w:2 },
@@ -1687,9 +1632,9 @@ const TILE_WEIGHTS = [
 const REST_SPOTS = [
   { name:'Ancient Spring',    icon:'🌊', label:'🌿 SAFE HAVEN',  restore:4, desc:'Cold clear water wells up from the stone. You drink deeply.', actionLabel:'Rest & restore 4 stamina', guardEnemy: null },
   { name:'Crumbling Well',    icon:'🪣', label:'🌿 SAFE HAVEN',  restore:3, desc:'An old well, still fed by underground streams.', actionLabel:'Rest & restore 3 stamina', guardEnemy: null },
-  { name:"Hunter's Cache",    icon:'🏕️', label:'⚔ GUARDED CACHE', restore:5, desc:'A hunter\'s camp, long abandoned — but something now lairs here. Clear it and the camp is yours to rest in.', actionLabel:'Fight the squatter, claim the camp', guardEnemy: 'skrim' },
+  { name:"Hunter's Cache",    icon:'🏕️', label:'⚔ GUARDED CACHE', restore:5, desc:'A hunter\'s camp, long abandoned — but something now lairs here. Clear it and the camp is yours to rest in.', actionLabel:'Fight the squatter, claim the camp', guardEnemy: 'goblin' },
   { name:'Stone Shrine',      icon:'🗿', label:'✦ ANCIENT PLACE', restore:4, desc:'A shrine carved into the rock, older than any map. It still hums with faint power.', actionLabel:'Rest at the shrine & restore 4 stamina', guardEnemy: null },
-  { name:'Fallen Tower',      icon:'🗼', label:'⚔ GUARDED RUIN',  restore:5, desc:'A toppled watchtower. Something has made a nest in the rubble. Drive it out and you can use it as shelter.', actionLabel:'Clear the rubble dweller, claim the ruin', guardEnemy: 'morrowhip' },
+  { name:'Fallen Tower',      icon:'🗼', label:'⚔ GUARDED RUIN',  restore:5, desc:'A toppled watchtower. Something has made a nest in the rubble. Drive it out and you can use it as shelter.', actionLabel:'Clear the rubble dweller, claim the ruin', guardEnemy: 'wolf' },
 ];
 
 function weightedPick(arr) {
@@ -1724,25 +1669,25 @@ function generateMap() {
     { type:'empty',            w:45 },
     { type:'resource-wood',    w:8  },
     { type:'resource-stone',   w:7  },
-    { type:'resource-bone',    w:4  },
-    { type:'resource-hide',    w:3  },
-    { type:'resource-bloodstone', w:1  },
-    { type:'enemy-skrim',     w:10 },
-    { type:'enemy-cinderhound',      w:4  },
-    { type:'enemy-hollowed',       w:4  },
+    { type:'resource-iron',    w:4  },
+    { type:'resource-gold',    w:3  },
+    { type:'resource-crystal', w:1  },
+    { type:'enemy-goblin',     w:10 },
+    { type:'enemy-golem',      w:4  },
+    { type:'enemy-mage',       w:4  },
     { type:'event',            w:4  },
   ];
   const OUTER_WEIGHTS = [
     { type:'empty',            w:35 },
     { type:'resource-wood',    w:5  },
     { type:'resource-stone',   w:5  },
-    { type:'resource-bone',    w:6  },
-    { type:'resource-hide',    w:6  },
-    { type:'resource-bloodstone', w:3  },
-    { type:'enemy-skrim',     w:8  },
-    { type:'enemy-cinderhound',      w:8  },
-    { type:'enemy-hollowed',       w:6  },
-    { type:'enemy-morrowhip',       w:8  },
+    { type:'resource-iron',    w:6  },
+    { type:'resource-gold',    w:6  },
+    { type:'resource-crystal', w:3  },
+    { type:'enemy-goblin',     w:8  },
+    { type:'enemy-golem',      w:8  },
+    { type:'enemy-mage',       w:6  },
+    { type:'enemy-wolf',       w:8  },
     { type:'event',            w:3  },
   ];
 
@@ -1838,9 +1783,9 @@ function tileClass(tile, r, c) {
   if(tile.type==='rest') return tile.restCleared ? 'rest-spot active-rest' : 'rest-spot';
   const map = {
     'resource-wood':'resource-wood','resource-stone':'resource-stone',
-    'resource-bone':'resource-bone','resource-hide':'resource-hide',
-    'resource-bloodstone':'resource-bloodstone',
-    'enemy-skrim':'enemy','enemy-cinderhound':'enemy','enemy-hollowed':'enemy','enemy-morrowhip':'enemy',
+    'resource-iron':'resource-iron','resource-gold':'resource-gold',
+    'resource-crystal':'resource-crystal',
+    'enemy-goblin':'enemy','enemy-golem':'enemy','enemy-mage':'enemy','enemy-wolf':'enemy',
     'enemy-warden':'boss','event':'event-tile'
   };
   return map[tile.type]||'empty';
@@ -1852,9 +1797,9 @@ function tileIcon(tile, r, c) {
   if(tile.type==='rest') return tile.restData ? tile.restData.icon : '🌿';
   if(tile.depleted) return '';
   const icons = {
-    castle:'🔥','resource-wood':'🪵','resource-stone':'🪨',
-    'resource-bone':'🦴','resource-hide':'🟫','resource-bloodstone':'🔴',
-    'enemy-skrim':'🦂','enemy-cinderhound':'🐕','enemy-hollowed':'👤','enemy-morrowhip':'🦇',
+    castle:'🏰','resource-wood':'🪵','resource-stone':'🪨',
+    'resource-iron':'⚙️','resource-gold':'🪙','resource-crystal':'💎',
+    'enemy-goblin':'👺','enemy-golem':'🗿','enemy-mage':'🧨','enemy-wolf':'🐺',
     'enemy-warden':'👁️','event':'✦'
   };
   return icons[tile.type]||'';
@@ -1931,22 +1876,25 @@ function handleTileTap(r,c,i) {
     return;
   }
 
-  // Adjacent unvisited tile — costs 1 stamina same as visited
+  // Adjacent unvisited tile — costs 2 stamina to push into the unknown
   if(adj && !tile.visited) {
-    if(G.stamina <= 0) { triggerDeath(); return; }
-    tile.seen = true;
-    moveTo(r,c,i);
+    if(G.stamina < 2) { toast('Need 2 stamina to venture into the unknown'); return; }
+    G.stamina -= 2;
+    tile.seen = true; // reveal visually as stamina is spent
+    updateStats();
+    renderMap();
+    setTimeout(()=>moveTo(r,c,i,true), 150); // true = already paid
     return;
   }
 }
 
-function moveTo(r,c,i) {
+function moveTo(r,c,i,alreadyPaid=false) {
   const tile = G.map[i];
   const isCastle = tile.type==='castle';
   const isRestSpot = tile.type==='rest' && tile.restCleared;
 
   // Castle and cleared rest spots are free; unvisited tiles pre-paid 2 in handleTileTap
-  if(!isCastle && !isRestSpot) {
+  if(!isCastle && !isRestSpot && !alreadyPaid) {
     if(G.stamina<=0) { triggerDeath(); return; }
     G.stamina--;
     updateStats();
@@ -1968,7 +1916,7 @@ function moveTo(r,c,i) {
     G.stamina = G.maxStamina;
     updateStats();
     updateResourceStrip();
-    toast(deposited ? 'Pack left at camp.' : 'Back at camp. You rest a moment.');
+    toast(deposited ? 'Pack deposited — stamina restored' : 'Back at the castle — stamina restored');
     setSyncing(true);
     sbSave().then(()=>setSyncing(false));
     return;
@@ -2023,27 +1971,27 @@ function triggerTile(i) {
     const hasPack = packTotal() > 0;
     const isWarden = eId === 'warden';
 
-    showBestiary(eId, () => {
-      if(isWarden) {
-        showEnemyWarning(
-          `🕯️ ${enemy.name.toUpperCase()}`,
-          `The Pale Warden does not yield.\n\nIf you fall here your pack is gone for good. No marker. No recovery. It keeps what it takes.`,
-          () => startCombat(enemy, i, true),
-          'FACE THE WARDEN',
-          '#5a0e3a'
-        );
-      } else if(hasPack) {
-        showEnemyWarning(
-          `${enemy.icon} ${enemy.name.toUpperCase()}`,
-          `If you collapse here your pack drops where you fall. You will need to come back for it.`,
-          () => startCombat(enemy, i, false),
-          'ENGAGE',
-          '#3a1010'
-        );
-      } else {
-        startCombat(enemy, i, false);
-      }
-    });
+    if(isWarden) {
+      // Always warn for warden — loot is GONE permanently if you die here
+      showEnemyWarning(
+        `👁️ REALM WARDEN`,
+        `This is the Guardian of the realm. It does not yield.\n\nIf you fall here, your adventurer is lost permanently — no skull marker, no recovery. The Guardian keeps what it takes.`,
+        () => startCombat(enemy, i, true), // true = permanent loot loss on death
+        'FACE THE GUARDIAN',
+        '#5a0e3a'
+      );
+    } else if(hasPack) {
+      // Lighter warning for regular enemies
+      showEnemyWarning(
+        `${enemy.icon} ${enemy.name.toUpperCase()}`,
+        `If you fall here, your pack drops on this tile. You'll need to fight your way back to retrieve it.`,
+        () => startCombat(enemy, i, false),
+        'ENGAGE',
+        '#3a1010'
+      );
+    } else {
+      startCombat(enemy, i, false);
+    }
   } else if(tile.type==='event') {
     const ev = EVENTS[Math.floor(Math.random()*EVENTS.length)];
     showEvent(ev, i);
@@ -2090,37 +2038,32 @@ function checkReturnBar() {
       `⚠ ${G.stamina} stamina · ${dist} steps home — no room for detours`;
   } else if(dist > 0 && G.stamina === 0) {
     bar.classList.add('show');
-    document.getElementById('return-bar-text').textContent = `💀 No stamina left — one more step and you collapse`;
+    document.getElementById('return-bar-text').textContent = `💀 No stamina — one more step and you fall`;
   } else {
     bar.classList.remove('show');
   }
 }
 
-async function returnToHole() {
-  // Deposit pack into kingdom stockpile
+async function returnToKingdom() {
+  // Deposit pack into kingdom
   Object.keys(G.pack).forEach(k => {
     G.kingdom[k] = (G.kingdom[k]||0) + G.pack[k];
     G.pack[k] = 0;
   });
-  // Restore stamina — resting at the hole
-  G.stamina = G.maxStamina;
-  updateStats();
   updateResourceStrip();
+  // Mark this player as done for the day
+  G.playedToday[G.player] = true;
   setSyncing(true);
   await sbSave();
   setSyncing(false);
-  // Return to direction screen — no lock
-  showScreen('screen-direction');
-  updateDirCards();
-  renderKingdomSummary();
-  toast('You crawl back. Pack left at camp.');
+  goToDoneScreen();
 }
 
 function goToDoneScreen() {
   document.getElementById('done-name-display').textContent = G.player;
   // Show kingdom resources
   const resEl = document.getElementById('done-resources');
-  resEl.innerHTML = ['wood','stone','bone','hide','bloodstone'].map(k => {
+  resEl.innerHTML = ['wood','stone','iron','gold','crystal'].map(k => {
     const r = RESOURCES.find(x=>x.id===k);
     return `<div style="display:flex;align-items:center;gap:4px;background:var(--dark-3);border:1px solid var(--iron);padding:4px 8px;font-family:Cinzel,serif;font-size:12px">
       ${r.icon} <b>${G.kingdom[k]||0}</b>
@@ -2147,7 +2090,7 @@ function goToDoneScreen() {
 }
 
 function switchPlayer(name) {
-  if(G.playedToday[name]) return; // Already played, should not be clickable but safety check
+  if(G.playedToday[name]) return; // Already played, shouldn't be clickable but safety check
   G.player = name;
   // Show direction screen for this player
   document.getElementById('dir-player-name').textContent = name;
@@ -2169,7 +2112,7 @@ function triggerDeath(customMsg) {
 
   if(permanentLoss) {
     // Loot is gone forever — no skull marker
-    G.pack = {wood:0, stone:0, bone:0, hide:0, bloodstone:0};
+    G.pack = {wood:0, stone:0, iron:0, gold:0, crystal:0};
   } else {
     // Drop pack as recoverable loot pile
     const droppedPack = {...G.pack};
@@ -2179,7 +2122,7 @@ function triggerDeath(customMsg) {
     } else if(hasItems) {
       G.lootPiles.push({ r, c, tileIdx: i, pack: droppedPack });
     }
-    G.pack = {wood:0, stone:0, bone:0, hide:0, bloodstone:0};
+    G.pack = {wood:0, stone:0, iron:0, gold:0, crystal:0};
   }
 
   G.playerHP = G.playerMaxHP;
@@ -2189,11 +2132,11 @@ function triggerDeath(customMsg) {
   let msg = customMsg;
   if(!msg) {
     if(permanentLoss && hasItems) {
-      msg = 'The Pale Warden does not let go. Your pack is gone. You wake at camp with nothing.';
+      msg = 'The Guardian claimed your adventurer. Their pack is gone — taken by the realm. The kingdom sends another soul.';
     } else if(hasItems) {
-      msg = 'You collapse. Your pack spills where you fell. The mark is on the map — crawl back for it before the dark resets.';
+      msg = 'This adventurer has fallen. Their pack marks the spot where they dropped. The kingdom sends another — retrieve what was lost.';
     } else {
-      msg = 'You collapse with nothing on you. You wake at camp. The nightmare continues.';
+      msg = 'This adventurer fell empty-handed. The kingdom sends another.';
     }
   }
   document.getElementById('death-warning').textContent = msg;
@@ -2205,43 +2148,12 @@ function triggerDeath(customMsg) {
 function respawnAtCastle() {
   G.playerPos = { r: G.castlePos.r, c: G.castlePos.c };
   G.stamina = G.maxStamina;
-
-  // HP growth: gain +5 maxHP per death, up to 30
-  const oldMax = G.playerMaxHP;
-  if(G.playerMaxHP < 30) {
-    G.playerMaxHP = Math.min(30, G.playerMaxHP + 5);
-    G.playerHP = G.playerMaxHP;
-    // Persist to localStorage
-    localStorage.setItem(`sr_maxhp_${G.player}`, G.playerMaxHP);
-    // Show growth message
-    setTimeout(() => {
-      showHPGrowth(oldMax, G.playerMaxHP);
-    }, 600);
-  } else {
-    G.playerHP = G.playerMaxHP;
-  }
-
+  G.playerHP = G.playerMaxHP;
   document.getElementById('ov-death').classList.remove('active');
   renderMap();
   updateStats();
   document.getElementById('return-bar').classList.remove('show');
-  toast('You come to. Still at camp. Still breathing.');
-}
-
-function showHPGrowth(oldMax, newMax) {
-  const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(5,3,2,0.92);z-index:600;display:flex;align-items:center;justify-content:center;padding:24px';
-  overlay.innerHTML = `
-    <div style="width:100%;max-width:300px;text-align:center;border:1px solid var(--iron);padding:28px;background:var(--dark-2);position:relative">
-      <div style="position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:2px solid var(--ember);border-left:2px solid var(--ember)"></div>
-      <div style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-bottom:2px solid var(--ember);border-right:2px solid var(--ember)"></div>
-      <div style="font-size:36px;margin-bottom:12px">🩸</div>
-      <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:0.2em;color:var(--ember);margin-bottom:10px">HARDENED BY SUFFERING</div>
-      <div style="font-size:15px;color:var(--bone);line-height:1.7;margin-bottom:20px">Your repeated struggle and refusal to stay down makes you stronger.<br><br>Max HP: <b style="color:#aa4040">${oldMax}</b> → <b style="color:#cc8080">${newMax}</b></div>
-      <button onclick="this.parentElement.parentElement.remove()" style="padding:10px 20px;border:1px solid var(--iron);background:transparent;color:var(--ash);font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;cursor:pointer">ENDURE</button>
-    </div>
-  `;
-  document.body.appendChild(overlay);
+  toast('A new adventurer stirs at the castle gates.');
 }
 
 function collectLootPile(tileIdx) {
@@ -2249,7 +2161,7 @@ function collectLootPile(tileIdx) {
   const pilesHere = G.lootPiles.filter(lp=>lp.tileIdx===tileIdx);
   if(!pilesHere.length) return;
 
-  const merged = {wood:0,stone:0,bone:0,hide:0,bloodstone:0};
+  const merged = {wood:0,stone:0,iron:0,gold:0,crystal:0};
   pilesHere.forEach(lp=>Object.keys(lp.pack).forEach(k=>merged[k]=(merged[k]||0)+(lp.pack[k]||0)));
 
   // Remove these piles
@@ -2287,23 +2199,11 @@ function showCollect(rData, amt, tileIdx) {
 function confirmCollect() {
   if(!G.pendingCollect) return;
   const {rData, amt, tileIdx} = G.pendingCollect;
-  const space = G.carryMax - packTotal();
+  addToPack(rData.id, amt);
+  G.map[tileIdx].depleted = true;
   G.pendingCollect = null;
   document.getElementById('ov-collect').classList.remove('active');
-  if(space <= 0) {
-    // Pack totally full — show swap screen
-    showPackSwap(rData.id, amt, tileIdx, () => {});
-  } else if(space < amt) {
-    // Partial — take what fits, offer swap for rest
-    addToPack(rData.id, space);
-    G.map[tileIdx].depleted = true;
-    renderMap();
-    showPackSwap(rData.id, amt - space, tileIdx, () => {});
-  } else {
-    addToPack(rData.id, amt);
-    G.map[tileIdx].depleted = true;
-    renderMap();
-  }
+  renderMap();
 }
 
 function closeCollect() {
@@ -2459,18 +2359,18 @@ function enemyTurn() {
   let edamage = 0;
 
   if(useAbility) {
-    if(e.id==='skrim') { clog('Skrim raises its tail — the barb scrapes you for reduced damage','log-e'); edamage=Math.max(1,e.atk-3); }
-    else if(e.id==='cinderhound') { clog('Cinderhound shakes ash — the heat scorches you','log-e'); edamage=Math.max(2,e.atk-3); }
-    else if(e.id==='hollowed') {
-      clog('The Hollowed makes no sound. Something inside you tears — 2 burn for 3 turns.','log-e');
+    if(e.id==='goblin') { clog('Goblin dodges — reduces incoming dmg next turn','log-e'); edamage=Math.max(1,e.atk-3); }
+    else if(e.id==='golem') { clog('Golem hardens — braces for impact','log-e'); edamage=Math.max(2,e.atk-3); }
+    else if(e.id==='mage') {
+      clog('Ember Mage ignites you — 2 burn for 3 turns','log-e');
       startPlayerBurn(3); edamage=Math.max(1,e.atk-2);
-    } else if(e.id==='morrowhip') {
+    } else if(e.id==='wolf') {
       const d1=Math.max(1,e.atk-1), d2=Math.max(1,e.atk-2);
-      clog(`Morrowhip strikes twice before you can react: ${d1}+${d2} damage!`,'log-e');
+      clog(`Dire Wolf rends twice: ${d1}+${d2} damage!`,'log-e');
       G.playerHP=Math.max(0,G.playerHP-d1-d2);
       updateStats(); updateCombatHP();
       if(G.playerHP<=0){combatLose();} return;
-    } else if(e.id==='warden') { clog('The Pale Warden is simply there. It hits you for full damage.','log-e'); c.wardActive=true; edamage=e.atk; }
+    } else if(e.id==='warden') { clog('Realm Warden wards itself','log-e'); c.wardActive=true; edamage=e.atk; }
   } else {
     edamage = Math.max(1, e.atk - Math.floor(Math.random()*3));
     clog(`${e.name} attacks for ${edamage} damage`,'log-e');
@@ -2545,13 +2445,12 @@ function combatWin() {
 
 function combatLose() {
   if(burnInterval){clearInterval(burnInterval);burnInterval=null;}
-  const isPerm = G.combat && G.combat.permanentLootLoss;
+  // Close combat overlay first
   document.getElementById('ov-combat').classList.remove('active');
   G.combat = null;
+  // Small delay so combat panel fully closes before death screen appears
   setTimeout(() => {
-    triggerDeath(isPerm
-      ? 'The Pale Warden does not release what it has taken. You wake at camp with nothing.'
-      : 'You collapse. Your pack spills where you fell. The nightmare continues.');
+    triggerDeath('This adventurer was defeated. Their pack marks where they fell. The kingdom sends another.');
   }, 400);
 }
 
@@ -2634,24 +2533,6 @@ function closeRest() {
 // ================================================================
 // KINGDOM
 // ================================================================
-function getUnlockedBuildings() {
-  // Buildings unlock sequentially — only show up to first unbuilt + all built
-  const order = ['pit','fire','boneshelter','crudesack','processing','totem'];
-  const result = [];
-  for(const id of order) {
-    const b = BUILDINGS.find(x=>x.id===id);
-    result.push(b);
-    if(!G.buildings[id]) break; // Stop after first unbuilt
-  }
-  return result;
-}
-
-function checkPhase1Complete() {
-  // Both totems built = phase 1 complete
-  return G.buildings.totem && G.buildings.totem_denielle ||
-         (G.buildings['totem_scott'] && G.buildings['totem_denielle']);
-}
-
 function showKingdom() {
   // Resources
   const resEl=document.getElementById('kd-resources');
@@ -2668,8 +2549,7 @@ function showKingdom() {
   // Buildings
   const bldEl=document.getElementById('kd-buildings');
   bldEl.innerHTML='';
-  const unlockedBuildings = getUnlockedBuildings();
-  unlockedBuildings.forEach(b=>{
+  BUILDINGS.forEach(b=>{
     const built=G.buildings[b.id];
     const canAfford=Object.entries(b.cost).every(([k,v])=>(G.kingdom[k]||0)>=v);
     const costStr=Object.entries(b.cost).map(([k,v])=>`<b>${v}</b> ${k}`).join(', ');
@@ -2677,19 +2557,19 @@ function showKingdom() {
     row.className=`bld-row${built?' built':''}`;
 
     // Campfire special rendering
-    if(b.id === 'fire' && built) {
-      const stoked = G.playedToday.fire_stoked;
+    if(b.id === 'campfire' && built) {
+      const stoked = G.playedToday.campfire_stoked;
       const canStoke = !stoked && (G.kingdom.wood||0) >= 2;
       row.innerHTML=`
         <div class="bld-icon">${stoked ? '🔥' : '🪵'}</div>
         <div class="bld-info">
           <div class="bld-name">Campfire <span style="font-size:9px;color:${stoked?'var(--gold-light)':'var(--ash)'}">${stoked ? '· BURNING' : '· COLD'}</span></div>
-          <div class="bld-desc">${stoked ? 'The fire crackles. +2 stamina when you head out.' : 'The fire is out. Stoke it with 2 wood for +2 stamina.'}</div>
+          <div class="bld-desc">${stoked ? 'The fire crackles. +2 gold at dawn.' : 'The fire is out. Stoke it with 2 wood for +2 gold at dawn.'}</div>
           ${!stoked ? '<div class="bld-cost">Stoke: <b>2</b> wood</div>' : ''}
         </div>
         ${stoked
           ? '<div class="built-tag">✦ BURNING</div>'
-          : `<button class="btn-bld" ${canStoke?'':'disabled'} onclick="stokefire()">${canStoke?'🔥 STOKE':'NEED WOOD'}</button>`
+          : `<button class="btn-bld" ${canStoke?'':'disabled'} onclick="stokeCampfire()">${canStoke?'STOKE':'NEED'}</button>`
         }
       `;
     } else {
@@ -2719,7 +2599,7 @@ function buildIt(id) {
   if(!ok){toast('Not enough resources');return;}
   Object.entries(b.cost).forEach(([k,v])=>G.kingdom[k]-=v);
   G.buildings[id]=true;
-  if(id==='crudesack') G.carryMax=25;
+  if(id==='packframe') G.carryMax=25;
   toast(`${b.name} built — ${b.effect}`);
   setSyncing(true);
   sbSave().then(()=>setSyncing(false));
@@ -2730,126 +2610,15 @@ function closeKingdom() {
   document.getElementById('ov-kingdom').classList.remove('active');
 }
 
-function stokefire() {
-  if(G.playedToday.fire_stoked) { toast('Fire already stoked today'); return; }
-  if((G.kingdom.wood||0) < 2) { toast('Need 2 wood to stoke the fire'); return; }
+function stokeCampfire() {
+  if(G.playedToday.campfire_stoked) { toast('Already stoked today'); return; }
+  if((G.kingdom.wood||0) < 2) { toast('Need 2 wood to stoke'); return; }
   G.kingdom.wood -= 2;
-  G.playedToday.fire_stoked = true;
-  if(Math.random() < 0.2) {
-    const gifts = [{r:'bone',a:2},{r:'hide',a:1},{r:'wood',a:3}];
-    const gift = gifts[Math.floor(Math.random()*gifts.length)];
-    G.kingdom[gift.r] = (G.kingdom[gift.r]||0) + gift.a;
-    toast(`🔥 Something moved at the edge of the firelight. When it was gone, ${gift.a} ${gift.r} remained.`);
-  } else {
-    toast('🔥 Fire lit. The dark pulls back a little.');
-  }
+  G.playedToday.campfire_stoked = true;
+  toast('🔥 Campfire stoked — +2 gold at dawn');
   setSyncing(true);
   sbSave().then(()=>setSyncing(false));
-  showKingdom();
-}
-
-
-// ================================================================
-// PACK SWAP
-// ================================================================
-let packSwapState = null; // { ground: {type,amt}, tileIdx, onDone }
-
-function showPackSwap(groundType, groundAmt, tileIdx, onDone) {
-  packSwapState = {
-    ground: { type: groundType, amt: groundAmt },
-    tileIdx,
-    onDone,
-    tempPack: {...G.pack},
-    tempGround: { [groundType]: groundAmt },
-  };
-  renderPackSwap();
-  document.getElementById('ov-packswap').classList.add('active');
-}
-
-function renderPackSwap() {
-  const ps = packSwapState;
-  const packEl = document.getElementById('ps-pack-list');
-  const groundEl = document.getElementById('ps-ground-list');
-  const rMap = {};
-  RESOURCES.forEach(r => rMap[r.id] = r);
-
-  packEl.innerHTML = Object.entries(ps.tempPack)
-    .filter(([,v]) => v > 0)
-    .map(([k,v]) => {
-      const r = rMap[k] || {icon:'?',id:k};
-      return `<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--dark-3);border:1px solid var(--iron)">
-        <span style="font-size:14px">${r.icon}</span>
-        <span style="flex:1;font-family:Cinzel,serif;font-size:11px;color:var(--bone)">${k} <b>${v}</b></span>
-        <button onclick="swapItem('pack','ground','${k}',1)" style="padding:3px 8px;border:1px solid var(--iron);background:transparent;color:var(--ash);font-family:Cinzel,serif;font-size:9px;cursor:pointer">DROP 1 ↓</button>
-        <button onclick="swapItem('pack','ground','${k}',${v})" style="padding:3px 8px;border:1px solid var(--iron);background:transparent;color:var(--ash);font-family:Cinzel,serif;font-size:9px;cursor:pointer">DROP ALL ↓</button>
-      </div>`;
-    }).join('') || '<div style="color:var(--iron-light);font-size:12px;font-style:italic">Pack empty</div>';
-
-  groundEl.innerHTML = Object.entries(ps.tempGround)
-    .filter(([,v]) => v > 0)
-    .map(([k,v]) => {
-      const r = rMap[k] || {icon:'?',id:k};
-      const packTotal_ = Object.values(ps.tempPack).reduce((a,b)=>a+b,0);
-      const space = G.carryMax - packTotal_;
-      const canTake = Math.min(v, space);
-      return `<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--dark-3);border:1px solid var(--iron)">
-        <span style="font-size:14px">${r.icon}</span>
-        <span style="flex:1;font-family:Cinzel,serif;font-size:11px;color:var(--bone)">${k} <b>${v}</b></span>
-        ${canTake > 0 ? `<button onclick="swapItem('ground','pack','${k}',1)" style="padding:3px 8px;border:1px solid var(--gold);background:transparent;color:var(--gold-light);font-family:Cinzel,serif;font-size:9px;cursor:pointer">TAKE 1 ↑</button>` : ''}
-        ${canTake > 0 ? `<button onclick="swapItem('ground','pack','${k}',${canTake})" style="padding:3px 8px;border:1px solid var(--gold);background:transparent;color:var(--gold-light);font-family:Cinzel,serif;font-size:9px;cursor:pointer">TAKE ${canTake} ↑</button>` : ''}
-      </div>`;
-    }).join('') || '<div style="color:var(--iron-light);font-size:12px;font-style:italic">Nothing here</div>';
-}
-
-function swapItem(from, to, type, amt) {
-  const ps = packSwapState;
-  const fromObj = from === 'pack' ? ps.tempPack : ps.tempGround;
-  const toObj = to === 'pack' ? ps.tempPack : ps.tempGround;
-  const actual = Math.min(amt, fromObj[type] || 0);
-  if(actual <= 0) return;
-  if(to === 'pack') {
-    const packTotal_ = Object.values(ps.tempPack).reduce((a,b)=>a+b,0);
-    const space = G.carryMax - packTotal_;
-    const take = Math.min(actual, space);
-    if(take <= 0) { toast('Pack still full'); return; }
-    fromObj[type] = (fromObj[type] || 0) - take;
-    toObj[type] = (toObj[type] || 0) + take;
-  } else {
-    fromObj[type] = (fromObj[type] || 0) - actual;
-    toObj[type] = (toObj[type] || 0) + actual;
-  }
-  renderPackSwap();
-}
-
-function confirmPackSwap() {
-  const ps = packSwapState;
-  G.pack = ps.tempPack;
-  // Drop remaining ground items as loot pile
-  const hasGround = Object.values(ps.tempGround).some(v => v > 0);
-  if(hasGround) {
-    const existing = G.lootPiles.find(lp => lp.tileIdx === ps.tileIdx);
-    if(existing) {
-      Object.keys(ps.tempGround).forEach(k => existing.pack[k] = (existing.pack[k]||0) + (ps.tempGround[k]||0));
-    } else {
-      G.lootPiles.push({ tileIdx: ps.tileIdx, pack: {...ps.tempGround} });
-    }
-  }
-  // Deplete the tile
-  G.map[ps.tileIdx].depleted = true;
-  document.getElementById('ov-packswap').classList.remove('active');
-  packSwapState = null;
-  updateStats();
-  updateResourceStrip();
-  renderMap();
-  if(ps.onDone) ps.onDone();
-}
-
-function cancelPackSwap() {
-  G.map[packSwapState.tileIdx].depleted = true;
-  document.getElementById('ov-packswap').classList.remove('active');
-  packSwapState = null;
-  renderMap();
-  toast('Left it all behind.');
+  showKingdom(); // Refresh panel
 }
 
 // ================================================================
@@ -2858,10 +2627,6 @@ function cancelPackSwap() {
 function updateStats() {
   document.getElementById('stat-stam').textContent=G.stamina;
   document.getElementById('stat-hp').textContent=G.playerHP;
-  const hpMax = document.getElementById('stat-hp-max');
-  if(hpMax) hpMax.textContent = G.playerMaxHP;
-  const cPMax = document.getElementById('c-p-maxhp');
-  if(cPMax) cPMax.textContent = G.playerMaxHP;
   const total=packTotal();
   document.getElementById('stat-carry').textContent=total;
   document.getElementById('stat-carry-max').textContent=G.carryMax;
@@ -2893,13 +2658,13 @@ async function debugResetRealm() {
   if(!confirmed) return;
 
   // Wipe everything in memory
-  G.kingdom    = { wood:0, stone:0, bone:0, hide:0, bloodstone:0 };
+  G.kingdom    = { wood:0, stone:0, iron:0, gold:0, crystal:0 };
   G.buildings  = {};
   G.claimedDirs  = {};
   G.playedToday  = {};
   G.day          = 1;
   G.realmSeed    = Math.floor(Math.random() * 999999);
-  G.pack         = { wood:0, stone:0, bone:0, hide:0, bloodstone:0 };
+  G.pack         = { wood:0, stone:0, iron:0, gold:0, crystal:0 };
   G.lootPiles    = [];
   G.carryMax     = 15;
   G.stamina      = G.maxStamina;
