@@ -829,8 +829,8 @@ body {
 /* TOAST */
 .toast {
   position: fixed;
-  top: 50%; left: 50%;
-  transform: translateX(-50%) translateY(calc(-50% + 80px));
+  top: 20px; left: 50%;
+  transform: translateX(-50%) translateY(-80px);
   background: var(--dark-3);
   border: 1px solid var(--iron);
   border-left: 2px solid var(--ember);
@@ -841,15 +841,13 @@ body {
   color: var(--bone);
   z-index: 300;
   transition: transform 0.3s ease;
-  white-space: nowrap;
   pointer-events: none;
-  background: rgba(10,9,8,0.92);
-  backdrop-filter: blur(2px);
   max-width: 280px;
   text-align: center;
   white-space: normal;
+  opacity: 0;
 }
-.toast.show { transform: translateX(-50%) translateY(-50%); }
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
 /* RETURN PROMPT */
 .return-bar {
@@ -884,7 +882,7 @@ body {
   <div class="login-sigil">🏰</div>
   <div class="login-title">SHIFTING <span>REALM</span></div>
   <div class="login-sub">THE DARKNESS WAITS · WILL YOU SURVIVE</div>
-  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v37</div>
+  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v38</div>
   <div class="login-divider"></div>
   <div class="who-are-you">Who ventures forth?</div>
   <div class="player-select">
