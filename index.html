@@ -882,7 +882,7 @@ body {
   <div class="login-sigil">🏰</div>
   <div class="login-title">SHIFTING <span>REALM</span></div>
   <div class="login-sub">THE DARKNESS WAITS · WILL YOU SURVIVE</div>
-  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v38</div>
+  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v41</div>
   <div class="login-divider"></div>
   <div class="who-are-you">Who ventures forth?</div>
   <div class="player-select">
@@ -1055,7 +1055,7 @@ body {
 
   <div class="action-bar">
     <button class="btn-action" onclick="showKingdom()">🔥 CAMP</button>
-    <button class="btn-action primary" onclick="returnToHole()">⬆ RETURN TO CAMP</button>
+
     <button class="btn-action" onclick="debugResetRealm()" style="border-color:#5a1010;color:#aa4040;font-size:7px">⚠ RESET DAY</button>
   </div>
 </div>
@@ -1552,11 +1552,17 @@ async function login(name) {
   // G.day was set from Supabase above — validate it is a real game day not a buggy value
   if(!G.day || G.day < 1 || G.day > 365) G.day = 1;
   // Load persisted maxHP from localStorage
-  const savedHP = localStorage.getItem(`sr_maxhp_${name}`);
-  if(savedHP) {
-    G.playerMaxHP = Math.min(30, Math.max(5, parseInt(savedHP) || 5));
-  } else {
+  // Validate saved HP against death count — reset if they don't match
+  const savedHP = parseInt(localStorage.getItem(`sr_maxhp_${name}`)) || 5;
+  const savedDeaths = parseInt(localStorage.getItem(`sr_deaths_${name}`)) || 0;
+  const maxHPFromDeaths = 5 + Math.floor(savedDeaths / 2) * 5;
+  if(savedHP > maxHPFromDeaths || savedHP < 5) {
+    // HP is higher than deaths justify — reset both
+    localStorage.setItem(`sr_maxhp_${name}`, 5);
+    localStorage.setItem(`sr_deaths_${name}`, 0);
     G.playerMaxHP = 5;
+  } else {
+    G.playerMaxHP = Math.min(30, savedHP);
   }
   G.playerHP = G.playerMaxHP;
   G.carryMax = carryMax();
@@ -2005,6 +2011,78 @@ function moveTo(r,c,i) {
   }
 }
 
+// ================================================================
+// BESTIARY — first encounter popup
+// ================================================================
+const BESTIARY = {
+  skrim: {
+    name: 'Skrim',
+    art: '🦂',
+    desc: 'Part scorpion, part something that should not be walking. The tail moves faster than the body. Survivors describe the barb as cold — which makes no sense, but they all say it.',
+    warning: 'Armored hide. Dangerous tail. Do not let it get behind you.',
+  },
+  morrowhip: {
+    name: 'Morrowhip',
+    art: '🦇',
+    desc: 'You will hear it before you see it — a sound like fabric tearing. It moves faster than your eyes track. Goes for the face. Specifically the eyes.',
+    warning: 'Attacks twice. Fast. Aim for the body, not where it was.',
+  },
+  hollowed: {
+    name: 'The Hollowed',
+    art: '👤',
+    desc: 'Looks like a person from a distance. No features up close — just smooth skin where the face should be. It makes no sound. You feel worse the longer you look at it.',
+    warning: 'Unknown origin. Causes psychic damage. Do not stare.',
+  },
+  cinderhound: {
+    name: 'Cinderhound',
+    art: '🐕',
+    desc: 'Built like a dog, made of ash and compacted heat. The burns it leaves do not hurt at first. That is the dangerous part.',
+    warning: 'Thick hide. Burns on contact. Fire does not deter it.',
+  },
+  warden: {
+    name: 'The Pale Warden',
+    art: '🕯️',
+    desc: 'Massive. Slow. It has been here longer than anything else. Nobody knows what it is guarding. Nobody who found out came back to say.',
+    warning: '⚠ If you fall here your pack is gone for good. No marker. No recovery.',
+  },
+};
+
+function showBestiary(enemyId, onClose) {
+  const b = BESTIARY[enemyId];
+  if(!b) { onClose(); return; }
+  const seen = localStorage.getItem('sr_seen_' + enemyId);
+  if(seen) { onClose(); return; }
+  localStorage.setItem('sr_seen_' + enemyId, '1');
+
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(5,3,2,0.97);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.innerHTML = `
+    <div style="width:100%;max-width:320px;background:var(--dark-2);border:1px solid var(--iron);position:relative">
+      <div style="position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:2px solid var(--ember);border-left:2px solid var(--ember)"></div>
+      <div style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-bottom:2px solid var(--ember);border-right:2px solid var(--ember)"></div>
+      <div style="padding:16px 18px;border-bottom:1px solid var(--iron);display:flex;align-items:center;gap:12px">
+        <div style="font-size:52px;line-height:1">${b.art}</div>
+        <div>
+          <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.2em;color:var(--ember);margin-bottom:3px">FIRST ENCOUNTER</div>
+          <div style="font-family:Cinzel,serif;font-size:20px;font-weight:700;color:var(--bone)">${b.name}</div>
+        </div>
+      </div>
+      <div style="padding:16px 18px">
+        <div style="font-size:13px;color:var(--ash);font-style:italic;line-height:1.7;margin-bottom:14px">${b.desc}</div>
+        <div style="background:rgba(196,80,26,0.08);border:1px solid rgba(196,80,26,0.25);padding:10px 12px;font-family:Cinzel,serif;font-size:9px;letter-spacing:0.1em;color:var(--ember);line-height:1.6">${b.warning}</div>
+      </div>
+      <div style="padding:12px 18px 16px">
+        <button id="bestiary-close-btn" style="width:100%;padding:11px;border:1px solid #6a1010;background:rgba(106,16,16,0.2);color:#c04040;font-family:Cinzel,serif;font-size:10px;letter-spacing:0.1em;cursor:pointer">FACE IT</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.querySelector('#bestiary-close-btn').onclick = () => {
+    document.body.removeChild(overlay);
+    onClose();
+  };
+}
+
 function triggerTile(i) {
   const tile = G.map[i];
   if(tile.type==='empty' || tile.type==='castle') return;
@@ -2155,8 +2233,11 @@ function switchPlayer(name) {
 }
 
 function depositPack() {
-  // Legacy — redirect to returnToKingdom
-  returnToKingdom();
+  // Legacy stub
+}
+
+function returnToKingdom() {
+  // Legacy stub — kept to prevent crashes
 }
 
 function triggerDeath(customMsg) {
@@ -2204,17 +2285,16 @@ function respawnAtCastle() {
   G.playerPos = { r: G.castlePos.r, c: G.castlePos.c };
   G.stamina = G.maxStamina;
 
-  // HP growth: gain +5 maxHP per death, up to 30
+  // HP growth: +5 maxHP every OTHER death, up to 30
   const oldMax = G.playerMaxHP;
-  if(G.playerMaxHP < 30) {
+  const deathKey = `sr_deaths_${G.player}`;
+  const deaths = (parseInt(localStorage.getItem(deathKey)) || 0) + 1;
+  localStorage.setItem(deathKey, deaths);
+  if(G.playerMaxHP < 30 && deaths % 2 === 0) {
     G.playerMaxHP = Math.min(30, G.playerMaxHP + 5);
     G.playerHP = G.playerMaxHP;
-    // Persist to localStorage
     localStorage.setItem(`sr_maxhp_${G.player}`, G.playerMaxHP);
-    // Show growth message
-    setTimeout(() => {
-      showHPGrowth(oldMax, G.playerMaxHP);
-    }, 600);
+    setTimeout(() => { showHPGrowth(oldMax, G.playerMaxHP); }, 600);
   } else {
     G.playerHP = G.playerMaxHP;
   }
@@ -2906,6 +2986,15 @@ async function debugResetRealm() {
   // Clear intro flags so both players see the welcome screen again
   localStorage.removeItem('sr_intro_seen_Denielle');
   localStorage.removeItem('sr_intro_seen_Scott');
+  ['Denielle','Scott'].forEach(n => {
+    localStorage.removeItem(`sr_maxhp_${n}`);
+    localStorage.removeItem(`sr_deaths_${n}`);
+    localStorage.removeItem(`sr_seen_skrim`);
+    localStorage.removeItem(`sr_seen_morrowhip`);
+    localStorage.removeItem(`sr_seen_hollowed`);
+    localStorage.removeItem(`sr_seen_cinderhound`);
+    localStorage.removeItem(`sr_seen_warden`);
+  });
 
   // Force-write clean state to Supabase via PATCH
   const payload = {
