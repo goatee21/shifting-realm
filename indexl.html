@@ -541,6 +541,7 @@ body {
 
 /* Revealed types */
 .tile.empty { background: #1c1814; border-color: #262018; }
+.tile.fire-lit { background: #1a1008 !important; border-color: #3a2010 !important; }
 .tile.visited { background: #1c1814; border-color: #262018; }
 .tile.resource-wood { background: #130e07; border-color: #2d1e0a; }
 .tile.resource-stone { background: #111110; border-color: #2a2820; }
@@ -882,7 +883,7 @@ body {
   <div class="login-sigil">🏰</div>
   <div class="login-title">SHIFTING <span>REALM</span></div>
   <div class="login-sub">THE DARKNESS WAITS · WILL YOU SURVIVE</div>
-  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v41</div>
+  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v47</div>
   <div class="login-divider"></div>
   <div class="who-are-you">Who ventures forth?</div>
   <div class="player-select">
@@ -1091,10 +1092,10 @@ body {
       </div>
       <div class="combat-log" id="combat-log"></div>
       <div id="combat-action-area">
-        <div class="combat-btns">
+        <div class="combat-btns" id="combat-btns">
           <button class="btn-combat bc-attack" onclick="combatAct('attack')">⚔ STRIKE</button>
-          <button class="btn-combat bc-ability" id="bc-ability" onclick="combatAct('ability')">✦ ABILITY</button>
-          <button class="btn-combat bc-ultimate" id="bc-ultimate" onclick="combatAct('ultimate')" disabled>★ (0/3)</button>
+          <button class="btn-combat bc-ability" id="bc-ability" onclick="combatAct('ability')" style="display:none">✦ DOUBLE STRIKE</button>
+          <button class="btn-combat bc-ultimate" id="bc-ultimate" onclick="combatAct('ultimate')" disabled style="display:none">★ (0/3)</button>
           <button class="btn-combat bc-flee" onclick="combatAct('flee')">↩ FLEE</button>
         </div>
       </div>
@@ -1350,7 +1351,7 @@ const BUILDINGS = [
   { id:'pit',        name:'The Pit',        icon:'⛏️', desc:'Dig out and shore up your camp. Widen it. Reinforce the walls. This is the anchor of everything.', effect:'Unlocks all else', cost:{wood:2}, phase:1 },
   { id:'fire',       name:'Fire',           icon:'🔥', desc:'Fire gives light and warmth. Stoke daily with 2 wood for +2 stamina. The light carries far out here. Things notice.', effect:'+2 stamina if lit', cost:{wood:3}, phase:1 },
   { id:'boneshelter',name:'Bone Shelter',   icon:'🦴', desc:'Walls of bone and hide scraped together. Less terrible than the pit. Barely.', effect:'Structural anchor', cost:{bone:8, hide:4}, phase:1 },
-  { id:'crudesack',  name:'Crude Sack',     icon:'🎒', desc:'Hide stitched with sinew. Carry a little more back to camp.', effect:'Carry +8', cost:{hide:6}, phase:1 },
+  { id:'crudesack',  name:'Crude Sack',     icon:'🎒', desc:'Hide stitched with sinew. Ugly work done in bad light. But your hands are fuller now, and full hands mean more nights survived.', effect:'Carry 15→50', cost:{hide:6}, phase:1 },
   { id:'processing', name:'Processing Area',icon:'🔩', desc:'Bones and stones arranged into something almost useful. Unlocks crafting.', effect:'Unlocks crafting', cost:{bone:10, stone:8}, phase:1 },
   { id:'totem',      name:'Ward Totem',     icon:'🗿', desc:'Built at the edge of the dark. Each survivor must raise their own. Something will notice.', effect:'Phase 1 completion', cost:{bone:5, hide:3, bloodstone:2}, phase:1 },
 ];
@@ -1488,7 +1489,7 @@ function addToPack(type, amt) {
 }
 
 function carryMax() {
-  return G.buildings['crudesack'] ? 23 : 15;
+  return G.buildings['crudesack'] ? 50 : 15;
 }
 
 function playerAtk() {
@@ -1856,7 +1857,7 @@ function tileIcon(tile, r, c) {
   if(tile.type==='rest') return tile.restData ? tile.restData.icon : '🌿';
   if(tile.depleted) return '';
   const icons = {
-    castle:'🔥','resource-wood':'🪵','resource-stone':'🪨',
+    castle: (G.buildings['fire'] && G.playedToday.fire_stoked) ? '🔥' : '🕳️','resource-wood':'🪵','resource-stone':'🪨',
     'resource-bone':'🦴','resource-hide':'🟫','resource-bloodstone':'🔴',
     'enemy-skrim':'🦂','enemy-cinderhound':'🐕','enemy-hollowed':'👤','enemy-morrowhip':'🦇',
     'enemy-warden':'👁️','event':'✦'
@@ -1894,7 +1895,8 @@ function renderMap() {
       const count = G.lootPiles.filter(lp=>lp.tileIdx===i).length;
       el.innerHTML = isPlayer ? `<span class="player-marker">🗡️</span>` : count > 1 ? '💀💀' : '💀';
     } else {
-      el.className = `tile ${cls}${isPlayer?' player-here':''}${isReachable||isUnknownAdj?' reachable':''}`;
+      const fireLit = isInFireRadius(r, c) && vis !== 'hidden';
+      el.className = `tile ${cls}${isPlayer?' player-here':''}${isReachable||isUnknownAdj?' reachable':''}${fireLit?' fire-lit':''}`;
       if(isPlayer) {
         el.innerHTML = `<span class="player-marker">🗡️</span>`;
       } else {
@@ -1935,22 +1937,26 @@ function handleTileTap(r,c,i) {
     return;
   }
 
-  // Adjacent unvisited tile — costs 1 stamina same as visited
+  // Adjacent unvisited tile — 1 stamina (0 in fire radius), paid here, moveTo skips it
   if(adj && !tile.visited) {
-    if(G.stamina <= 0) { triggerDeath(); return; }
+    const inFire = isInFireRadius(r, c);
+    if(!inFire && G.stamina <= 0) { triggerDeath(); return; }
+    if(!inFire) { G.stamina--; updateStats(); }
     tile.seen = true;
-    moveTo(r,c,i);
+    tile.visited = true;
+    moveTo(r,c,i,true); // staminaPaid=true, already deducted above
     return;
   }
 }
 
-function moveTo(r,c,i) {
+function moveTo(r,c,i,staminaPaid) {
   const tile = G.map[i];
   const isCastle = tile.type==='castle';
   const isRestSpot = tile.type==='rest' && tile.restCleared;
 
-  // Castle and cleared rest spots are free; unvisited tiles pre-paid 2 in handleTileTap
-  if(!isCastle && !isRestSpot) {
+  // Castle, cleared rest spots, fire-lit tiles, and pre-paid tiles are free
+  const inFireLight = isInFireRadius(r, c);
+  if(!isCastle && !isRestSpot && !inFireLight && !staminaPaid) {
     if(G.stamina<=0) { triggerDeath(); return; }
     G.stamina--;
     updateStats();
@@ -2156,6 +2162,72 @@ function closeEvent() {
 // ================================================================
 // RETURN / DEATH
 // ================================================================
+
+// ================================================================
+// BUILDING STORY POPUPS
+// ================================================================
+const BUILDING_STORIES = {
+  pit:         { icon:'⛏️', title:'A Scratch in the Earth',  body:'A scratch in the earth. Barely enough to curl into. The sounds outside do not stop. But they have not found you yet.' },
+  fire:        { icon:'🔥', title:'The First Flame',          body:'The flame takes. The dark pulls back — just slightly. You did not realize how cold you were until just now. Something out there noticed the light.' },
+  boneshelter: { icon:'🦴', title:'Walls of a Sort',          body:'The walls go up crooked and slow. It will not keep everything out. Nothing will. But it is a structure. A thing that says you are still here.' },
+  crudesack:   { icon:'🎒', title:'Something to Carry',       body:'Hide stitched with sinew. Ugly work done in bad light. But your hands are fuller now. Full hands mean more nights survived.' },
+  processing:  { icon:'🔩', title:'The First Tool',           body:'You clear a place for working the things you drag back. Ideas come — crude, half-formed. Tools. Weapons. A way, perhaps, to push back against the night.' },
+  totem:       { icon:'🗿', title:'The Ward is Set',          body:'As you press the bloodstones into its eye sockets something shifts in your chest. Your body surges with strange energy. You feel — for the first time — that you might actually have a chance against what waits out there.' },
+};
+
+function showBuildingStory(id, onClose) {
+  const s = BUILDING_STORIES[id];
+  if(!s) { if(onClose) onClose(); return; }
+  const isTotem = id === 'totem';
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(5,3,2,0.97);z-index:700;display:flex;align-items:center;justify-content:center;padding:24px';
+  overlay.innerHTML = `
+    <div style="width:100%;max-width:320px;text-align:center">
+      <div style="font-size:52px;margin-bottom:18px;filter:drop-shadow(0 0 20px rgba(196,80,26,${isTotem?'0.7':'0.3'}))">${s.icon}</div>
+      <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:0.25em;color:var(--ember);margin-bottom:12px">${isTotem ? '— THE WARD IS SET —' : '— BUILT —'}</div>
+      <div style="font-family:Cinzel,serif;font-size:${isTotem?'17':'15'}px;font-weight:${isTotem?'700':'400'};color:var(--bone);margin-bottom:20px;line-height:1.5">${s.title}</div>
+      <div style="font-size:14px;color:var(--ash);font-style:italic;line-height:1.8;margin-bottom:28px;max-width:280px;margin-left:auto;margin-right:auto">${s.body}</div>
+      <button id="bld-story-btn" style="padding:11px 24px;border:1px solid ${isTotem?'var(--ember)':'var(--iron)'};background:transparent;color:${isTotem?'var(--bone)':'var(--ash)'};font-family:Cinzel,serif;font-size:9px;letter-spacing:0.2em;cursor:pointer">${isTotem ? 'HOLD THE DARK' : 'CONTINUE'}</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.querySelector('#bld-story-btn').onclick = () => { document.body.removeChild(overlay); if(onClose) onClose(); };
+}
+
+function showUltimateUnlock() {
+  showNarrativeScreen({
+    icon: '🗿',
+    eyebrow: '— Something Awakens —',
+    title: 'The Dark Surge',
+    body: 'Your hands stop shaking. Something in the totem answers what is in you. Strange. Wrong. Yours.<br><br>You feel — for the first time — that you might actually have a chance against what waits out there.',
+    buffs: [
+      { icon: '★', text: 'Dark Surge unlocked — 4x damage, charges over 3 hits' }
+    ],
+    btnText: 'HOLD THE DARK',
+    zIndex: 800,
+  });
+}
+
+function showDoubleStrikeUnlock() {
+  showNarrativeScreen({
+    icon: '🗡️',
+    eyebrow: 'Something Shifts',
+    title: 'Your Hands Remember',
+    body: 'You have died enough times to know exactly how it goes. The hesitation is gone. Your hands move before your mind catches up.<br><br>They know how to strike twice now.',
+    buffs: [
+      { icon: '✦', text: 'Double Strike unlocked — hit twice per ability turn' }
+    ],
+    btnText: 'ENDURE',
+    zIndex: 700,
+  });
+}
+
+function isInFireRadius(r, c) {
+  if(!G.buildings['fire'] || !G.playedToday.fire_stoked) return false;
+  const cp = G.castlePos;
+  return Math.abs(r - cp.r) + Math.abs(c - cp.c) <= 2;
+}
+
 function checkReturnBar() {
   const bar = document.getElementById('return-bar');
   const cp = G.castlePos || {r:9,c:4};
@@ -2285,16 +2357,24 @@ function respawnAtCastle() {
   G.playerPos = { r: G.castlePos.r, c: G.castlePos.c };
   G.stamina = G.maxStamina;
 
-  // HP growth: +5 maxHP every OTHER death, up to 30
+  // Track deaths — HP gains on deaths 2,4,6... ability on death 5 (separate)
   const oldMax = G.playerMaxHP;
   const deathKey = `sr_deaths_${G.player}`;
   const deaths = (parseInt(localStorage.getItem(deathKey)) || 0) + 1;
   localStorage.setItem(deathKey, deaths);
-  if(G.playerMaxHP < 30 && deaths % 2 === 0) {
+
+  const isDoubleStrikeDeath = deaths === 5 && !localStorage.getItem(`sr_ds_${G.player}`);
+  const isHPDeath = deaths % 2 === 0 && deaths !== 5 && G.playerMaxHP < 30;
+
+  if(isHPDeath) {
     G.playerMaxHP = Math.min(30, G.playerMaxHP + 5);
     G.playerHP = G.playerMaxHP;
     localStorage.setItem(`sr_maxhp_${G.player}`, G.playerMaxHP);
-    setTimeout(() => { showHPGrowth(oldMax, G.playerMaxHP); }, 600);
+    setTimeout(() => { showHPGrowth(oldMax, G.playerMaxHP, deaths); }, 600);
+  } else if(isDoubleStrikeDeath) {
+    localStorage.setItem(`sr_ds_${G.player}`, '1');
+    G.playerHP = G.playerMaxHP;
+    setTimeout(showDoubleStrikeUnlock, 600);
   } else {
     G.playerHP = G.playerMaxHP;
   }
@@ -2306,20 +2386,59 @@ function respawnAtCastle() {
   toast('You come to. Still at camp. Still breathing.');
 }
 
-function showHPGrowth(oldMax, newMax) {
+// ================================================================
+// FULL SCREEN NARRATIVE EVENTS
+// ================================================================
+
+// Generic full-screen narrative popup
+// buffs = array of { icon, text } shown as unlock lines
+function showNarrativeScreen(opts, onClose) {
+  // opts: { icon, eyebrow, title, body, buffs:[], btnText, zIndex }
+  const z = opts.zIndex || 600;
   const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(5,3,2,0.92);z-index:600;display:flex;align-items:center;justify-content:center;padding:24px';
+  overlay.style.cssText = `position:fixed;inset:0;background:rgba(5,3,2,0.97);z-index:${z};display:flex;align-items:center;justify-content:center;padding:28px;overflow-y:auto`;
+
+  const buffsHTML = (opts.buffs||[]).map(b => `
+    <div style="display:flex;align-items:center;gap:10px;background:var(--dark-3);border:1px solid var(--iron);border-left:2px solid var(--ember);padding:10px 14px;margin-bottom:6px;text-align:left">
+      <span style="font-size:18px">${b.icon}</span>
+      <span style="font-family:Cinzel,serif;font-size:11px;letter-spacing:0.08em;color:var(--bone)">${b.text}</span>
+    </div>
+  `).join('');
+
   overlay.innerHTML = `
-    <div style="width:100%;max-width:300px;text-align:center;border:1px solid var(--iron);padding:28px;background:var(--dark-2);position:relative">
-      <div style="position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:2px solid var(--ember);border-left:2px solid var(--ember)"></div>
-      <div style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-bottom:2px solid var(--ember);border-right:2px solid var(--ember)"></div>
-      <div style="font-size:36px;margin-bottom:12px">🩸</div>
-      <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:0.2em;color:var(--ember);margin-bottom:10px">HARDENED BY SUFFERING</div>
-      <div style="font-size:15px;color:var(--bone);line-height:1.7;margin-bottom:20px">Your repeated struggle and refusal to stay down makes you stronger.<br><br>Max HP: <b style="color:#aa4040">${oldMax}</b> → <b style="color:#cc8080">${newMax}</b></div>
-      <button onclick="this.parentElement.parentElement.remove()" style="padding:10px 20px;border:1px solid var(--iron);background:transparent;color:var(--ash);font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;cursor:pointer">ENDURE</button>
+    <div style="width:100%;max-width:320px;text-align:center">
+      <div style="font-size:56px;margin-bottom:16px;filter:drop-shadow(0 0 24px rgba(196,80,26,0.5))">${opts.icon}</div>
+      <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.3em;color:var(--ember);margin-bottom:10px;text-transform:uppercase">${opts.eyebrow||''}</div>
+      <div style="font-family:Cinzel,serif;font-size:20px;font-weight:700;color:var(--bone);margin-bottom:18px;line-height:1.3">${opts.title}</div>
+      <div style="font-size:14px;color:var(--ash);font-style:italic;line-height:1.9;margin-bottom:${buffsHTML?'22':'28'}px;max-width:290px;margin-left:auto;margin-right:auto">${opts.body}</div>
+      ${buffsHTML ? `<div style="margin-bottom:24px;text-align:left">${buffsHTML}</div>` : ''}
+      <button id="narr-btn" style="padding:13px 28px;border:1px solid var(--ember);background:transparent;color:var(--bone);font-family:Cinzel,serif;font-size:10px;letter-spacing:0.2em;cursor:pointer;width:100%;max-width:220px">${opts.btnText||'CONTINUE'}</button>
     </div>
   `;
   document.body.appendChild(overlay);
+  overlay.querySelector('#narr-btn').onclick = () => {
+    document.body.removeChild(overlay);
+    if(onClose) onClose();
+  };
+  return overlay;
+}
+
+function showHPGrowth(oldMax, newMax, deaths, onClose) {
+  // First HP gain (death 2) vs subsequent gains
+  const isFirst = deaths === 2;
+  showNarrativeScreen({
+    icon: '🩸',
+    eyebrow: 'Hardened by Suffering',
+    title: isFirst ? 'You Get Up Again' : 'Still Standing',
+    body: isFirst
+      ? 'This time something is different. The nightmare has tried to break you and failed. You can feel it — you are harder now. This world will not stop you. You will prevail.'
+      : 'In this land, it seems death makes you stronger. You are not sure whether that is a mercy or a curse.',
+    buffs: [
+      { icon: '❤️', text: `Max HP: ${oldMax} → ${newMax}` }
+    ],
+    btnText: 'RISE',
+    zIndex: 600,
+  }, onClose);
 }
 
 function collectLootPile(tileIdx) {
@@ -2451,10 +2570,17 @@ function startCombat(enemy, tileIdx, permanentLootLoss) {
 
   document.getElementById('combat-action-area').style.display = '';
   document.getElementById('combat-result-area').style.display = 'none';
-  document.getElementById('bc-ability').disabled = false;
-  document.getElementById('bc-ability').textContent = '✦ ABILITY';
-  document.getElementById('bc-ultimate').disabled = true;
-  document.getElementById('bc-ultimate').textContent = '★ (0/3)';
+  // Show ability if unlocked (after 2nd HP boost = 4 deaths)
+  const abilityUnlocked = G.playerMaxHP >= 15;
+  const ultimateUnlocked = !!localStorage.getItem(`sr_ult_${G.player}`);
+  const abilityBtn = document.getElementById('bc-ability');
+  const ultimateBtn = document.getElementById('bc-ultimate');
+  abilityBtn.style.display = abilityUnlocked ? '' : 'none';
+  abilityBtn.disabled = false;
+  abilityBtn.textContent = '✦ DOUBLE STRIKE';
+  ultimateBtn.style.display = ultimateUnlocked ? '' : 'none';
+  ultimateBtn.disabled = true;
+  ultimateBtn.textContent = '★ (0/3)';
 
   document.getElementById('ov-combat').classList.add('active');
 }
@@ -2491,16 +2617,20 @@ function combatAct(action) {
     G.ultimateCharge = Math.min(3, G.ultimateCharge+1);
   } else if(action==='ability') {
     if(G.abilityCD>0) return;
-    dmg = Math.max(1, Math.floor(atk*1.8) - c.enemy.def);
-    clog(`Power ability — ${dmg} damage!`,'log-p');
+    // Double strike — two hits at slightly reduced damage each
+    const d1 = Math.max(1, atk - 1);
+    const d2 = Math.max(1, atk - 1);
+    dmg = d1 + d2;
+    clog(`Double Strike — ${d1}+${d2} damage!`,'log-p');
     G.abilityCD = 3;
     document.getElementById('bc-ability').disabled = true;
     document.getElementById('bc-ability').textContent = `✦ CD(${G.abilityCD})`;
     G.ultimateCharge = Math.min(3, G.ultimateCharge+1);
   } else if(action==='ultimate') {
     if(G.ultimateCharge<3) return;
-    dmg = Math.max(1, Math.floor(atk*3) - c.enemy.def);
-    clog(`★ ULTIMATE — ${dmg} devastating damage!`,'log-s');
+    // Ultimate: 4x multiplier, ignores defense — meant to hurt the Warden
+    dmg = Math.max(1, Math.floor(atk * 4));
+    clog(`★ DARK SURGE — ${dmg} damage. Something in you answers the totem.`,'log-s');
     G.ultimateCharge = 0;
   }
 
@@ -2791,17 +2921,33 @@ function showKingdom() {
 }
 
 function buildIt(id) {
-  const b=BUILDINGS.find(x=>x.id===id);
-  if(!b||G.buildings[id]) return;
-  const ok=Object.entries(b.cost).every(([k,v])=>(G.kingdom[k]||0)>=v);
-  if(!ok){toast('Not enough resources');return;}
+  const b = BUILDINGS.find(x=>x.id===id);
+  if(!b) return;
+  const storeId = id === 'totem' ? `totem_${G.player.toLowerCase()}` : id;
+  if(G.buildings[storeId]) { toast('Already built'); return; }
+  const ok = Object.entries(b.cost).every(([k,v])=>(G.kingdom[k]||0)>=v);
+  if(!ok){ toast('Not enough resources'); return; }
   Object.entries(b.cost).forEach(([k,v])=>G.kingdom[k]-=v);
-  G.buildings[id]=true;
-  if(id==='crudesack') G.carryMax=25;
-  toast(`${b.name} built — ${b.effect}`);
+  G.buildings[storeId] = true;
+  if(id==='crudesack') { G.carryMax = carryMax(); }
   setSyncing(true);
-  sbSave().then(()=>setSyncing(false));
-  showKingdom(); // Refresh
+  sbSave().then(async () => {
+    setSyncing(false);
+    closeKingdom();
+    if(id === 'totem') {
+      showBuildingStory('totem', async () => {
+        localStorage.setItem(`sr_ult_${G.player}`, '1');
+        showUltimateUnlock();
+        const row = await sbLoad();
+        const bld = row ? (row.buildings || {}) : G.buildings;
+        const bothDone = bld['totem_scott'] && bld['totem_denielle'];
+        if(bothDone) setTimeout(showPhase1End, 800);
+        else setTimeout(() => showTotemSoloMessage(G.player === 'Scott' ? 'Denielle' : 'Scott'), 200);
+      });
+    } else {
+      showBuildingStory(id, () => { showKingdom(); });
+    }
+  });
 }
 
 function closeKingdom() {
@@ -2989,6 +3135,7 @@ async function debugResetRealm() {
   ['Denielle','Scott'].forEach(n => {
     localStorage.removeItem(`sr_maxhp_${n}`);
     localStorage.removeItem(`sr_deaths_${n}`);
+    localStorage.removeItem(`sr_ds_${n}`);
     localStorage.removeItem(`sr_seen_skrim`);
     localStorage.removeItem(`sr_seen_morrowhip`);
     localStorage.removeItem(`sr_seen_hollowed`);
