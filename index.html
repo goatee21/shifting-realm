@@ -883,7 +883,7 @@ body {
   <div class="login-sigil">🏰</div>
   <div class="login-title">SHIFTING <span>REALM</span></div>
   <div class="login-sub">THE DARKNESS WAITS · WILL YOU SURVIVE</div>
-  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v52</div>
+  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v58</div>
   <div class="login-divider"></div>
   <div class="who-are-you">Who ventures forth?</div>
   <div class="player-select">
@@ -1028,7 +1028,7 @@ body {
         <span class="stat-icon">⚡</span>
         <div class="stat-info">
           <div class="stat-label">STAMINA</div>
-          <div class="stat-val"><span id="stat-stam">10</span>/10</div>
+          <div class="stat-val"><span id="stat-stam">10</span>/<span id="stat-stam-max">10</span></div>
         </div>
       </div>
       <div class="stat-pill">
@@ -1127,7 +1127,7 @@ body {
       <div class="carry-warning" id="col-warn" style="display:none"></div>
     </div>
     <div class="panel-footer">
-      <button class="btn-action primary" onclick="confirmCollect()">GATHER & CARRY</button>
+      <button class="btn-action primary" onclick="confirmCollect()">ADJUST YOUR LOAD</button>
       <button class="btn-action" onclick="closeCollect()">LEAVE IT</button>
     </div>
   </div>
@@ -1292,10 +1292,11 @@ const EVENTS = [
     text:'Another body. Not old. The pack is still on them, mostly intact. You recognize the look of someone who got too far out.',
     choices:[
       { label:'Take what you can. (+6 wood, +4 stone)', fn: () => {
-        addToPack('wood',6); addToPack('stone',4); toast('You take what you need and do not think about it'); return true;
+        addMultipleToPack([{type:'wood',amt:6},{type:'stone',amt:4}], -1);
+        toast('You take what you need and do not think about it'); return true;
       }},
       { label:'Leave it. Mark the spot and move on. (+3 hide)', fn: () => {
-        addToPack('hide',3); toast('Something about leaving it feels right. You find hide nearby.'); return true;
+        addMultipleToPack([{type:'hide',amt:3}], -1); toast('Something about leaving it feels right. You find hide nearby.'); return true;
       }},
     ]
   },
@@ -1307,7 +1308,7 @@ const EVENTS = [
         if(Math.random() > 0.4) {
           const r = RESOURCES[Math.floor(Math.random()*RESOURCES.length)];
           const amt = r.min*2 + Math.floor(Math.random()*r.min);
-          addToPack(r.id, amt); toast(`You find something in the dark. +${amt} ${r.id}.`);
+          addMultipleToPack([{type:r.id,amt}], -1); toast(`You find something in the dark. +${amt} ${r.id}.`);
         } else {
           const dmg = 8 + Math.floor(Math.random()*6);
           G.playerHP = Math.max(1, G.playerHP - dmg);
@@ -1315,7 +1316,7 @@ const EVENTS = [
         }
         return true;
       }},
-      { label:'Seal it with stone. (+2 bloodstone)', fn: () => { addToPack('bloodstone',2); toast('The breathing stops. You find bloodstone in the rubble.'); return true; }},
+      { label:'Seal it with stone. (+2 bloodstone)', fn: () => { addMultipleToPack([{type:'bloodstone',amt:2}], -1); toast('The breathing stops. You find bloodstone in the rubble.'); return true; }},
     ]
   },
   {
@@ -1327,7 +1328,7 @@ const EVENTS = [
         updateStats(); toast('It tastes fine. That almost makes it worse.'); return true;
       }},
       { label:'Take what supplies remain. (+4 wood, +2 hide)', fn: () => {
-        addToPack('wood',4); addToPack('hide',2); toast('You take the supplies and leave quickly.'); return true;
+        addMultipleToPack([{type:'wood',amt:4},{type:'hide',amt:2}], -1); toast('You take the supplies and leave quickly.'); return true;
       }},
     ]
   },
@@ -1338,7 +1339,7 @@ const EVENTS = [
       { label:'Read the carving. (random effect)', fn: () => {
         const roll = Math.random();
         if(roll > 0.6) { G.stamina = Math.min(G.maxStamina, G.stamina+3); updateStats(); toast('The words make sense somehow. +3 stamina.'); }
-        else if(roll > 0.3) { addToPack('bloodstone',1); toast('A bloodstone sits at the base of the stone. You take it.'); }
+        else if(roll > 0.3) { addMultipleToPack([{type:'bloodstone',amt:1}], -1); toast('A bloodstone sits at the base of the stone. You take it.'); }
         else { const dmg=4; G.playerHP=Math.max(1,G.playerHP-dmg); updateStats(); toast('Reading it costs you something. '+dmg+' damage.'); }
         return true;
       }},
@@ -1368,41 +1369,80 @@ const SB_HEADERS = {
   'Prefer': 'return=representation',
 };
 
-// Pull shared kingdom state from Supabase
-async function sbLoad() {
+// ── Load shared row (day/seed/directions) ──────────────────────
+async function sbLoadShared() {
   try {
-    const res = await fetch(`${SB_URL}/rest/v1/sr_kingdom?id=eq.main`, {
-      headers: SB_HEADERS,
-    });
+    const res = await fetch(`${SB_URL}/rest/v1/sr_kingdom?id=eq.main`, { headers: SB_HEADERS });
     const rows = await res.json();
-    if(!rows || !rows.length) return null;
-    return rows[0];
-  } catch(e) {
-    console.error('sbLoad failed', e);
-    return null;
-  }
+    return (rows && rows.length) ? rows[0] : null;
+  } catch(e) { console.error('sbLoadShared failed', e); return null; }
 }
 
-// Push shared kingdom state to Supabase
-async function sbSave() {
-  const today = todayKey();
+// ── Load player row ────────────────────────────────────────────
+async function sbLoadPlayer(name) {
+  try {
+    const id = name.toLowerCase();
+    const res = await fetch(`${SB_URL}/rest/v1/sr_players?id=eq.${id}`, { headers: SB_HEADERS });
+    const rows = await res.json();
+    return (rows && rows.length) ? rows[0] : null;
+  } catch(e) { console.error('sbLoadPlayer failed', e); return null; }
+}
+
+// ── Load both rows at once ─────────────────────────────────────
+async function sbLoad(name) {
+  const [shared, player] = await Promise.all([
+    sbLoadShared(),
+    name ? sbLoadPlayer(name) : Promise.resolve(null)
+  ]);
+  return { shared, player };
+}
+
+// ── Save shared row ────────────────────────────────────────────
+async function sbSaveShared() {
   const payload = {
-    resources: G.kingdom,
-    buildings: G.buildings,
     day: (G.day && G.day <= 999) ? G.day : 1,
     realm_seed: G.realmSeed,
     claimed_dirs: G.claimedDirs,
     played_today: G.playedToday,
-    realm_day_key: today,
+    realm_day_key: todayKey(),
     updated_at: new Date().toISOString(),
   };
   try {
     await fetch(`${SB_URL}/rest/v1/sr_kingdom?id=eq.main`, {
-      method: 'PATCH',
-      headers: SB_HEADERS,
+      method: 'PATCH', headers: SB_HEADERS, body: JSON.stringify(payload),
+    });
+  } catch(e) { console.error('sbSaveShared failed', e); }
+}
+
+// ── Save player row (upsert) ───────────────────────────────────
+async function sbSavePlayer() {
+  const id = G.player.toLowerCase();
+  const payload = {
+    id,
+    resources:         G.kingdom,
+    buildings:         G.buildings,
+    totem_built:       !!G.buildings['totem'],
+    deaths:            G.deaths,
+    max_hp:            G.playerMaxHP,
+    max_stamina:       G.maxStamina,
+    has_bag:           G.hasBag,
+    has_double_strike: G.hasDoubleStrike,
+    has_ultimate:      G.hasUltimate,
+    intro_seen:        G.introSeen,
+    updated_at:        new Date().toISOString(),
+  };
+  try {
+    await fetch(`${SB_URL}/rest/v1/sr_players`, {
+      method: 'POST',
+      headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=representation' },
       body: JSON.stringify(payload),
     });
-  } catch(e) { console.error('sbSave failed', e); }
+  } catch(e) { console.error('sbSavePlayer failed', e); }
+}
+
+// ── Convenience: save both ─────────────────────────────────────
+async function sbSave() {
+  await Promise.all([sbSaveShared(), sbSavePlayer()]);
 }
 
 // Today's date string — used to detect midnight reset
@@ -1440,14 +1480,21 @@ const G = {
   pack: { wood:0, stone:0, bone:0, hide:0, bloodstone:0 },
   carryMax: 2,
 
-  // Kingdom (persists)
+  // Kingdom (personal stash — per player, not shared)
   kingdom: { wood:0, stone:0, bone:0, hide:0, bloodstone:0 },
   buildings: {},
   realmSeed: 0,
 
-  // Claimed directions AND who has played today
+  // Player progression (stored in sr_players row)
+  deaths: 0,
+  hasBag: false,
+  hasDoubleStrike: false,
+  hasUltimate: false,
+  introSeen: false,
+
+  // Shared state (stored in sr_kingdom main row)
   claimedDirs: {},
-  playedToday: {}, // { 'Scott': true, 'Denielle': true }
+  playedToday: {},
 
   // Combat state
   combat: null,
@@ -1480,20 +1527,35 @@ function packTotal() {
 }
 
 function addToPack(type, amt) {
+  // Returns { actual, overflow } — callers handle overflow themselves
   const space = G.carryMax - packTotal();
-  const actual = Math.min(amt, space);
-  G.pack[type] = (G.pack[type]||0) + actual;
-  if(actual < amt) toast(`Pack full! Left ${amt-actual} ${type} behind`);
-  updateStats();
-  updateResourceStrip();
-  return actual;
+  const actual = Math.min(Math.max(0, space), amt);
+  if(actual > 0) {
+    G.pack[type] = (G.pack[type]||0) + actual;
+    updateStats();
+    updateResourceStrip();
+  }
+  return { actual, overflow: amt - actual };
+}
+
+// Helper: add multiple resource types, collect all overflow, open swap once
+function addMultipleToPack(items, tileIdx) {
+  // items = [{type, amt}, ...]
+  const overflowMap = {};
+  for(const {type, amt} of items) {
+    const { overflow } = addToPack(type, amt);
+    if(overflow > 0) overflowMap[type] = (overflowMap[type]||0) + overflow;
+  }
+  const hasOverflow = Object.values(overflowMap).some(v => v > 0);
+  if(hasOverflow) {
+    showPackSwapMulti(overflowMap, tileIdx ?? -1, () => {});
+  }
+  return !hasOverflow;
 }
 
 function carryMax() {
-  const hasPack = G.buildings['crudesack'];
-  const hasBag = !!localStorage.getItem(`sr_bag_${G.player}`);
-  if(hasPack) return 50;
-  if(hasBag) return 10;
+  if(G.buildings['crudesack']) return 50;
+  if(G.hasBag) return 10;
   return 2;
 }
 
@@ -1510,69 +1572,59 @@ async function login(name) {
   const loreEl = document.getElementById('screen-login').querySelector('.login-lore');
   loreEl.textContent = 'Connecting to the realm...';
 
-  let row = null;
-  try { row = await sbLoad(); } catch(e) { console.error('Login load error', e); }
-
+  const { shared, player } = await sbLoad(name);
   const today = todayKey();
 
-  if(row === null) {
-    loreEl.textContent = '⚠ Offline — playing with local state only';
+  if(!shared && !player) {
+    loreEl.textContent = '⚠ Offline — cannot reach the realm';
     setTimeout(() => {
       loreEl.textContent = 'The nightmare recurs each night. The camp endures. Venture out, gather what you can, and come back.';
     }, 2000);
   }
 
-  if(row) {
-    // Check if it is a new day — reset daily state if so
-    if(row.realm_day_key !== today) {
-      const isExplicitReset = row.realm_day_key === '';
-      const bld = row.buildings || {};
-      const res = row.resources || {};
-      if(!isExplicitReset) {
-        // Fire bonus stamina handled at explore start via G.playedToday.fire_stoked
-      }
-      G.kingdom   = isExplicitReset ? { wood:0, stone:0, bone:0, hide:0, bloodstone:0 } : res;
-      G.buildings = isExplicitReset ? {} : bld;
-      G.claimedDirs  = {};
-      G.playedToday  = {};
-      G.realmSeed = Math.floor(Math.random() * 999999);
-      G.day = isExplicitReset ? 1 : (row.day || 0) + 1;
-      await sbSave();
+  // ── Load shared state (day, seed, directions) ──────────────────
+  if(shared) {
+    if(shared.realm_day_key !== today && shared.realm_day_key !== '') {
+      // New day — reset daily tracking, new seed, increment day
+      G.claimedDirs = {};
+      G.playedToday = {};
+      G.realmSeed   = Math.floor(Math.random() * 999999);
+      G.day         = (shared.day || 0) + 1;
+      await sbSaveShared();
     } else {
-      // Same day — load as-is
-      G.kingdom    = row.resources   || { wood:0, stone:0, bone:0, hide:0, bloodstone:0 };
-      G.buildings  = row.buildings   || {};
-      G.claimedDirs  = row.claimed_dirs || {};
-      G.playedToday  = row.played_today || {};
-      G.realmSeed    = row.realm_seed   || 0;
-      const loadedDay = row.day || 1;
-      G.day = (loadedDay > 0 && loadedDay <= 365) ? loadedDay : 1;
+      G.claimedDirs = shared.claimed_dirs || {};
+      G.playedToday = shared.played_today || {};
+      G.realmSeed   = shared.realm_seed   || 0;
+      G.day         = shared.realm_day_key === '' ? 1 : (shared.day || 1);
     }
   } else {
-    // No row yet — fresh start (table may be empty)
     G.realmSeed = Math.floor(Math.random() * 999999);
   }
 
+  // ── Load player state ──────────────────────────────────────────
+  if(player) {
+    G.kingdom         = player.resources       || { wood:0, stone:0, bone:0, hide:0, bloodstone:0 };
+    G.buildings       = player.buildings       || {};
+    G.playerMaxHP     = player.max_hp          || 5;
+    G.maxStamina      = player.max_stamina     || 10;
+    G.deaths          = player.deaths          || 0;
+    G.hasBag          = !!player.has_bag;
+    G.hasDoubleStrike = !!player.has_double_strike;
+    G.hasUltimate     = !!player.has_ultimate;
+    G.introSeen       = !!player.intro_seen;
+  } else {
+    G.kingdom = { wood:0, stone:0, bone:0, hide:0, bloodstone:0 };
+    G.buildings = {}; G.playerMaxHP = 5; G.deaths = 0;
+    G.hasBag = false; G.hasDoubleStrike = false;
+    G.hasUltimate = false; G.introSeen = false;
+  }
+
+  if(!G.day || G.day < 1 || G.day > 365) G.day = 1;
+  G.playerHP = G.playerMaxHP;
+  G.carryMax = carryMax();
+
   const daysSinceEpoch = Math.floor(Date.now() / 86400000);
   G.realmMod = REALM_MODS[daysSinceEpoch % REALM_MODS.length];
-  // G.day was set from Supabase above — validate it is a real game day not a buggy value
-  if(!G.day || G.day < 1 || G.day > 365) G.day = 1;
-  // Load persisted maxHP from localStorage
-  // Validate saved HP against death count — reset if they don't match
-  const savedHP = parseInt(localStorage.getItem(`sr_maxhp_${name}`)) || 5;
-  const savedDeaths = parseInt(localStorage.getItem(`sr_deaths_${name}`)) || 0;
-  const maxHPFromDeaths = 5 + Math.floor(savedDeaths / 2) * 5;
-  if(savedHP > maxHPFromDeaths || savedHP < 5) {
-    // HP is higher than deaths justify — reset both
-    localStorage.setItem(`sr_maxhp_${name}`, 5);
-    localStorage.setItem(`sr_deaths_${name}`, 0);
-    G.playerMaxHP = 5;
-  } else {
-    G.playerMaxHP = Math.min(30, savedHP);
-  }
-  G.playerHP = G.playerMaxHP;
-  G.player = name; // ensure player is set before carryMax reads localStorage
-  G.carryMax = carryMax();
 
   document.getElementById('dir-player-name').textContent = name;
   document.getElementById('dir-day').textContent = `Day ${G.day}`;
@@ -1582,23 +1634,20 @@ async function login(name) {
 
   const now = new Date();
   const midnight = new Date(now); midnight.setHours(24,0,0,0);
-  const hrs = Math.floor((midnight-now)/3600000);
+  const hrs  = Math.floor((midnight-now)/3600000);
   const mins = Math.floor(((midnight-now)%3600000)/60000);
   document.getElementById('dir-reset').textContent = `Realm shifts in ${hrs}h ${mins}m`;
 
   updateDirCards();
   renderKingdomSummary();
 
-  // Restore login lore text
   document.getElementById('screen-login').querySelector('.login-lore').textContent =
-    'Each dawn the kingdom is cast into a new dimension. Scout what you can. Return before the dark takes you.';
+    'The nightmare recurs each night. The camp endures. Venture out, gather what you can, and come back.';
 
-  // No daily lock — players can always venture out
-
-  // Show intro screen on very first login ever (once per player, tracked locally)
-  const introKey = `sr_intro_seen_${name}`;
-  if(!localStorage.getItem(introKey) && G.day <= 1) {
-    localStorage.setItem(introKey, '1');
+  // Show intro on very first login (tracked in player row)
+  if(!G.introSeen && G.day <= 1) {
+    G.introSeen = true;
+    sbSavePlayer();
     showScreen('screen-intro');
     return;
   }
@@ -1942,7 +1991,7 @@ function renderMap() {
     if(hasLoot && vis !== 'hidden') {
       el.className = `tile loot-pile${isPlayer?' player-here':''}${isReachable?' reachable':''}`;
       const count = G.lootPiles.filter(lp=>lp.tileIdx===i).length;
-      el.innerHTML = isPlayer ? `<span class="player-marker">🗡️</span>` : count > 1 ? '💀💀' : '💀';
+      el.innerHTML = isPlayer ? `<span class="player-marker">🗡️</span>` : count > 1 ? '🎒🎒' : '🎒';
     } else {
       const fireLit = isInFireRadius(r, c) && vis !== 'hidden';
       el.className = `tile ${cls}${isPlayer?' player-here':''}${isReachable||isUnknownAdj?' reachable':''}${fireLit?' fire-lit':''}`;
@@ -1997,6 +2046,8 @@ function handleTileTap(r,c,i) {
     moveTo(r,c,i,true); // staminaPaid=true, already deducted above
     return;
   }
+  // Non-adjacent but visible tile — do nothing (no teleporting)
+  if(!adj) return;
 }
 
 function moveTo(r,c,i,staminaPaid) {
@@ -2009,6 +2060,11 @@ function moveTo(r,c,i,staminaPaid) {
   if(!isCastle && !isRestSpot && !inFireLight && !staminaPaid) {
     if(G.stamina<=0) { triggerDeath(); return; }
     G.stamina--;
+    updateStats();
+  }
+  // Fire-lit tiles also refill stamina (treated like safe camp extension)
+  if(inFireLight && !isCastle) {
+    G.stamina = G.maxStamina;
     updateStats();
   }
 
@@ -2029,17 +2085,20 @@ function moveTo(r,c,i,staminaPaid) {
     G.stamina = G.maxStamina;
     updateStats();
     updateResourceStrip();
-    toast(deposited ? 'You leave what you gathered at the hole.' : 'Back at camp. You rest a moment.');
+    if(deposited) {
+      toast('You leave what you gathered at the hole.');
+      checkBuildPrompt();
+    } else {
+      toast('Back at camp. You rest a moment.');
+    }
     setSyncing(true);
     sbSave().then(()=>setSyncing(false));
     return;
   }
 
-  // Fire edge auto-deposit — outermost lit tile (dist==2) acts as drop point
-  if(G.buildings['fire'] && G.playedToday.fire_stoked) {
-    const cp = G.castlePos;
-    const distFromCamp = Math.abs(r - cp.r) + Math.abs(c - cp.c);
-    if(distFromCamp === 2 && packTotal() > 0) {
+  // Fire auto-deposit — any fire-lit tile deposits your pack
+  if(G.buildings['fire'] && G.playedToday.fire_stoked && packTotal() > 0) {
+    if(isInFireRadius(r, c)) {
       const deposited = {...G.pack};
       Object.keys(G.pack).forEach(k => {
         G.kingdom[k] = (G.kingdom[k]||0) + G.pack[k];
@@ -2048,9 +2107,10 @@ function moveTo(r,c,i,staminaPaid) {
       updateResourceStrip();
       updateStats();
       const items = Object.entries(deposited).filter(([k,v])=>v>0).map(([k,v])=>`${v} ${k}`).join(', ');
-      toast(`🔥 Pack dropped at the fire's edge — ${items}`);
+      toast(`🔥 You deposit your items at the edge of camp — ${items}`);
       setSyncing(true);
       sbSave().then(()=>setSyncing(false));
+      checkBuildPrompt();
     }
   }
 
@@ -2175,13 +2235,13 @@ function triggerTile(i) {
     const hasPack = packTotal() > 0;
     const isWarden = eId === 'warden';
 
-    showBestiary(eId, () => {
+    showBestiary(eId, async () => {
       if(isWarden) {
-        const myTotemKey = `totem_${G.player.toLowerCase()}`;
         const partnerName = G.player === 'Scott' ? 'Denielle' : 'Scott';
-        const partnerKey = `totem_${partnerName.toLowerCase()}`;
-        const myTotem = !!G.buildings[myTotemKey];
-        const partnerTotem = !!G.buildings[partnerKey];
+        const myTotem = !!G.buildings['totem'];
+        // Check partner totem from Supabase player row
+        const pRow = await sbLoadPlayer(partnerName);
+        const partnerTotem = pRow ? !!pRow.totem_built : false;
         const bothTotems = myTotem && partnerTotem;
 
         const retreatToPrev = () => {
@@ -2465,18 +2525,18 @@ function respawnAtCastle() {
 
   // Track deaths — scrap bag on 1, HP gains on 2/4/6, double strike on 5
   const oldMax = G.playerMaxHP;
-  const deathKey = `sr_deaths_${G.player}`;
-  const deaths = (parseInt(localStorage.getItem(deathKey)) || 0) + 1;
-  localStorage.setItem(deathKey, deaths);
+  G.deaths = (G.deaths || 0) + 1;
+  const deaths = G.deaths;
 
-  const isFirstDeath = deaths === 1 && !localStorage.getItem(`sr_bag_${G.player}`);
-  const isDoubleStrikeDeath = deaths === 5 && !localStorage.getItem(`sr_ds_${G.player}`);
+  const isFirstDeath = deaths === 1 && !G.hasBag;
+  const isDoubleStrikeDeath = deaths === 5 && !G.hasDoubleStrike;
   const isHPDeath = deaths % 2 === 0 && deaths !== 5 && G.playerMaxHP < 30;
 
   if(isFirstDeath) {
-    localStorage.setItem(`sr_bag_${G.player}`, '1');
+    G.hasBag = true;
     G.carryMax = carryMax();
     G.playerHP = G.playerMaxHP;
+    sbSavePlayer();
     setTimeout(() => {
       showNarrativeScreen({
         icon: '🎒',
@@ -2493,11 +2553,13 @@ function respawnAtCastle() {
   } else if(isHPDeath) {
     G.playerMaxHP = Math.min(30, G.playerMaxHP + 5);
     G.playerHP = G.playerMaxHP;
-    localStorage.setItem(`sr_maxhp_${G.player}`, G.playerMaxHP);
+    // max_hp saved via sbSavePlayer below
     setTimeout(() => { showHPGrowth(oldMax, G.playerMaxHP, deaths); }, 600);
+    sbSavePlayer();
   } else if(isDoubleStrikeDeath) {
-    localStorage.setItem(`sr_ds_${G.player}`, '1');
+    G.hasDoubleStrike = true;
     G.playerHP = G.playerMaxHP;
+    sbSavePlayer();
     setTimeout(showDoubleStrikeUnlock, 600);
   } else {
     G.playerHP = G.playerMaxHP;
@@ -2566,28 +2628,48 @@ function showHPGrowth(oldMax, newMax, deaths, onClose) {
 }
 
 function collectLootPile(tileIdx) {
-  // Merge ALL piles on this tile into pack
   const pilesHere = G.lootPiles.filter(lp=>lp.tileIdx===tileIdx);
   if(!pilesHere.length) return;
 
   const merged = {wood:0,stone:0,bone:0,hide:0,bloodstone:0};
   pilesHere.forEach(lp=>Object.keys(lp.pack).forEach(k=>merged[k]=(merged[k]||0)+(lp.pack[k]||0)));
 
-  // Remove these piles
+  // Remove piles — we'll re-add any overflow below
   G.lootPiles = G.lootPiles.filter(lp=>lp.tileIdx!==tileIdx);
 
-  // Add to pack (respecting carry limit)
-  let collected = [];
-  Object.entries(merged).forEach(([k,v])=>{
-    if(v>0) { const actual=addToPack(k,v); if(actual>0) collected.push(`+${actual} ${k}`); }
-  });
+  // Try to fit everything, collect overflow
+  const overflowMap = {};
+  const collectedLines = [];
+  for(const [k, v] of Object.entries(merged)) {
+    if(v <= 0) continue;
+    const { actual, overflow } = addToPack(k, v);
+    if(actual > 0) collectedLines.push(`+${actual} ${k}`);
+    if(overflow > 0) overflowMap[k] = (overflowMap[k]||0) + overflow;
+  }
 
-  renderMap();
-  toast(collected.length ? `Retrieved: ${collected.join(', ')}` : 'Pile was empty');
+  const hasOverflow = Object.values(overflowMap).some(v => v > 0);
+  if(hasOverflow) {
+    // Put overflow back as a loot pile on this tile
+    G.lootPiles.push({ tileIdx, pack: overflowMap });
+    renderMap();
+    showPackSwapMulti(overflowMap, tileIdx, () => { renderMap(); });
+    if(collectedLines.length) toast(`Took: ${collectedLines.join(', ')} — pack full, rest stays`);
+  } else {
+    renderMap();
+    toast(collectedLines.length ? `Retrieved: ${collectedLines.join(', ')}` : 'Pile was empty');
+  }
 }
 function showCollect(rData, amt, tileIdx) {
-  G.pendingCollect = {rData, amt, tileIdx};
   const space = G.carryMax - packTotal();
+
+  // Pack completely full — skip collect panel, go straight to swap
+  if(space <= 0) {
+    G.map[tileIdx].depleted = true;
+    showPackSwap(rData.id, amt, tileIdx, () => {});
+    return;
+  }
+
+  G.pendingCollect = {rData, amt, tileIdx};
   const actual = Math.min(amt, space);
 
   document.getElementById('col-name').textContent = rData.name;
@@ -2597,10 +2679,10 @@ function showCollect(rData, amt, tileIdx) {
   document.getElementById('col-desc').textContent = rData.desc;
 
   const warn = document.getElementById('col-warn');
-  if(actual<amt) {
-    warn.style.display='';
+  if(actual < amt) {
+    warn.style.display = '';
     warn.textContent = `Pack too full for all ${amt} — can only carry ${actual}`;
-  } else { warn.style.display='none'; }
+  } else { warn.style.display = 'none'; }
 
   document.getElementById('ov-collect').classList.add('active');
 }
@@ -2608,32 +2690,34 @@ function showCollect(rData, amt, tileIdx) {
 function confirmCollect() {
   if(!G.pendingCollect) return;
   const {rData, amt, tileIdx} = G.pendingCollect;
-  const space = G.carryMax - packTotal();
   G.pendingCollect = null;
   document.getElementById('ov-collect').classList.remove('active');
-  if(space <= 0) {
-    // Pack totally full — show swap screen
-    showPackSwap(rData.id, amt, tileIdx, () => {});
-  } else if(space < amt) {
-    // Partial — take what fits, offer swap for rest
-    addToPack(rData.id, space);
-    G.map[tileIdx].depleted = true;
-    renderMap();
-    showPackSwap(rData.id, amt - space, tileIdx, () => {});
+  G.map[tileIdx].depleted = true;
+  const { overflow } = addToPack(rData.id, amt);
+  if(overflow > 0) {
+    showPackSwapMulti({ [rData.id]: overflow }, tileIdx, () => { renderMap(); });
   } else {
-    addToPack(rData.id, amt);
-    G.map[tileIdx].depleted = true;
     renderMap();
   }
 }
 
 function closeCollect() {
-  G.map[G.pendingCollect?.tileIdx].depleted = true;
+  const pc = G.pendingCollect;
+  if(pc) {
+    const tileIdx = pc.tileIdx;
+    G.map[tileIdx].depleted = true;
+    // Leave a loot pile so they can come back for it
+    const existing = G.lootPiles.find(lp => lp.tileIdx === tileIdx);
+    if(existing) {
+      existing.pack[pc.rData.id] = (existing.pack[pc.rData.id]||0) + pc.amt;
+    } else {
+      G.lootPiles.push({ tileIdx, pack: { [pc.rData.id]: pc.amt } });
+    }
+  }
   G.pendingCollect = null;
   document.getElementById('ov-collect').classList.remove('active');
-  if(G.prevPos) { G.playerPos = {...G.prevPos}; }
   renderMap();
-  toast('Left the resources behind');
+  toast('Left a bag — come back for it');
 }
 
 // ================================================================
@@ -2696,8 +2780,8 @@ function startCombat(enemy, tileIdx, permanentLootLoss) {
   document.getElementById('combat-action-area').style.display = '';
   document.getElementById('combat-result-area').style.display = 'none';
   // Show ability if unlocked (after 2nd HP boost = 4 deaths)
-  const abilityUnlocked = !!localStorage.getItem(`sr_ds_${G.player}`);
-  const ultimateUnlocked = !!localStorage.getItem(`sr_ult_${G.player}`);
+  const abilityUnlocked = !!G.hasDoubleStrike;
+  const ultimateUnlocked = !!G.hasUltimate;
   const abilityBtn = document.getElementById('bc-ability');
   const ultimateBtn = document.getElementById('bc-ultimate');
   abilityBtn.style.display = abilityUnlocked ? '' : 'none';
@@ -2843,7 +2927,7 @@ function updateCombatHP() {
 }
 function updateUlt() {
   const btn=document.getElementById('bc-ultimate');
-  const unlocked = !!localStorage.getItem(`sr_ult_${G.player}`);
+  const unlocked = !!G.hasUltimate;
   if(!unlocked) { btn.style.display='none'; return; }
   btn.style.display='';
   if(G.ultimateCharge>=3){btn.disabled=false;btn.textContent='★ DARK SURGE';}
@@ -2855,7 +2939,8 @@ function combatWin() {
   const c=G.combat;
   const l=c.enemy.loot;
   const amt=l.min+Math.floor(Math.random()*(l.max-l.min+1));
-  addToPack(l.type, amt);
+  const { actual, overflow } = addToPack(l.type, amt);
+  const tileIdx = c.tileIdx;
 
   // If this was a rest spot guard fight
   if(G.pendingRestClaim !== undefined && G.pendingRestClaim >= 0) {
@@ -2867,19 +2952,25 @@ function combatWin() {
     document.getElementById('combat-action-area').style.display='none';
     document.getElementById('combat-result-area').style.display='';
     document.getElementById('c-result-title').innerHTML=`<span class="result-win">VICTORY</span>`;
-    document.getElementById('c-result-sub').textContent=`+${amt} ${l.type} · ${rd.name} claimed · +${rd.restore} stamina`;
+    const overflowNote = overflow > 0 ? ` · pack full, ${overflow} left behind` : '';
+    document.getElementById('c-result-sub').textContent=`+${actual} ${l.type} · ${rd.name} claimed · +${rd.restore} stamina${overflowNote}`;
     G.pendingRestClaim = undefined;
     renderMap();
+    // Show swap after combat closes if overflow
+    if(overflow > 0) G._pendingCombatOverflow = { type: l.type, overflow, tileIdx: -1 };
     return;
   }
 
-  if(c.tileIdx >= 0) {
-    G.map[c.tileIdx].depleted=true;
-  }
+  if(tileIdx >= 0) G.map[tileIdx].depleted = true;
   document.getElementById('combat-action-area').style.display='none';
   document.getElementById('combat-result-area').style.display='';
   document.getElementById('c-result-title').innerHTML=`<span class="result-win">VICTORY</span>`;
-  document.getElementById('c-result-sub').textContent=`+${amt} ${l.type} added to your pack`;
+  if(overflow > 0) {
+    document.getElementById('c-result-sub').textContent=`+${actual} ${l.type} added · pack full, ${overflow} left — adjust load`;
+    G._pendingCombatOverflow = { type: l.type, overflow, tileIdx: -1 };
+  } else {
+    document.getElementById('c-result-sub').textContent=`+${actual} ${l.type} added to your pack`;
+  }
   renderMap();
 }
 
@@ -2898,6 +2989,11 @@ function combatLose() {
 function closeCombat() {
   document.getElementById('ov-combat').classList.remove('active');
   G.combat=null;
+  if(G._pendingCombatOverflow) {
+    const { type, overflow, tileIdx } = G._pendingCombatOverflow;
+    G._pendingCombatOverflow = null;
+    setTimeout(() => showPackSwapMulti({ [type]: overflow }, tileIdx, () => {}), 200);
+  }
 }
 
 // ================================================================
@@ -3105,13 +3201,15 @@ function buildIt(id) {
   Object.entries(b.cost).forEach(([k,v])=>G.kingdom[k]-=v);
   G.buildings[storeId] = true;
   if(id==='crudesack') { G.carryMax = carryMax(); }
+  if(id==='fire') { G.maxStamina += 5; G.stamina = G.maxStamina; updateStats(); }
   setSyncing(true);
   sbSave().then(async () => {
     setSyncing(false);
     closeKingdom();
     if(id === 'totem') {
       showBuildingStory('totem', async () => {
-        localStorage.setItem(`sr_ult_${G.player}`, '1');
+        G.hasUltimate = true;
+        sbSavePlayer();
         // Show ultimate unlock, then check partner totem status
         showUltimateUnlock(async () => {
           const row = await sbLoad();
@@ -3159,6 +3257,25 @@ function closeKingdom() {
   document.getElementById('ov-kingdom').classList.remove('active');
 }
 
+function checkBuildPrompt() {
+  // Find the next unbuilt building the player can now afford
+  const unbuilt = getUnlockedBuildings().filter(b => !G.buildings[b.id === 'totem' ? `totem_${G.player.toLowerCase()}` : b.id]);
+  const affordable = unbuilt.find(b => Object.entries(b.cost).every(([k,v]) => (G.kingdom[k]||0) >= v));
+  if(!affordable) return;
+  // Small delay so deposit toast shows first
+  setTimeout(() => {
+    showNarrativeScreen({
+      icon: affordable.icon,
+      eyebrow: '— You Have Enough —',
+      title: `Build the ${affordable.name}`,
+      body: affordable.desc,
+      buffs: Object.entries(affordable.cost).map(([k,v]) => ({ icon: RESOURCES.find(r=>r.id===k)?.icon||'?', text: `${v} ${k} — you have ${G.kingdom[k]||0}` })),
+      btnText: 'GO BUILD IT',
+      zIndex: 500,
+    }, () => { showKingdom(); });
+  }, 1200);
+}
+
 function stokefire() {
   if(G.playedToday.fire_stoked) { toast('Fire already stoked today'); return; }
   if((G.kingdom.wood||0) < 2) { toast('Need 2 wood to stoke the fire'); return; }
@@ -3184,8 +3301,9 @@ function stokefire() {
     title: 'The Dark Pulls Back',
     body: `The flame catches. The nearest tiles glow amber — the fire's reach pushes the dark away.${giftLine ? '<br><br>' + giftLine : ''}`,
     buffs: [
+      { icon: '❤️', text: 'Max stamina permanently +5' },
       { icon: '⚡', text: 'Tiles within 2 steps of camp — cost 0 stamina' },
-      { icon: '🎒', text: 'Walk to the edge of the firelight to auto-deposit your pack' },
+      { icon: '🎒', text: 'Step into the firelight and your pack deposits automatically' },
     ],
     btnText: 'TEND THE FLAME',
     zIndex: 600,
@@ -3199,12 +3317,15 @@ function stokefire() {
 let packSwapState = null; // { ground: {type,amt}, tileIdx, onDone }
 
 function showPackSwap(groundType, groundAmt, tileIdx, onDone) {
+  showPackSwapMulti({ [groundType]: groundAmt }, tileIdx, onDone);
+}
+
+function showPackSwapMulti(groundMap, tileIdx, onDone) {
   packSwapState = {
-    ground: { type: groundType, amt: groundAmt },
     tileIdx,
     onDone,
     tempPack: {...G.pack},
-    tempGround: { [groundType]: groundAmt },
+    tempGround: {...groundMap},
   };
   renderPackSwap();
   document.getElementById('ov-packswap').classList.add('active');
@@ -3268,9 +3389,9 @@ function swapItem(from, to, type, amt) {
 function confirmPackSwap() {
   const ps = packSwapState;
   G.pack = ps.tempPack;
-  // Drop remaining ground items as loot pile
+  // Drop remaining ground items as loot pile (only if there's a real tile)
   const hasGround = Object.values(ps.tempGround).some(v => v > 0);
-  if(hasGround) {
+  if(hasGround && ps.tileIdx >= 0) {
     const existing = G.lootPiles.find(lp => lp.tileIdx === ps.tileIdx);
     if(existing) {
       Object.keys(ps.tempGround).forEach(k => existing.pack[k] = (existing.pack[k]||0) + (ps.tempGround[k]||0));
@@ -3278,8 +3399,8 @@ function confirmPackSwap() {
       G.lootPiles.push({ tileIdx: ps.tileIdx, pack: {...ps.tempGround} });
     }
   }
-  // Deplete the tile
-  G.map[ps.tileIdx].depleted = true;
+  // Deplete the tile if it's a real map tile
+  if(ps.tileIdx >= 0 && G.map[ps.tileIdx]) G.map[ps.tileIdx].depleted = true;
   document.getElementById('ov-packswap').classList.remove('active');
   packSwapState = null;
   updateStats();
@@ -3289,11 +3410,22 @@ function confirmPackSwap() {
 }
 
 function cancelPackSwap() {
-  G.map[packSwapState.tileIdx].depleted = true;
+  const ps = packSwapState;
+  if(ps.tileIdx >= 0 && G.map[ps.tileIdx]) G.map[ps.tileIdx].depleted = true;
+  // Drop all ground items as a loot pile so they can be recovered
+  const hasGround = Object.values(ps.tempGround).some(v => v > 0);
+  if(hasGround && ps.tileIdx >= 0) {
+    const existing = G.lootPiles.find(lp => lp.tileIdx === ps.tileIdx);
+    if(existing) {
+      Object.keys(ps.tempGround).forEach(k => existing.pack[k] = (existing.pack[k]||0) + (ps.tempGround[k]||0));
+    } else {
+      G.lootPiles.push({ tileIdx: ps.tileIdx, pack: {...ps.tempGround} });
+    }
+  }
   document.getElementById('ov-packswap').classList.remove('active');
   packSwapState = null;
   renderMap();
-  toast('Left it all behind.');
+  toast('Left a bag — come back for it');
 }
 
 // ================================================================
@@ -3301,6 +3433,8 @@ function cancelPackSwap() {
 // ================================================================
 function updateStats() {
   document.getElementById('stat-stam').textContent=G.stamina;
+  const stamMaxEl = document.getElementById('stat-stam-max');
+  if(stamMaxEl) stamMaxEl.textContent = G.maxStamina;
   document.getElementById('stat-hp').textContent=G.playerHP;
   const hpMax = document.getElementById('stat-hp-max');
   if(hpMax) hpMax.textContent = G.playerMaxHP;
@@ -3352,16 +3486,33 @@ async function debugResetRealm() {
   // Clear intro flags so both players see the welcome screen again
   localStorage.removeItem('sr_intro_seen_Denielle');
   localStorage.removeItem('sr_intro_seen_Scott');
+  // Reset G player state
+  G.deaths = 0; G.playerMaxHP = 5; G.playerHP = 5; G.maxStamina = 10;
+  G.hasBag = false; G.hasDoubleStrike = false;
+  G.hasUltimate = false; G.introSeen = false;
+  G.carryMax = 2;
+  // Clear player rows in Supabase
+  const playerResetPayload = {
+    resources: { wood:0, stone:0, bone:0, hide:0, bloodstone:0 },
+    buildings: {}, totem_built: false,
+    deaths: 0, max_hp: 5, max_stamina: 10, has_bag: false,
+    has_double_strike: false, has_ultimate: false, intro_seen: false,
+  };
+  ['denielle','scott'].forEach(async id => {
+    try {
+      await fetch(`${SB_URL}/rest/v1/sr_players?id=eq.${id}`, {
+        method: 'PATCH', headers: SB_HEADERS, body: JSON.stringify(playerResetPayload),
+      });
+    } catch(e) {}
+  });
   ['Denielle','Scott'].forEach(n => {
-    localStorage.removeItem(`sr_maxhp_${n}`);
-    localStorage.removeItem(`sr_deaths_${n}`);
-    localStorage.removeItem(`sr_ds_${n}`);
-    localStorage.removeItem(`sr_bag_${n}`);
+    // legacy localStorage cleanup
     localStorage.removeItem(`sr_seen_skrim`);
     localStorage.removeItem(`sr_seen_morrowhip`);
     localStorage.removeItem(`sr_seen_hollowed`);
     localStorage.removeItem(`sr_seen_cinderhound`);
     localStorage.removeItem(`sr_seen_warden`);
+    localStorage.removeItem(`sr_intro_seen_${n}`);
   });
 
   // Force-write clean state to Supabase via PATCH
