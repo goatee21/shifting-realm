@@ -883,7 +883,7 @@ body {
   <div class="login-sigil">🏰</div>
   <div class="login-title">SHIFTING <span>REALM</span></div>
   <div class="login-sub">THE DARKNESS WAITS · WILL YOU SURVIVE</div>
-  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v51</div>
+  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v52</div>
   <div class="login-divider"></div>
   <div class="who-are-you">Who ventures forth?</div>
   <div class="player-select">
@@ -1042,7 +1042,7 @@ body {
         <span class="stat-icon">🎒</span>
         <div class="stat-info">
           <div class="stat-label">PACK</div>
-          <div class="stat-val"><span id="stat-carry">0</span>/<span id="stat-carry-max">15</span></div>
+          <div class="stat-val"><span id="stat-carry">0</span>/<span id="stat-carry-max">2</span></div>
         </div>
       </div>
     </div>
@@ -1351,7 +1351,7 @@ const BUILDINGS = [
   { id:'pit',        name:'The Pit',        icon:'⛏️', desc:'Dig out and shore up your camp. Widen it. Reinforce the walls. This is the anchor of everything.', effect:'Unlocks all else', cost:{wood:2}, phase:1 },
   { id:'fire',       name:'Fire',           icon:'🔥', desc:'Fire gives light and warmth. Stoke daily with 2 wood for +2 stamina. The light carries far out here. Things notice.', effect:'+2 stamina if lit', cost:{wood:3}, phase:1 },
   { id:'boneshelter',name:'Bone Shelter',   icon:'🦴', desc:'Walls of bone and hide scraped together. Less terrible than the pit. Barely.', effect:'Structural anchor', cost:{bone:8, hide:4}, phase:1 },
-  { id:'crudesack',  name:'Crude Sack',     icon:'🎒', desc:'Hide stitched with sinew. Ugly work done in bad light. But your hands are fuller now, and full hands mean more nights survived.', effect:'Carry 15→50', cost:{hide:6}, phase:1 },
+  { id:'crudesack',  name:'Crude Pack',     icon:'🎒', desc:'Some framing and additional hide might make something more useful than what you are dragging around. A real pack. Something with structure.', effect:'Carry 10→50', cost:{hide:10, bone:5}, phase:1 },
   { id:'processing', name:'Processing Area',icon:'🔩', desc:'Bones and stones arranged into something almost useful. Unlocks crafting.', effect:'Unlocks crafting', cost:{bone:20, stone:15, hide:8}, phase:1 },
   { id:'totem',      name:'Ward Totem',     icon:'🗿', desc:'Built at the edge of the dark. Each survivor must raise their own. Something will notice.', effect:'Phase 1 completion', cost:{bone:5, hide:3, bloodstone:2}, phase:1 },
 ];
@@ -1438,7 +1438,7 @@ const G = {
 
   // Pack (carried during exploration, lost on death)
   pack: { wood:0, stone:0, bone:0, hide:0, bloodstone:0 },
-  carryMax: 15,
+  carryMax: 2,
 
   // Kingdom (persists)
   kingdom: { wood:0, stone:0, bone:0, hide:0, bloodstone:0 },
@@ -1490,7 +1490,11 @@ function addToPack(type, amt) {
 }
 
 function carryMax() {
-  return G.buildings['crudesack'] ? 50 : 15;
+  const hasPack = G.buildings['crudesack'];
+  const hasBag = !!localStorage.getItem(`sr_bag_${G.player}`);
+  if(hasPack) return 50;
+  if(hasBag) return 10;
+  return 2;
 }
 
 function playerAtk() {
@@ -1567,6 +1571,7 @@ async function login(name) {
     G.playerMaxHP = Math.min(30, savedHP);
   }
   G.playerHP = G.playerMaxHP;
+  G.player = name; // ensure player is set before carryMax reads localStorage
   G.carryMax = carryMax();
 
   document.getElementById('dir-player-name').textContent = name;
@@ -2024,7 +2029,7 @@ function moveTo(r,c,i,staminaPaid) {
     G.stamina = G.maxStamina;
     updateStats();
     updateResourceStrip();
-    toast(deposited ? 'Pack left at camp.' : 'Back at camp. You rest a moment.');
+    toast(deposited ? 'You leave what you gathered at the hole.' : 'Back at camp. You rest a moment.');
     setSyncing(true);
     sbSave().then(()=>setSyncing(false));
     return;
@@ -2270,7 +2275,7 @@ const BUILDING_STORIES = {
   pit:         { icon:'⛏️', title:'A Scratch in the Earth',  body:'A scratch in the earth. Barely enough to curl into. The sounds outside do not stop. But they have not found you yet.' },
   fire:        { icon:'🔥', title:'The First Flame',          body:'The flame takes. The dark pulls back — just slightly. You did not realize how cold you were until just now. Something out there noticed the light.' },
   boneshelter: { icon:'🦴', title:'Walls of a Sort',          body:'The walls go up crooked and slow. It will not keep everything out. Nothing will. But it is a structure. A thing that says you are still here.' },
-  crudesack:   { icon:'🎒', title:'Something to Carry',       body:'Hide stitched with sinew. Ugly work done in bad light. But your hands are fuller now. Full hands mean more nights survived.' },
+  crudesack:   { icon:'🎒', title:'A Crude Pack',              body:'Framed hide, rough stitching, sinew that might hold. It is not much. But it is a pack — a real one. You can carry more now, and more means more nights where you come back with something.' },
   processing:  { icon:'🔩', title:'The First Tool',           body:'You clear a place for working the things you drag back. Ideas come — crude, half-formed. Tools. Weapons. A way, perhaps, to push back against the night.' },
   totem:       { icon:'🗿', title:'The Ward is Set',          body:'As you press the bloodstones into its eye sockets something shifts in your chest. Your body surges with strange energy. You feel — for the first time — that you might actually have a chance against what waits out there.' },
 };
@@ -2362,7 +2367,7 @@ async function returnToHole() {
   showScreen('screen-direction');
   updateDirCards();
   renderKingdomSummary();
-  toast('You crawl back. Pack left at camp.');
+  toast('You make it back. You leave what you gathered at the hole.');
 }
 
 function goToDoneScreen() {
@@ -2458,16 +2463,34 @@ function respawnAtCastle() {
   G.playerPos = { r: G.castlePos.r, c: G.castlePos.c };
   G.stamina = G.maxStamina;
 
-  // Track deaths — HP gains on deaths 2,4,6... ability on death 5 (separate)
+  // Track deaths — scrap bag on 1, HP gains on 2/4/6, double strike on 5
   const oldMax = G.playerMaxHP;
   const deathKey = `sr_deaths_${G.player}`;
   const deaths = (parseInt(localStorage.getItem(deathKey)) || 0) + 1;
   localStorage.setItem(deathKey, deaths);
 
+  const isFirstDeath = deaths === 1 && !localStorage.getItem(`sr_bag_${G.player}`);
   const isDoubleStrikeDeath = deaths === 5 && !localStorage.getItem(`sr_ds_${G.player}`);
   const isHPDeath = deaths % 2 === 0 && deaths !== 5 && G.playerMaxHP < 30;
 
-  if(isHPDeath) {
+  if(isFirstDeath) {
+    localStorage.setItem(`sr_bag_${G.player}`, '1');
+    G.carryMax = carryMax();
+    G.playerHP = G.playerMaxHP;
+    setTimeout(() => {
+      showNarrativeScreen({
+        icon: '🎒',
+        eyebrow: '— First Blood —',
+        title: 'Something to Hold More',
+        body: "You scrape yourself off the ground. Everything hurts. But as your eyes adjust, you notice something half-buried nearby — a torn sack, rough and barely holding together. It's nothing. But with it, you could carry more than your bare hands allow. You take it.",
+        buffs: [
+          { icon: '🎒', text: 'Scrap Bag found — carry capacity 2 → 10' },
+        ],
+        btnText: 'GET UP',
+        zIndex: 600,
+      });
+    }, 600);
+  } else if(isHPDeath) {
     G.playerMaxHP = Math.min(30, G.playerMaxHP + 5);
     G.playerHP = G.playerMaxHP;
     localStorage.setItem(`sr_maxhp_${G.player}`, G.playerMaxHP);
@@ -2820,7 +2843,10 @@ function updateCombatHP() {
 }
 function updateUlt() {
   const btn=document.getElementById('bc-ultimate');
-  if(G.ultimateCharge>=3){btn.disabled=false;btn.textContent='★ ULTIMATE';}
+  const unlocked = !!localStorage.getItem(`sr_ult_${G.player}`);
+  if(!unlocked) { btn.style.display='none'; return; }
+  btn.style.display='';
+  if(G.ultimateCharge>=3){btn.disabled=false;btn.textContent='★ DARK SURGE';}
   else{btn.disabled=true;btn.textContent=`★ (${G.ultimateCharge}/3)`;}
 }
 
@@ -3319,7 +3345,7 @@ async function debugResetRealm() {
   G.realmSeed    = Math.floor(Math.random() * 999999);
   G.pack         = { wood:0, stone:0, bone:0, hide:0, bloodstone:0 };
   G.lootPiles    = [];
-  G.carryMax     = 15;
+  G.carryMax     = 2;
   G.stamina      = G.maxStamina;
   G.playerHP     = G.playerMaxHP;
 
@@ -3330,6 +3356,7 @@ async function debugResetRealm() {
     localStorage.removeItem(`sr_maxhp_${n}`);
     localStorage.removeItem(`sr_deaths_${n}`);
     localStorage.removeItem(`sr_ds_${n}`);
+    localStorage.removeItem(`sr_bag_${n}`);
     localStorage.removeItem(`sr_seen_skrim`);
     localStorage.removeItem(`sr_seen_morrowhip`);
     localStorage.removeItem(`sr_seen_hollowed`);
