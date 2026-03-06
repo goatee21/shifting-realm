@@ -21,6 +21,7 @@
   --dark-4: #262118;
   --iron: #3a3530;
   --iron-light: #5a5248;
+  --ash-light: #b8a898;
   --gold: #9a7228;
   --gold-light: #c4a050;
   --crystal: #3a5870;
@@ -142,8 +143,8 @@ body {
 
 .login-lore {
   margin-top: 40px;
-  font-size: 13px;
-  color: var(--iron-light);
+  font-size: 15px;
+  color: var(--ash-light);
   font-style: italic;
   text-align: center;
   max-width: 260px;
@@ -192,7 +193,7 @@ body {
   font-family: 'Cinzel', serif;
 }
 .day-num { font-size: 13px; color: var(--gold-light); }
-.day-reset { font-size: 9px; letter-spacing: 0.1em; color: var(--ash); margin-top: 2px; }
+.day-reset { font-family: 'Crimson Text', serif; font-size: 12px; letter-spacing: 0.03em; color: var(--ash-light); margin-top: 2px; }
 
 .realm-pill {
   display: inline-flex;
@@ -205,8 +206,8 @@ body {
   width: 100%;
 }
 .realm-pill-icon { font-size: 16px; }
-.realm-pill-text { font-size: 12px; color: var(--ash); font-style: italic; }
-.realm-pill-text strong { color: var(--bone); font-style: normal; font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.08em; }
+.realm-pill-text { font-size: 13px; color: var(--ash-light); font-style: italic; }
+.realm-pill-text strong { color: var(--bone); font-style: normal; font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.06em; }
 
 .dir-body {
   width: 100%;
@@ -293,7 +294,7 @@ body {
 .dir-card[data-dir="east"] .dir-name { color: var(--east); }
 .dir-card[data-dir="west"] .dir-name { color: var(--west); }
 
-.dir-hint { font-size: 11px; color: var(--ash); font-style: italic; line-height: 1.4; }
+.dir-hint { font-size: 13px; color: var(--ash-light); font-style: italic; line-height: 1.4; }
 .dir-taken-by { font-size: 10px; color: var(--ember); font-style: normal; font-family: 'Cinzel', serif; letter-spacing: 0.1em; }
 
 .kingdom-summary {
@@ -323,10 +324,11 @@ body {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-family: 'Cinzel', serif;
-  font-size: 12px;
+  font-family: 'Crimson Text', serif;
+  font-size: 14px;
+  font-weight: 600;
 }
-.ks-res span { color: var(--ash); font-size: 10px; }
+.ks-res span { color: var(--ash-light); font-size: 12px; }
 
 /* ===================== EXPLORE SCREEN ===================== */
 #screen-explore {
@@ -386,15 +388,16 @@ body {
 .stat-icon { font-size: 10px; }
 .stat-info { flex: 1; min-width: 0; }
 .stat-label {
-  font-family: 'Cinzel', serif;
-  font-size: 6px;
-  letter-spacing: 0.1em;
-  color: var(--ash);
+  font-family: 'Crimson Text', serif;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: var(--ash-light);
   white-space: nowrap;
 }
 .stat-val {
-  font-family: 'Cinzel', serif;
-  font-size: 11px;
+  font-family: 'Crimson Text', serif;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--bone);
   white-space: nowrap;
 }
@@ -420,16 +423,17 @@ body {
   white-space: nowrap;
   flex-shrink: 0;
 }
-.res-chip-icon { font-size: 9px; }
+.res-chip-icon { font-size: 11px; }
 .res-chip-val {
-  font-family: 'Cinzel', serif;
-  font-size: 10px;
+  font-family: 'Crimson Text', serif;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--bone);
 }
 .res-chip-carry {
-  font-family: 'Cinzel', serif;
-  font-size: 8px;
-  color: var(--ash);
+  font-family: 'Crimson Text', serif;
+  font-size: 11px;
+  color: var(--ash-light);
 }
 
 /* MAP */
@@ -635,9 +639,9 @@ body {
   align-items: flex-start;
 }
 .panel-label {
-  font-family: 'Cinzel', serif;
-  font-size: 9px;
-  letter-spacing: 0.2em;
+  font-family: 'Crimson Text', serif;
+  font-size: 11px;
+  letter-spacing: 0.15em;
   color: var(--ember);
   margin-bottom: 3px;
 }
@@ -647,7 +651,7 @@ body {
   font-weight: 600;
   color: var(--bone);
 }
-.panel-sub { font-size: 12px; color: var(--ash); font-style: italic; margin-top: 2px; }
+.panel-sub { font-family: 'Crimson Text', serif; font-size: 14px; color: var(--ash-light); font-style: italic; margin-top: 2px; }
 .panel-icon { font-size: 30px; }
 .panel-body { padding: 16px 18px; }
 .panel-footer { padding: 12px 18px 16px; display: flex; flex-direction: column; gap: 8px; }
@@ -679,13 +683,13 @@ body {
   max-height: 72px;
   overflow-y: auto;
   scrollbar-width: none;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.6;
   margin-bottom: 14px;
 }
 .combat-log::-webkit-scrollbar { display: none; }
 .log-p { color: var(--bone); }
-.log-e { color: #b05050; }
+.log-e { color: #cc6060; }
 .log-s { color: var(--gold-light); font-style: italic; }
 
 .combat-btns {
@@ -726,11 +730,11 @@ body {
   text-align: center;
   margin: 10px 0 4px;
 }
-.collect-desc { font-size: 13px; color: var(--ash); font-style: italic; text-align: center; line-height: 1.5; }
+.collect-desc { font-size: 14px; color: var(--ash-light); font-style: italic; text-align: center; line-height: 1.5; }
 .carry-warning { 
-  font-family: 'Cinzel', serif;
-  font-size: 9px;
-  letter-spacing: 0.1em;
+  font-family: 'Crimson Text', serif;
+  font-size: 13px;
+  letter-spacing: 0.02em;
   color: var(--ember);
   text-align: center;
   margin-top: 8px;
@@ -740,7 +744,7 @@ body {
 }
 
 /* EVENT */
-.event-text { font-size: 14px; color: var(--ash); font-style: italic; line-height: 1.7; margin-bottom: 14px; }
+.event-text { font-size: 15px; color: var(--ash-light); font-style: italic; line-height: 1.7; margin-bottom: 14px; }
 .event-choice {
   width: 100%;
   padding: 11px 14px;
@@ -748,7 +752,7 @@ body {
   background: transparent;
   color: var(--bone);
   font-family: 'Crimson Text', serif;
-  font-size: 13px;
+  font-size: 15px;
   cursor: pointer;
   transition: all 0.15s;
   text-align: left;
@@ -776,12 +780,12 @@ body {
   background: rgba(120,20,20,0.15);
   border: 1px solid rgba(180,40,40,0.3);
   padding: 10px 14px;
-  font-family: 'Cinzel', serif;
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  color: #c06060;
+  font-family: 'Crimson Text', serif;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  color: #d08080;
   text-align: center;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 /* KINGDOM PANEL */
@@ -808,8 +812,8 @@ body {
 .bld-icon { font-size: 22px; flex-shrink: 0; }
 .bld-info { flex: 1; min-width: 0; }
 .bld-name { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 600; color: var(--bone); }
-.bld-desc { font-size: 11px; color: var(--ash); font-style: italic; }
-.bld-cost { font-size: 10px; color: var(--ash); margin-top: 2px; }
+.bld-desc { font-size: 13px; color: var(--ash-light); font-style: italic; }
+.bld-cost { font-size: 12px; color: var(--ash-light); margin-top: 2px; }
 .bld-cost b { color: var(--bone); }
 .btn-bld {
   padding: 6px 10px;
@@ -836,9 +840,9 @@ body {
   border: 1px solid var(--iron);
   border-left: 2px solid var(--ember);
   padding: 9px 18px;
-  font-family: 'Cinzel', serif;
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  font-family: 'Crimson Text', serif;
+  font-size: 14px;
+  letter-spacing: 0.03em;
   color: var(--bone);
   z-index: 300;
   transition: transform 0.3s ease;
@@ -868,22 +872,121 @@ body {
 }
 .return-bar.show { transform: translateY(0); }
 .return-text {
-  font-family: 'Cinzel', serif;
-  font-size: 9px;
-  letter-spacing: 0.08em;
-  color: #ffaaaa;
+  font-family: 'Crimson Text', serif;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  color: #ffbbbb;
   text-align: center;
+}
+
+/* ===================== VFX ===================== */
+
+/* Screen shake */
+@keyframes screen-shake {
+  0%   { transform: translate(0,0) rotate(0deg); }
+  15%  { transform: translate(-4px, 2px) rotate(-0.5deg); }
+  30%  { transform: translate(4px, -2px) rotate(0.5deg); }
+  45%  { transform: translate(-3px, 3px) rotate(0deg); }
+  60%  { transform: translate(3px, -1px) rotate(0.3deg); }
+  75%  { transform: translate(-2px, 1px) rotate(-0.3deg); }
+  90%  { transform: translate(1px, -1px) rotate(0deg); }
+  100% { transform: translate(0,0) rotate(0deg); }
+}
+.screen-shake { animation: screen-shake 0.35s ease-out forwards; }
+
+/* Red damage flash overlay */
+@keyframes damage-flash {
+  0%   { opacity: 0.55; }
+  100% { opacity: 0; }
+}
+#damage-overlay {
+  position: fixed; inset: 0;
+  background: rgba(180, 20, 20, 0.45);
+  z-index: 200;
+  pointer-events: none;
+  opacity: 0;
+}
+#damage-overlay.flash { animation: damage-flash 0.45s ease-out forwards; }
+
+/* Floating resource text */
+@keyframes float-up {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  60%  { opacity: 1; transform: translateY(-18px) scale(1.1); }
+  100% { opacity: 0; transform: translateY(-32px) scale(0.9); }
+}
+.float-text {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Cinzel', serif;
+  font-size: clamp(7px, 1.8vw, 13px);
+  font-weight: 700;
+  pointer-events: none;
+  z-index: 10;
+  white-space: nowrap;
+  animation: float-up 1s ease-out forwards;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+}
+
+/* Tile collect pulse */
+@keyframes collect-pulse {
+  0%   { box-shadow: inset 0 0 0 0 rgba(196,160,80,0); }
+  30%  { box-shadow: inset 0 0 0 3px rgba(196,160,80,0.6); }
+  100% { box-shadow: inset 0 0 0 0 rgba(196,160,80,0); }
+}
+.collect-pulse { animation: collect-pulse 0.6s ease-out forwards; }
+
+/* Enemy death burst */
+@keyframes enemy-die {
+  0%   { opacity:1; transform: scale(1); }
+  40%  { opacity:1; transform: scale(1.4); filter: brightness(2); }
+  100% { opacity:0; transform: scale(0.2); }
+}
+.enemy-die { animation: enemy-die 0.4s ease-out forwards; }
+
+/* Spark particle */
+@keyframes spark-rise {
+  0%   { opacity: 0.9; transform: translate(var(--sx), 0) scale(1); }
+  100% { opacity: 0;   transform: translate(calc(var(--sx) + var(--drift)), var(--sy)) scale(0.3); }
+}
+.spark {
+  position: absolute;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: #ffaa44;
+  pointer-events: none;
+  z-index: 5;
+  animation: spark-rise var(--dur) ease-out forwards;
+}
+
+/* Fire tile ember glow */
+.tile.fire-lit {
+  box-shadow: inset 0 0 6px rgba(180,80,20,0.35);
+}
+.tile.fire-lit::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 100%, rgba(200,90,20,0.18) 0%, transparent 70%);
+  pointer-events: none;
+  animation: ember-breathe 2.5s ease-in-out infinite;
+}
+@keyframes ember-breathe {
+  0%,100% { opacity: 0.5; }
+  50%      { opacity: 1; }
 }
 </style>
 </head>
 <body>
+<div id="damage-overlay"></div>
 
 <!-- ==================== LOGIN SCREEN ==================== -->
 <div class="screen active" id="screen-login">
   <div class="login-sigil">🏰</div>
   <div class="login-title">SHIFTING <span>REALM</span></div>
   <div class="login-sub">THE DARKNESS WAITS · WILL YOU SURVIVE</div>
-  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v58</div>
+  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v65</div>
   <div class="login-divider"></div>
   <div class="who-are-you">Who ventures forth?</div>
   <div class="player-select">
@@ -986,6 +1089,14 @@ body {
       <div class="ks-title">Camp — Stockpile</div>
       <div class="ks-resources" id="ks-resources"></div>
     </div>
+    <div id="dir-debug-section" style="display:none;margin-top:12px;padding:10px;border:1px solid #2a1a0a;background:rgba(20,10,5,0.5)">
+      <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:0.15em;color:var(--iron-light);margin-bottom:8px;text-align:center">DEBUG</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <button class="btn-player" onclick="debugGrantTotem()" style="border-color:#1a4a1a;color:#60aa60">🗿 Grant Totem (this player)</button>
+        <button class="btn-player" onclick="debugGrantBothTotems()" style="border-color:#1a4a5a;color:#60aaaa">🗿🗿 Grant Both Totems</button>
+        <button class="btn-player" id="debug-godmode-btn" onclick="debugToggleGodMode()" style="border-color:#4a3a0a;color:#aaaa40">⚡ God Mode: OFF</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1012,8 +1123,10 @@ body {
       <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center" id="done-resources"></div>
     </div>
     <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--iron);width:100%;max-width:280px;text-align:center">
-      <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:0.15em;color:var(--iron-light);margin-bottom:8px">DEBUG</div>
-      <button class="btn-player" onclick="debugResetRealm()" style="border-color:#5a1010;color:#aa4040;width:100%">⚠ Reset Day (clears all progress)</button>
+      <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:0.15em;color:var(--iron-light);margin-bottom:8px" id="debug-label">DEBUG</div>
+      <button class="btn-player" onclick="debugGrantTotem()" style="border-color:#1a4a1a;color:#60aa60;width:100%;margin-bottom:6px" id="debug-totem-btn">🗿 Grant Totem (this player)</button>
+      <button class="btn-player" onclick="debugGrantBothTotems()" style="border-color:#1a4a5a;color:#60aaaa;width:100%;margin-bottom:6px" id="debug-both-totems-btn">🗿🗿 Grant Both Totems</button>
+      <button class="btn-player" onclick="debugResetRealm()" style="border-color:#5a1010;color:#aa4040;width:100%" id="debug-reset-btn">⚠ Reset Day (clears all progress)</button>
     </div>
   </div>
 </div>
@@ -1240,6 +1353,11 @@ body {
 <div class="toast" id="toast"></div>
 
 <script>
+// ================================================================
+// DEBUG — set to false before shipping to players
+// ================================================================
+const DEBUG_MODE = true;
+
 // ================================================================
 // GAME DATA
 // ================================================================
@@ -1496,6 +1614,9 @@ const G = {
   claimedDirs: {},
   playedToday: {},
 
+  // Debug
+  godMode: false,
+
   // Combat state
   combat: null,
 
@@ -1591,6 +1712,8 @@ async function login(name) {
       G.realmSeed   = Math.floor(Math.random() * 999999);
       G.day         = (shared.day || 0) + 1;
       await sbSaveShared();
+      // Clear warden state — tied to the realm, resets with it
+      await sbPatchWarden({ warden_ready: {}, warden_battle: null, warden_defeated: null });
     } else {
       G.claimedDirs = shared.claimed_dirs || {};
       G.playedToday = shared.played_today || {};
@@ -1705,6 +1828,16 @@ function closeIntro() {
 function updateDirCards() {
   // Hide realm modifier on day 1 — no modifier yet
   document.getElementById('realm-pill-wrap').style.display = G.day <= 1 ? 'none' : '';
+  // Show debug tools if enabled
+  const debugSection = document.getElementById('dir-debug-section');
+  if(debugSection) debugSection.style.display = DEBUG_MODE ? '' : 'none';
+  // Sync god mode button label
+  const godBtn = document.getElementById('debug-godmode-btn');
+  if(godBtn) {
+    godBtn.textContent = `⚡ God Mode: ${G.godMode ? 'ON' : 'OFF'}`;
+    godBtn.style.borderColor = G.godMode ? '#aaaa20' : '#4a3a0a';
+    godBtn.style.color       = G.godMode ? '#ffff60' : '#aaaa40';
+  }
 
   ['north','south','east','west'].forEach(dir => {
     const card = document.querySelector(`[data-dir="${dir}"]`);
@@ -1766,6 +1899,7 @@ function chooseDirection(dir) {
   badge.className = `explore-dir-badge badge-${dir}`;
 
   showScreen('screen-explore');
+  startFireSparks();
 }
 
 // ================================================================
@@ -2027,6 +2161,18 @@ function handleTileTap(r,c,i) {
     return;
   }
 
+  // GOD MODE — free movement, all tiles revealed, no triggers
+  if(G.godMode && adj) {
+    tile.visited = true;
+    visitRadius({r,c}, 1);
+    G.playerPos = {r,c};
+    renderMap();
+    updateStats();
+    // Only trigger the warden tile — skip everything else
+    if(tile.type === 'enemy-warden') setTimeout(() => triggerTile(i), 200);
+    return;
+  }
+
   // Adjacent visited tile — costs 1 stamina (castle and cleared rest spots free)
   if(adj && tile.visited) {
     const isCastleTile = tile.type === 'castle';
@@ -2183,12 +2329,14 @@ const BESTIARY = {
   },
 };
 
-function showBestiary(enemyId, onClose) {
+function showBestiary(enemyId, onClose, opts) {
+  // opts: { btnText, skipIfSeen }
   const b = BESTIARY[enemyId];
   if(!b) { onClose(); return; }
   const seen = localStorage.getItem('sr_seen_' + enemyId);
-  if(seen) { onClose(); return; }
-  localStorage.setItem('sr_seen_' + enemyId, '1');
+  const skipIfSeen = opts?.skipIfSeen !== false; // default true
+  if(seen && skipIfSeen) { onClose(); return; }
+  if(!seen) localStorage.setItem('sr_seen_' + enemyId, '1');
 
   const overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(5,3,2,0.97);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px';
@@ -2208,7 +2356,7 @@ function showBestiary(enemyId, onClose) {
         <div style="background:rgba(196,80,26,0.08);border:1px solid rgba(196,80,26,0.25);padding:10px 12px;font-family:Cinzel,serif;font-size:9px;letter-spacing:0.1em;color:var(--ember);line-height:1.6">${b.warning}</div>
       </div>
       <div style="padding:12px 18px 16px">
-        <button id="bestiary-close-btn" style="width:100%;padding:11px;border:1px solid #6a1010;background:rgba(106,16,16,0.2);color:#c04040;font-family:Cinzel,serif;font-size:10px;letter-spacing:0.1em;cursor:pointer">FACE IT</button>
+        <button id="bestiary-close-btn" style="width:100%;padding:11px;border:1px solid #6a1010;background:rgba(106,16,16,0.2);color:#c04040;font-family:Cinzel,serif;font-size:10px;letter-spacing:0.1em;cursor:pointer">${opts?.btnText||'FACE IT'}</button>
       </div>
     </div>
   `;
@@ -2219,7 +2367,107 @@ function showBestiary(enemyId, onClose) {
   };
 }
 
-function triggerTile(i) {
+async function handleWardenEncounter() {
+  const partnerName = G.player === 'Scott' ? 'Denielle' : 'Scott';
+  const myTotem     = !!G.buildings['totem'];
+  const pRow        = await sbLoadPlayer(partnerName);
+  const partnerTotem = pRow ? !!pRow.totem_built : false;
+  const bothTotems  = myTotem && partnerTotem;
+  const seenBefore  = !!localStorage.getItem('sr_seen_warden');
+  const seenBothMsg = !!localStorage.getItem('sr_seen_warden_both');
+
+  const retreatToPrev = () => { G.playerPos = {...G.prevPos}; renderMap(); };
+
+  // ── CASE 1: No totem — first ever sight of the Warden ────────
+  if(!myTotem && !seenBefore) {
+    // Show bestiary with RETREAT button, then "not ready" narrative
+    showBestiary('warden', () => {
+      showNarrativeScreen({
+        icon: '🕯️',
+        eyebrow: '— The Pale Warden —',
+        title: 'Not Yet',
+        body: 'Something vast stirs in the dark. It notices you — and dismisses you in the same moment. You are not ready for this. Not even close.\n\nFind a way to become harder to dismiss.',
+        btnText: 'RETREAT',
+        zIndex: 600,
+      }, retreatToPrev);
+    }, { btnText: 'RETREAT', skipIfSeen: false });
+    return;
+  }
+
+  // ── CASE 2: No totem — seen before ───────────────────────────
+  if(!myTotem) {
+    showNarrativeScreen({
+      icon: '🕯️',
+      eyebrow: '— The Pale Warden —',
+      title: 'Not Yet',
+      body: 'It is still there. Still waiting. Still not impressed by you.\n\nYou need to build a Ward Totem before this changes.',
+      btnText: 'RETREAT',
+      zIndex: 600,
+    }, retreatToPrev);
+    return;
+  }
+
+  // ── CASE 3: My totem built, partner's isn't ───────────────────
+  if(!bothTotems) {
+    // Show bestiary first if they haven't seen it yet
+    const showScreen = () => showNarrativeScreen({
+      icon: '🕯️',
+      eyebrow: '— The Pale Warden —',
+      title: 'One Ward Is Not Enough',
+      body: `Your totem hums at your back. You feel its power — real, strange, yours. And it is not enough.\n\nSomething holds. A resistance you cannot push through alone. ${partnerName}'s totem must also stand before this creature will yield.`,
+      btnText: 'WITHDRAW',
+      zIndex: 600,
+    }, retreatToPrev);
+
+    if(!seenBefore) {
+      showBestiary('warden', showScreen, { btnText: 'APPROACH', skipIfSeen: false });
+    } else {
+      showScreen();
+    }
+    return;
+  }
+
+  // ── CASE 4: Both totems — first time reaching this state ──────
+  if(!seenBothMsg) {
+    localStorage.setItem('sr_seen_warden_both', '1');
+    const showReadyUp = () => showWardenReadyPrompt();
+    if(!seenBefore) {
+      showBestiary('warden', () => {
+        showNarrativeScreen({
+          icon: '🕯️',
+          eyebrow: '— The Pale Warden —',
+          title: 'This Is What You Heard About',
+          body: `You feel both totems coursing through you — yours and ${partnerName}'s, combined into something that hums at a frequency the dark understands.\n\nThe Warden is here. Massive. Waiting. You have your skills, your gear, each other. Perhaps that is enough.\n\nPerhaps.`,
+          buffs: [
+            { icon: '🗿', text: 'Both ward totems standing' },
+            { icon: '⚔', text: 'Your combined strength may be enough' },
+          ],
+          btnText: 'FACE IT TOGETHER',
+          zIndex: 600,
+        }, showReadyUp);
+      }, { btnText: 'APPROACH', skipIfSeen: false });
+    } else {
+      showNarrativeScreen({
+        icon: '🕯️',
+        eyebrow: '— The Pale Warden —',
+        title: 'This Is What You Heard About',
+        body: `You feel both totems coursing through you — yours and ${partnerName}'s, combined into something that hums at a frequency the dark understands.\n\nThe Warden is here. Massive. Waiting. You have your skills, your gear, each other. Perhaps that is enough.\n\nPerhaps.`,
+        buffs: [
+          { icon: '🗿', text: 'Both ward totems standing' },
+          { icon: '⚔', text: 'Your combined strength may be enough' },
+        ],
+        btnText: 'FACE IT TOGETHER',
+        zIndex: 600,
+      }, showReadyUp);
+    }
+    return;
+  }
+
+  // ── CASE 5: Both totems — repeat visit, skip straight to ready-up ──
+  showWardenReadyPrompt();
+}
+
+async function triggerTile(i) {
   const tile = G.map[i];
   if(tile.type==='empty' || tile.type==='castle') return;
   if(tile.depleted && tile.type!=='rest') return;
@@ -2235,50 +2483,9 @@ function triggerTile(i) {
     const hasPack = packTotal() > 0;
     const isWarden = eId === 'warden';
 
-    showBestiary(eId, async () => {
-      if(isWarden) {
-        const partnerName = G.player === 'Scott' ? 'Denielle' : 'Scott';
-        const myTotem = !!G.buildings['totem'];
-        // Check partner totem from Supabase player row
-        const pRow = await sbLoadPlayer(partnerName);
-        const partnerTotem = pRow ? !!pRow.totem_built : false;
-        const bothTotems = myTotem && partnerTotem;
-
-        const retreatToPrev = () => {
-          G.playerPos = {...G.prevPos};
-          renderMap();
-        };
-        if(!myTotem) {
-          // No totem at all — too weak
-          showNarrativeScreen({
-            icon: '🕯️',
-            eyebrow: '— The Warden —',
-            title: 'Not Yet',
-            body: 'Something vast stirs beyond this point. You feel it notice you and dismiss you in the same moment. You are not ready for this. Not even close.',
-            btnText: 'RETREAT',
-            zIndex: 600,
-          }, retreatToPrev);
-        } else if(!bothTotems) {
-          // My totem built, partner's isn't
-          showNarrativeScreen({
-            icon: '🕯️',
-            eyebrow: '— The Warden —',
-            title: 'Something Resists',
-            body: `You feel the totem's power coursing through you. Strong. Real. And yet something holds — a resistance you cannot push through alone. Perhaps one ward is not enough. Perhaps when ${partnerName}'s totem also stands, their combined energies will prevail.`,
-            btnText: 'WITHDRAW',
-            zIndex: 600,
-          }, retreatToPrev);
-        } else {
-          // Both totems — fight!
-          showEnemyWarning(
-            `🕯️ ${enemy.name.toUpperCase()}`,
-            `The Pale Warden does not yield.\n\nIf you fall here your pack is gone for good. No marker. No recovery. It keeps what it takes.`,
-            () => startCombat(enemy, i, true),
-            'FACE THE WARDEN',
-            '#5a0e3a'
-          );
-        }
-      } else if(hasPack) {
+    if(isWarden) {
+      await handleWardenEncounter();
+    } else if(hasPack) {
         showEnemyWarning(
           `${enemy.icon} ${enemy.name.toUpperCase()}`,
           `If you collapse here your pack drops where you fall. You will need to come back for it.`,
@@ -2289,7 +2496,6 @@ function triggerTile(i) {
       } else {
         startCombat(enemy, i, false);
       }
-    });
   } else if(tile.type==='event') {
     const ev = EVENTS[Math.floor(Math.random()*EVENTS.length)];
     showEvent(ev, i);
@@ -2432,6 +2638,11 @@ async function returnToHole() {
 
 function goToDoneScreen() {
   document.getElementById('done-name-display').textContent = G.player;
+  // Show/hide debug section based on flag
+  ['debug-label','debug-totem-btn','debug-both-totems-btn','debug-reset-btn'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.style.display = DEBUG_MODE ? '' : 'none';
+  });
   // Show kingdom resources
   const resEl = document.getElementById('done-resources');
   resEl.innerHTML = ['wood','stone','bone','hide','bloodstone'].map(k => {
@@ -2648,8 +2859,13 @@ function collectLootPile(tileIdx) {
   }
 
   const hasOverflow = Object.values(overflowMap).some(v => v > 0);
+  const tileEl = getTileEl(tileIdx);
+  // Flash collected items
+  for(const line of collectedLines) {
+    const m = line.match(/\+(\d+) (\w+)/);
+    if(m) vfxCollect(tileEl, m[2], parseInt(m[1]));
+  }
   if(hasOverflow) {
-    // Put overflow back as a loot pile on this tile
     G.lootPiles.push({ tileIdx, pack: overflowMap });
     renderMap();
     showPackSwapMulti(overflowMap, tileIdx, () => { renderMap(); });
@@ -2693,7 +2909,9 @@ function confirmCollect() {
   G.pendingCollect = null;
   document.getElementById('ov-collect').classList.remove('active');
   G.map[tileIdx].depleted = true;
-  const { overflow } = addToPack(rData.id, amt);
+  const tileEl = getTileEl(tileIdx);
+  const { actual, overflow } = addToPack(rData.id, amt);
+  if(actual > 0) vfxCollect(tileEl, rData.id, actual);
   if(overflow > 0) {
     showPackSwapMulti({ [rData.id]: overflow }, tileIdx, () => { renderMap(); });
   } else {
@@ -2900,7 +3118,7 @@ function enemyTurn() {
   G.playerHP = Math.max(0, G.playerHP - edamage);
   updateStats();
   updateCombatHP();
-  if(edamage > 0) clog(`${e.name} hits for ${edamage} damage`, 'log-e');
+  if(edamage > 0) { clog(`${e.name} hits for ${edamage} damage`, 'log-e'); vfxDamage(); }
   if(G.playerHP<=0) { combatLose(); return; }
 }
 
@@ -2912,7 +3130,7 @@ function startPlayerBurn(turns) {
     if(t<=0||!G.combat||G.playerHP<=0){clearInterval(burnInterval);burnInterval=null;return;}
     G.playerHP=Math.max(0,G.playerHP-2);
     updateStats(); updateCombatHP();
-    clog('Burn: 2 damage to you','log-e'); t--;
+    clog('Burn: 2 damage to you','log-e'); vfxDamage(); t--;
     if(G.playerHP<=0){clearInterval(burnInterval);burnInterval=null;combatLose();}
   },1300);
 }
@@ -2961,7 +3179,7 @@ function combatWin() {
     return;
   }
 
-  if(tileIdx >= 0) G.map[tileIdx].depleted = true;
+  if(tileIdx >= 0) { G.map[tileIdx].depleted = true; vfxEnemyDie(getTileEl(tileIdx)); }
   document.getElementById('combat-action-area').style.display='none';
   document.getElementById('combat-result-area').style.display='';
   document.getElementById('c-result-title').innerHTML=`<span class="result-win">VICTORY</span>`;
@@ -3294,6 +3512,7 @@ function stokefire() {
   setSyncing(true);
   sbSave().then(()=>setSyncing(false));
   closeKingdom();
+  startFireSparks();
 
   showNarrativeScreen({
     icon: '🔥',
@@ -3465,6 +3684,56 @@ function updateResourceStrip() {
 // ================================================================
 // DEBUG
 // ================================================================
+function debugToggleGodMode() {
+  if(!DEBUG_MODE) return;
+  G.godMode = !G.godMode;
+  const btn = document.getElementById('debug-godmode-btn');
+  if(btn) btn.textContent = `⚡ God Mode: ${G.godMode ? 'ON' : 'OFF'}`;
+  if(btn) btn.style.borderColor = G.godMode ? '#aaaa20' : '#4a3a0a';
+  if(btn) btn.style.color       = G.godMode ? '#ffff60' : '#aaaa40';
+  if(G.godMode) {
+    // Reveal entire map
+    G.map.forEach(tile => { tile.visited = true; });
+    renderMap();
+    toast('⚡ God Mode ON — full map revealed, no interruptions');
+  } else {
+    toast('God Mode OFF');
+  }
+}
+
+async function debugGrantTotem() {
+  if(!DEBUG_MODE) return;
+  G.buildings['totem'] = true;
+  await sbSavePlayer();
+  toast(`🗿 Totem granted to ${G.player}`);
+  goToDoneScreen();
+}
+
+async function debugGrantBothTotems() {
+  if(!DEBUG_MODE) return;
+  // Grant to current player immediately
+  G.buildings['totem'] = true;
+  await sbSavePlayer();
+  // Grant to partner via direct upsert
+  const partnerName = G.player === 'Scott' ? 'Denielle' : 'Scott';
+  const partnerId = partnerName.toLowerCase();
+  try {
+    const pRow = await sbLoadPlayer(partnerName);
+    const partnerBuildings = pRow?.buildings || {};
+    partnerBuildings['totem'] = true;
+    await fetch(`${SB_URL}/rest/v1/sr_players`, {
+      method: 'POST',
+      headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=representation' },
+      body: JSON.stringify({ id: partnerId, buildings: partnerBuildings, totem_built: true, updated_at: new Date().toISOString() }),
+    });
+    toast(`🗿🗿 Both totems granted`);
+  } catch(e) {
+    toast('⚠ Partner totem failed — try again');
+    console.error(e);
+  }
+  goToDoneScreen();
+}
+
 async function debugResetRealm() {
   // Replace browser confirm() — blocked on some mobile browsers
   const confirmed = await showConfirm('Full reset? Wipes ALL progress — resources, buildings, everything. Fresh start.');
@@ -3512,6 +3781,7 @@ async function debugResetRealm() {
     localStorage.removeItem(`sr_seen_hollowed`);
     localStorage.removeItem(`sr_seen_cinderhound`);
     localStorage.removeItem(`sr_seen_warden`);
+  localStorage.removeItem(`sr_seen_warden_both`);
     localStorage.removeItem(`sr_intro_seen_${n}`);
   });
 
@@ -3533,7 +3803,7 @@ async function debugResetRealm() {
     const res = await fetch(`${SB_URL}/rest/v1/sr_kingdom?id=eq.main`, {
       method: 'PATCH',
       headers: SB_HEADERS,
-      body: JSON.stringify(payload),
+      body: JSON.stringify({...payload, warden_ready: {}, warden_battle: null, warden_defeated: null}),
     });
     saveOk = res.ok;
     if(!saveOk) {
@@ -3578,6 +3848,7 @@ let dirPollInterval = null;
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  if(id !== 'screen-explore') stopFireSparks();
 
   // Poll for updates when on direction screen (so claimed dirs sync between players)
   if(dirPollInterval) { clearInterval(dirPollInterval); dirPollInterval = null; }
@@ -3592,6 +3863,109 @@ function showScreen(id) {
     }, 8000); // Poll every 8 seconds
   }
 }
+// ================================================================
+// VFX
+// ================================================================
+
+function vfxDamage() {
+  // Red flash
+  const ov = document.getElementById('damage-overlay');
+  ov.classList.remove('flash');
+  void ov.offsetWidth; // reflow
+  ov.classList.add('flash');
+  // Screen shake on explore screen
+  const explore = document.getElementById('screen-explore');
+  explore.classList.remove('screen-shake');
+  void explore.offsetWidth;
+  explore.classList.add('screen-shake');
+  explore.addEventListener('animationend', () => explore.classList.remove('screen-shake'), { once: true });
+}
+
+function vfxCollect(tileEl, resourceId, amt) {
+  if(!tileEl) return;
+  const colors = {
+    wood:'#8B5E2A', stone:'#9a9a8a', bone:'#d4c9a8',
+    hide:'#7a4a20', bloodstone:'#cc2020',
+  };
+  const icons = { wood:'🪵', stone:'🪨', bone:'🦴', hide:'🟫', bloodstone:'🔴' };
+  const col = colors[resourceId] || '#c4a050';
+  const icon = icons[resourceId] || '';
+
+  // Pulse the tile
+  tileEl.classList.remove('collect-pulse');
+  void tileEl.offsetWidth;
+  tileEl.classList.add('collect-pulse');
+  tileEl.addEventListener('animationend', () => tileEl.classList.remove('collect-pulse'), { once: true });
+
+  // Float text
+  const txt = document.createElement('div');
+  txt.className = 'float-text';
+  txt.style.color = col;
+  txt.textContent = `${icon}+${amt}`;
+  tileEl.appendChild(txt);
+  txt.addEventListener('animationend', () => txt.remove());
+}
+
+function vfxEnemyDie(tileEl) {
+  if(!tileEl) return;
+  const icon = tileEl.querySelector('.player-marker') ? null : tileEl;
+  // Burst the tile icon
+  const span = document.createElement('span');
+  span.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.4em;z-index:6;pointer-events:none';
+  span.textContent = '💥';
+  span.classList.add('enemy-die');
+  tileEl.appendChild(span);
+  span.addEventListener('animationend', () => span.remove());
+}
+
+function vfxSparks(tileEl, count) {
+  if(!tileEl) return;
+  for(let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const s = document.createElement('div');
+      s.className = 'spark';
+      const sx = (Math.random() * 80 + 10) + '%';
+      const drift = (Math.random() * 10 - 5) + 'px';
+      const sy = -(Math.random() * 20 + 8) + 'px';
+      const dur = (Math.random() * 0.5 + 0.4) + 's';
+      s.style.cssText = `left:${sx};bottom:0;--sx:0px;--drift:${drift};--sy:${sy};--dur:${dur}`;
+      tileEl.appendChild(s);
+      s.addEventListener('animationend', () => s.remove());
+    }, i * 60);
+  }
+}
+
+// Continuous fire sparks — runs every few seconds on lit tiles
+let fireSparkInterval = null;
+function startFireSparks() {
+  if(fireSparkInterval) clearInterval(fireSparkInterval);
+  if(!G.buildings['fire'] || !G.playedToday.fire_stoked) return;
+  fireSparkInterval = setInterval(() => {
+    if(document.getElementById('screen-explore').classList.contains('active')) {
+      const cp = G.castlePos;
+      for(let r=Math.max(0,cp.r-2);r<=Math.min(9,cp.r+2);r++) {
+        for(let c=Math.max(0,cp.c-2);c<=Math.min(9,cp.c+2);c++) {
+          if(Math.abs(r-cp.r)+Math.abs(c-cp.c) <= 2 && Math.random() < 0.35) {
+            const tileIdx = r*10+c;
+            const tiles = document.getElementById('map-grid')?.children;
+            if(tiles && tiles[tileIdx]) vfxSparks(tiles[tileIdx], 2);
+          }
+        }
+      }
+    }
+  }, 1800);
+}
+
+function stopFireSparks() {
+  if(fireSparkInterval) { clearInterval(fireSparkInterval); fireSparkInterval = null; }
+}
+
+// Get tile DOM element by map index
+function getTileEl(tileIdx) {
+  const grid = document.getElementById('map-grid');
+  return grid && tileIdx >= 0 ? grid.children[tileIdx] : null;
+}
+
 </script>
 </body>
 </html>
