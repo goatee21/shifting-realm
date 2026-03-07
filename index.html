@@ -337,6 +337,7 @@ body {
   height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
+  position: relative;
 }
 
 .explore-header {
@@ -856,21 +857,21 @@ body {
 
 /* RETURN PROMPT */
 .return-bar {
-  position: fixed;
-  bottom: 44px;
+  position: absolute;
+  top: 60px;
   left: 0; right: 0;
   background: rgba(100,15,15,0.97);
-  border-top: 1px solid #8a2020;
   border-bottom: 1px solid #8a2020;
   padding: 6px 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 90;
-  transform: translateY(100px);
-  transition: transform 0.3s;
+  transform: translateY(-48px);
+  transition: transform 0.3s ease;
+  pointer-events: none;
 }
-.return-bar.show { transform: translateY(0); }
+.return-bar.show { transform: translateY(0); pointer-events: all; }
 .return-text {
   font-family: 'Crimson Text', serif;
   font-size: 13px;
@@ -959,6 +960,58 @@ body {
   z-index: 5;
   animation: spark-rise var(--dur) ease-out forwards;
 }
+
+/* ── WARDEN BATTLE SCREEN ───────────────────────────── */
+@keyframes warden-icon-float {
+  0%,100% { transform: translateY(0) scale(1); filter: drop-shadow(0 0 16px rgba(160,40,220,0.7)); }
+  50%     { transform: translateY(-8px) scale(1.04); filter: drop-shadow(0 0 28px rgba(200,60,255,0.95)); }
+}
+@keyframes warden-ambient-drift {
+  0%   { opacity:0; transform: translate(0,0) scale(1); }
+  40%  { opacity:0.6; }
+  100% { opacity:0; transform: translate(var(--ax),var(--ay)) scale(0.4); }
+}
+.ambient-orb {
+  position:absolute;
+  border-radius:50%;
+  pointer-events:none;
+  animation: warden-ambient-drift var(--adur) ease-out forwards;
+  background: var(--acolor, rgba(120,20,180,0.5));
+}
+.btn-warden {
+  padding: 12px 8px;
+  border: 1px solid;
+  background: transparent;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-transform: uppercase;
+}
+.btn-warden:active { transform: scale(0.96); }
+.bc-w-attack  { border-color:#6a1010; color:#cc4040; }
+.bc-w-attack:hover  { background:rgba(106,16,16,0.3); }
+.bc-w-ability { border-color:var(--iron); color:var(--ash); }
+.bc-w-ability:hover { border-color:var(--ash);color:var(--bone);background:rgba(90,82,72,0.2); }
+.bc-w-ability:disabled { opacity:0.3;cursor:not-allowed; }
+.bc-w-ultimate { border-color:var(--gold);color:var(--gold-light); }
+.bc-w-ultimate:hover { background:rgba(154,114,40,0.2); }
+.bc-w-ultimate:disabled { opacity:0.3;cursor:not-allowed; }
+.bc-w-flee    { border-color:#2a2030; color:#6a5a7a; font-size:10px; }
+.bc-w-flee:hover { background:rgba(42,32,48,0.4); color:#9a8aaa; }
+.w-log-p { color:#c8b89a; }
+.w-log-e { color:#cc6060; }
+.w-log-s { color:#aa70cc; font-style:italic; }
+.w-log-phase { color:#ffcc44; font-family:Cinzel,serif; font-size:12px; letter-spacing:0.1em; border-top:1px solid #4a3010; padding-top:6px; margin-top:4px; }
+
+/* Warden HP bar pulse in phase 2 */
+@keyframes warden-hp-pulse {
+  0%,100% { box-shadow: 0 0 4px rgba(220,60,255,0.4); }
+  50%     { box-shadow: 0 0 12px rgba(220,60,255,0.8); }
+}
+.warden-phase2 #w-e-bar { background: linear-gradient(90deg,#880020,#ff2060); animation:warden-hp-pulse 1.5s ease-in-out infinite; }
+.warden-phase2 #w-phase-label { color:#ff4060; animation:warden-hp-pulse 1.5s ease-in-out infinite; }
 
 /* ── WARDEN VFX ─────────────────────────────────────────────── */
 
@@ -1075,7 +1128,7 @@ body {
   <div class="login-sigil">🏰</div>
   <div class="login-title">SHIFTING <span>REALM</span></div>
   <div class="login-sub">THE DARKNESS WAITS · WILL YOU SURVIVE</div>
-  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v66</div>
+  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v71</div>
   <div class="login-divider"></div>
   <div class="who-are-you">Who ventures forth?</div>
   <div class="player-select">
@@ -1255,14 +1308,95 @@ body {
 
   <div class="action-bar">
     <button class="btn-action" onclick="showKingdom()">🔥 CAMP</button>
-
+    <button class="btn-action" id="explore-godmode-btn" onclick="debugToggleGodMode()" style="display:none;border-color:#4a3a0a;color:#aaaa40;font-size:7px">⚡ GOD</button>
     <button class="btn-action" onclick="debugResetRealm()" style="border-color:#5a1010;color:#aa4040;font-size:7px">⚠ RESET DAY</button>
+  </div>
+
+  <!-- LOW STAMINA WARNING — slides down over resource strip -->
+  <div class="return-bar" id="return-bar">
+    <div class="return-text" id="return-bar-text">⚠ LOW STAMINA — Camp may be too far</div>
   </div>
 </div>
 
 <!-- ==================== OVERLAYS ==================== -->
 
 <!-- COMBAT -->
+<!-- ==================== WARDEN BATTLE ==================== -->
+<div class="overlay" id="ov-warden" style="z-index:150;padding:0;align-items:stretch;background:#000">
+  <div id="warden-battle-wrap" style="
+    width:100%;height:100%;
+    display:flex;flex-direction:column;
+    background:radial-gradient(ellipse at 50% 0%, rgba(100,10,140,0.35) 0%, rgba(5,2,10,0.98) 55%);
+    position:relative;overflow:hidden;
+  ">
+    <!-- Void ambient particles container -->
+    <div id="warden-ambient" style="position:absolute;inset:0;pointer-events:none;z-index:0"></div>
+
+    <!-- Header -->
+    <div style="padding:16px 20px 10px;text-align:center;position:relative;z-index:1;flex-shrink:0">
+      <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:0.35em;color:#6a30aa;margin-bottom:4px">— THE PALE WARDEN —</div>
+      <div style="font-family:Cinzel,serif;font-size:11px;letter-spacing:0.2em;color:#9a60cc" id="w-phase-label">GUARDIAN OF THE REALM</div>
+    </div>
+
+    <!-- Warden icon + HP -->
+    <div style="flex-shrink:0;text-align:center;padding:4px 20px 8px;position:relative;z-index:1">
+      <div id="w-enemy-icon" style="font-size:52px;line-height:1;margin-bottom:8px;filter:drop-shadow(0 0 20px rgba(160,40,220,0.8));animation:warden-icon-float 3s ease-in-out infinite">👁️</div>
+      <div style="max-width:280px;margin:0 auto">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+          <span style="font-family:Cinzel,serif;font-size:8px;letter-spacing:0.15em;color:#6a30aa">WARDEN HP</span>
+          <span style="font-family:Cinzel,serif;font-size:11px;color:#cc80ff"><b id="w-e-hp">80</b>/<span id="w-e-maxhp">80</span></span>
+        </div>
+        <div style="height:5px;background:rgba(60,0,80,0.5);border:1px solid #4a1060">
+          <div id="w-e-bar" style="height:100%;background:linear-gradient(90deg,#5a0880,#cc30ff);width:100%;transition:width 0.5s ease"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div style="height:1px;background:linear-gradient(90deg,transparent,#4a1060,transparent);margin:0 20px;flex-shrink:0"></div>
+
+    <!-- Combat log -->
+    <div id="w-combat-log" style="
+      flex:1;overflow-y:auto;scrollbar-width:none;
+      padding:10px 20px;
+      font-family:Crimson Text,serif;font-size:15px;line-height:1.7;
+      color:#9a8aaa;
+      min-height:0;
+    "></div>
+
+    <!-- Divider -->
+    <div style="height:1px;background:linear-gradient(90deg,transparent,#4a1060,transparent);margin:0 20px;flex-shrink:0"></div>
+
+    <!-- Player HP -->
+    <div style="padding:10px 20px 6px;flex-shrink:0;position:relative;z-index:1">
+      <div style="max-width:280px;margin:0 auto">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+          <span style="font-family:Cinzel,serif;font-size:8px;letter-spacing:0.15em;color:var(--ash)">YOUR HP</span>
+          <span style="font-family:Cinzel,serif;font-size:11px;color:var(--bone)"><b id="w-p-hp">30</b>/<span id="w-p-maxhp">30</span></span>
+        </div>
+        <div style="height:4px;background:var(--dark-4);border:1px solid var(--iron)">
+          <div id="w-p-bar" style="height:100%;background:linear-gradient(90deg,#1a4a1a,#3aaa3a);width:100%;transition:width 0.4s ease"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action buttons -->
+    <div id="w-action-area" style="padding:8px 16px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;flex-shrink:0;position:relative;z-index:1">
+      <button class="btn-warden bc-w-attack" onclick="wardenAct('attack')">⚔ STRIKE</button>
+      <button class="btn-warden bc-w-flee" onclick="wardenAct('flee')">↩ FLEE</button>
+      <button class="btn-warden bc-w-ability" id="w-bc-ability" onclick="wardenAct('ability')" style="display:none">✦ DOUBLE STRIKE</button>
+      <button class="btn-warden bc-w-ultimate" id="w-bc-ultimate" onclick="wardenAct('ultimate')" disabled style="display:none">★ (0/3)</button>
+    </div>
+
+    <!-- Victory / Defeat result -->
+    <div id="w-result-area" style="display:none;padding:16px 20px 24px;text-align:center;position:relative;z-index:1">
+      <div id="w-result-title" style="font-family:Cinzel,serif;font-size:26px;font-weight:700;letter-spacing:0.1em;margin-bottom:8px"></div>
+      <div id="w-result-sub" style="font-size:14px;color:var(--ash);font-style:italic;margin-bottom:16px;line-height:1.6"></div>
+      <button class="btn-action primary" style="width:100%;padding:13px;font-size:12px" onclick="closeWardenBattle()">CONTINUE</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="ov-combat">
   <div class="panel">
     <div class="panel-head">
@@ -1430,10 +1564,6 @@ body {
   </div>
 </div>
 
-<!-- LOW STAMINA WARNING -->
-<div class="return-bar" id="return-bar">
-  <div class="return-text" id="return-bar-text">⚠ LOW STAMINA — Camp may be too far</div>
-</div>
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
@@ -1886,6 +2016,9 @@ async function login(name) {
     renderMap();
     updateStats();
     updateResourceStrip();
+    // Show/hide debug button in explore action bar
+    const expGodBtn = document.getElementById('explore-godmode-btn');
+    if(expGodBtn) expGodBtn.style.display = DEBUG_MODE ? '' : 'none';
     showScreen('screen-explore');
 
     // Show return narrative after a short delay so map renders first
@@ -2123,6 +2256,7 @@ function generateMap() {
   }
 
   revealAroundCastle();
+  if(G.godMode) G.map.forEach(tile => { tile.visited = true; });
 }
 
 function shuffle(arr) {
@@ -3048,6 +3182,11 @@ function showEvent(ev, tileIdx) {
 // COMBAT
 // ================================================================
 function startCombat(enemy, tileIdx, permanentLootLoss) {
+  if(enemy.id === 'warden') {
+    startWardenBattle(enemy, tileIdx, permanentLootLoss);
+    return;
+  }
+
   G.combat = {
     enemy: {...enemy},
     enemyHP: enemy.hp,
@@ -3201,8 +3340,7 @@ function enemyTurn() {
   G.playerHP = Math.max(0, G.playerHP - edamage);
   updateStats();
   updateCombatHP();
-  const isWarden = e.id === 'warden';
-  if(edamage > 0) { clog(`${e.name} hits for ${edamage} damage`, 'log-e'); isWarden ? vfxWardenHit() : vfxDamage(); }
+  if(edamage > 0) { clog(`${e.name} hits for ${edamage} damage`, 'log-e'); vfxDamage(); }
   if(G.playerHP<=0) { combatLose(); return; }
 }
 
@@ -3263,10 +3401,9 @@ function combatWin() {
     return;
   }
 
-  const isWarden = c.enemy.id === 'warden';
   if(tileIdx >= 0) {
     G.map[tileIdx].depleted = true;
-    isWarden ? vfxWardenDeath(tileIdx) : vfxEnemyDie(getTileEl(tileIdx));
+    vfxEnemyDie(getTileEl(tileIdx));
   }
   document.getElementById('combat-action-area').style.display='none';
   document.getElementById('combat-result-area').style.display='';
@@ -3300,6 +3437,256 @@ function closeCombat() {
     G._pendingCombatOverflow = null;
     setTimeout(() => showPackSwapMulti({ [type]: overflow }, tileIdx, () => {}), 200);
   }
+}
+
+// ================================================================
+// WARDEN BATTLE
+// ================================================================
+let wardenAmbientInterval = null;
+
+function startWardenBattle(enemy, tileIdx, permanentLootLoss) {
+  G.combat = {
+    enemy: {...enemy},
+    enemyHP: enemy.hp,
+    tileIdx,
+    burnTurns: 0,
+    wardActive: false,
+    permanentLootLoss: !!permanentLootLoss,
+    phase: 1,
+  };
+  G.abilityCD = 0;
+  G.ultimateCharge = 0;
+
+  const ov = document.getElementById('ov-warden');
+  const wrap = document.getElementById('warden-battle-wrap');
+  wrap.classList.remove('warden-phase2');
+
+  document.getElementById('w-e-hp').textContent = enemy.hp;
+  document.getElementById('w-e-maxhp').textContent = enemy.hp;
+  document.getElementById('w-e-bar').style.width = '100%';
+  document.getElementById('w-p-hp').textContent = G.playerHP;
+  document.getElementById('w-p-maxhp').textContent = G.playerMaxHP;
+  document.getElementById('w-p-bar').style.width = `${(G.playerHP/G.playerMaxHP)*100}%`;
+  document.getElementById('w-phase-label').textContent = 'GUARDIAN OF THE REALM';
+  document.getElementById('w-enemy-icon').textContent = '👁️';
+
+  const log = document.getElementById('w-combat-log');
+  log.innerHTML = '';
+  wlog('The Pale Warden fills your vision. Everything else falls away.', 'w-log-s');
+  wlog('It does not speak. It does not need to.', 'w-log-s');
+
+  document.getElementById('w-action-area').style.display = '';
+  document.getElementById('w-result-area').style.display = 'none';
+
+  const abilityBtn = document.getElementById('w-bc-ability');
+  const ultimateBtn = document.getElementById('w-bc-ultimate');
+  abilityBtn.style.display = G.hasDoubleStrike ? '' : 'none';
+  abilityBtn.disabled = false;
+  abilityBtn.textContent = '✦ DOUBLE STRIKE';
+  ultimateBtn.style.display = G.hasUltimate ? '' : 'none';
+  ultimateBtn.disabled = true;
+  ultimateBtn.textContent = '★ (0/3)';
+
+  ov.classList.add('active');
+  startWardenAmbient();
+}
+
+function wlog(text, cls) {
+  const log = document.getElementById('w-combat-log');
+  const d = document.createElement('div');
+  d.className = cls || '';
+  d.textContent = text;
+  log.appendChild(d);
+  log.scrollTop = log.scrollHeight;
+}
+
+function updateWardenHP() {
+  const c = G.combat;
+  if(!c) return;
+  document.getElementById('w-e-hp').textContent = c.enemyHP;
+  document.getElementById('w-e-bar').style.width = `${(c.enemyHP / c.enemy.hp) * 100}%`;
+  document.getElementById('w-p-hp').textContent = G.playerHP;
+  document.getElementById('w-p-bar').style.width = `${(G.playerHP / G.playerMaxHP) * 100}%`;
+
+  // Phase 2 trigger at half HP
+  if(c.enemyHP <= Math.floor(c.enemy.hp / 2) && c.phase === 1) {
+    c.phase = 2;
+    document.getElementById('warden-battle-wrap').classList.add('warden-phase2');
+    document.getElementById('w-phase-label').textContent = 'ENRAGED — PHASE II';
+    document.getElementById('w-enemy-icon').textContent = '👁️';
+    wlog('─── The Warden tears itself open. Something worse looks out. ───', 'w-log-phase');
+    vfxWardenHit(); // Shake the screen on phase transition
+    setTimeout(() => vfxWardenHit(), 300);
+  }
+}
+
+function updateWardenUlt() {
+  const btn = document.getElementById('w-bc-ultimate');
+  if(!btn) return;
+  if(G.ultimateCharge >= 3) { btn.disabled = false; btn.textContent = '★ UNLEASH'; }
+  else { btn.disabled = true; btn.textContent = `★ (${G.ultimateCharge}/3)`; }
+}
+
+function wardenAct(action) {
+  const c = G.combat;
+  if(!c) return;
+
+  if(action === 'flee') {
+    if(G.stamina <= 0) { wlog('No stamina — there is no escape.', 'w-log-e'); return; }
+    G.stamina--;
+    updateStats();
+    wlog('You wrench yourself free and fall back into the dark...', 'w-log-s');
+    stopWardenAmbient();
+    setTimeout(() => document.getElementById('ov-warden').classList.remove('active'), 900);
+    setTimeout(() => { G.combat = null; }, 950);
+    return;
+  }
+
+  const atk = playerAtk();
+  let dmg = 0;
+
+  if(action === 'attack') {
+    dmg = Math.max(1, atk + Math.floor(Math.random() * 4) - 1 - c.enemy.def);
+    if(c.wardActive) { wlog('The Ward reflects. Your blow glances off for half damage.', 'w-log-e'); dmg = Math.floor(dmg/2); c.wardActive = false; vfxWardenWard(); }
+    wlog(`You drive steel into it — ${dmg} damage.`, 'w-log-p');
+    G.ultimateCharge = Math.min(3, G.ultimateCharge + 1);
+  } else if(action === 'ability') {
+    if(G.abilityCD > 0) return;
+    dmg = Math.max(1, Math.floor(atk * 1.8) - c.enemy.def);
+    wlog(`Double Strike tears through — ${dmg} damage!`, 'w-log-p');
+    G.abilityCD = 3;
+    const ab = document.getElementById('w-bc-ability');
+    ab.disabled = true; ab.textContent = `✦ CD(${G.abilityCD})`;
+    G.ultimateCharge = Math.min(3, G.ultimateCharge + 1);
+  } else if(action === 'ultimate') {
+    if(G.ultimateCharge < 3) return;
+    dmg = Math.max(1, Math.floor(atk * 3) - c.enemy.def);
+    wlog(`★ UNLEASH — ${dmg} devastating damage!`, 'w-log-s');
+    G.ultimateCharge = 0;
+  }
+
+  c.enemyHP = Math.max(0, c.enemyHP - dmg);
+  updateWardenHP();
+  updateWardenUlt();
+
+  if(c.enemyHP <= 0) { wardenWin(); return; }
+
+  // Cooldown tick
+  if(G.abilityCD > 0) {
+    G.abilityCD--;
+    const ab = document.getElementById('w-bc-ability');
+    if(G.abilityCD === 0) { ab.disabled = false; ab.textContent = '✦ DOUBLE STRIKE'; }
+    else { ab.textContent = `✦ CD(${G.abilityCD})`; }
+  }
+
+  setTimeout(wardenEnemyTurn, 400);
+}
+
+function wardenEnemyTurn() {
+  const c = G.combat;
+  if(!c || c.enemyHP <= 0) return;
+  const e = c.enemy;
+  const phase2 = c.phase === 2;
+  const useAbility = Math.random() < (phase2 ? 0.45 : 0.28);
+  let edamage = 0;
+
+  if(useAbility) {
+    if(phase2) {
+      // Phase 2 — Cleave (hits harder, no ward)
+      const base = e.atk + 3;
+      edamage = Math.max(2, base - Math.floor(Math.random() * 2));
+      wlog(`The Warden cleaves — ${edamage} damage rips through you.`, 'w-log-e');
+    } else {
+      // Phase 1 — Ward
+      wlog('The Warden closes itself. A pale light seals it.', 'w-log-e');
+      c.wardActive = true;
+      vfxWardenWard();
+      edamage = e.atk; // Still hits alongside ward
+    }
+  } else {
+    edamage = Math.max(1, e.atk + (phase2 ? 2 : 0) - Math.floor(Math.random() * 3));
+    const hits = [
+      'The Warden reaches through you.', 'It moves. You were not ready.',
+      'A blow that feels like cold water in your lungs.',
+      'It finds a gap you did not know you had.',
+      'You are briefly somewhere else. Then you are back, bleeding.',
+    ];
+    wlog(hits[Math.floor(Math.random() * hits.length)], 'w-log-e');
+  }
+
+  G.playerHP = Math.max(0, G.playerHP - edamage);
+  updateStats();
+  updateWardenHP();
+  if(edamage > 0) vfxWardenHit();
+  if(G.playerHP <= 0) { wardenLose(); }
+}
+
+function wardenWin() {
+  if(burnInterval) { clearInterval(burnInterval); burnInterval = null; }
+  stopWardenAmbient();
+  const c = G.combat;
+  const l = c.enemy.loot;
+  const amt = l.min + Math.floor(Math.random() * (l.max - l.min + 1));
+  const { actual, overflow } = addToPack(l.type, amt);
+  if(c.tileIdx >= 0) { G.map[c.tileIdx].depleted = true; vfxWardenDeath(c.tileIdx); }
+
+  document.getElementById('w-action-area').style.display = 'none';
+  document.getElementById('w-result-area').style.display = '';
+  document.getElementById('w-result-title').innerHTML = `<span style="color:var(--gold-light);text-shadow:0 0 20px rgba(200,160,80,0.6)">THE WARDEN FALLS</span>`;
+  document.getElementById('w-result-sub').textContent = actual > 0
+    ? `+${actual} ${l.type} recovered from its remains${overflow > 0 ? ` · pack full, ${overflow} left behind` : ''}`
+    : `It leaves nothing behind. The realm is lighter.`;
+
+  if(overflow > 0) G._pendingCombatOverflow = { type: l.type, overflow, tileIdx: -1 };
+  renderMap();
+}
+
+function wardenLose() {
+  if(burnInterval) { clearInterval(burnInterval); burnInterval = null; }
+  stopWardenAmbient();
+  const isPerm = G.combat && G.combat.permanentLootLoss;
+  document.getElementById('ov-warden').classList.remove('active');
+  G.combat = null;
+  setTimeout(() => {
+    triggerDeath(isPerm
+      ? 'The Pale Warden does not release what it has taken. You wake at camp with nothing.'
+      : 'You collapse. Your pack spills where you fell. The nightmare continues.');
+  }, 400);
+}
+
+function closeWardenBattle() {
+  document.getElementById('ov-warden').classList.remove('active');
+  G.combat = null;
+  if(G._pendingCombatOverflow) {
+    const { type, overflow, tileIdx } = G._pendingCombatOverflow;
+    G._pendingCombatOverflow = null;
+    setTimeout(() => showPackSwapMulti({ [type]: overflow }, tileIdx, () => {}), 200);
+  }
+}
+
+function startWardenAmbient() {
+  stopWardenAmbient();
+  const container = document.getElementById('warden-ambient');
+  if(!container) return;
+  const colors = ['rgba(100,10,160,0.5)','rgba(160,20,200,0.4)','rgba(60,0,100,0.6)','rgba(200,40,255,0.3)','rgba(40,0,80,0.7)'];
+  wardenAmbientInterval = setInterval(() => {
+    if(!document.getElementById('ov-warden').classList.contains('active')) { stopWardenAmbient(); return; }
+    const orb = document.createElement('div');
+    orb.className = 'ambient-orb';
+    const size = 6 + Math.random() * 16;
+    const x = Math.random() * 100;
+    const ax = (Math.random() * 60 - 30) + 'px';
+    const ay = -(30 + Math.random() * 80) + 'px';
+    const dur = (2 + Math.random() * 3) + 's';
+    const col = colors[Math.floor(Math.random() * colors.length)];
+    orb.style.cssText = `width:${size}px;height:${size}px;left:${x}%;bottom:${Math.random()*40}%;--ax:${ax};--ay:${ay};--adur:${dur};--acolor:${col}`;
+    container.appendChild(orb);
+    orb.addEventListener('animationend', () => orb.remove());
+  }, 180);
+}
+
+function stopWardenAmbient() {
+  if(wardenAmbientInterval) { clearInterval(wardenAmbientInterval); wardenAmbientInterval = null; }
 }
 
 // ================================================================
@@ -3783,17 +4170,52 @@ async function debugGrantWarden() {
 function debugToggleGodMode() {
   if(!DEBUG_MODE) return;
   G.godMode = !G.godMode;
-  const btn = document.getElementById('debug-godmode-btn');
-  if(btn) btn.textContent = `⚡ God Mode: ${G.godMode ? 'ON' : 'OFF'}`;
-  if(btn) btn.style.borderColor = G.godMode ? '#aaaa20' : '#4a3a0a';
-  if(btn) btn.style.color       = G.godMode ? '#ffff60' : '#aaaa40';
+
+  // Update all god mode buttons
+  const label = `⚡ God Mode: ${G.godMode ? 'ON' : 'OFF'}`;
+  const bc = G.godMode ? '#aaaa20' : '#4a3a0a';
+  const col = G.godMode ? '#ffff60' : '#aaaa40';
+  ['debug-godmode-btn'].forEach(id => {
+    const btn = document.getElementById(id);
+    if(btn) { btn.textContent = label; btn.style.borderColor = bc; btn.style.color = col; }
+  });
+  const expBtn = document.getElementById('explore-godmode-btn');
+  if(expBtn) { expBtn.style.borderColor = bc; expBtn.style.color = col; expBtn.textContent = G.godMode ? '⚡ GOD: ON' : '⚡ GOD'; }
+
   if(G.godMode) {
+    // ── Full endgame loadout ───────────────────────────────────
+    // All buildings
+    BUILDINGS.forEach(b => { G.buildings[b.id] = true; });
+
+    // All combat upgrades
+    G.hasBag          = true;
+    G.hasDoubleStrike = true;
+    G.hasUltimate     = true;
+
+    // Max stats
+    G.playerMaxHP  = 30;
+    G.playerHP     = 30;
+    G.maxStamina   = 20;
+    G.stamina      = 20;
+    G.carryMax     = 50;
+    G.abilityCD    = 0;
+    G.ultimateCharge = 0;
+
+    // Full resources in pack and kingdom
+    ['wood','stone','bone','hide','bloodstone'].forEach(k => {
+      G.pack[k]    = 20;
+      G.kingdom[k] = 99;
+    });
+
     // Reveal entire map
     G.map.forEach(tile => { tile.visited = true; });
+
+    updateStats();
+    updateResourceStrip();
     renderMap();
-    toast('⚡ God Mode ON — full map revealed, no interruptions');
+    toast('⚡ God Mode ON — endgame loadout, full map, find the Warden');
   } else {
-    toast('God Mode OFF');
+    toast('God Mode OFF — stats stay until you reload');
   }
 }
 
