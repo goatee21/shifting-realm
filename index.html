@@ -960,6 +960,94 @@ body {
   animation: spark-rise var(--dur) ease-out forwards;
 }
 
+/* ── WARDEN VFX ─────────────────────────────────────────────── */
+
+/* Void flash overlay — purple tint on warden hits */
+@keyframes void-flash {
+  0%   { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+#void-overlay {
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse at 50% 40%, rgba(120,20,180,0.55) 0%, rgba(40,0,80,0.35) 60%, transparent 100%);
+  z-index: 200;
+  pointer-events: none;
+  opacity: 0;
+}
+#void-overlay.flash { animation: void-flash 0.55s ease-out forwards; }
+
+/* Void shake — heavier than normal damage shake */
+@keyframes void-shake {
+  0%   { transform: translate(0,0) rotate(0deg); }
+  10%  { transform: translate(-6px, 3px) rotate(-0.8deg); }
+  25%  { transform: translate(7px, -4px) rotate(0.8deg); }
+  40%  { transform: translate(-5px, 5px) rotate(-0.5deg); }
+  55%  { transform: translate(6px, -2px) rotate(0.6deg); }
+  70%  { transform: translate(-4px, 2px) rotate(-0.4deg); }
+  85%  { transform: translate(3px, -2px) rotate(0.2deg); }
+  100% { transform: translate(0,0) rotate(0deg); }
+}
+.void-shake { animation: void-shake 0.5s ease-out forwards; }
+
+/* Warden ward flash — white/purple pulse on combat panel when it wards */
+@keyframes ward-flash {
+  0%   { opacity: 0; transform: scale(0.8); }
+  25%  { opacity: 0.9; transform: scale(1.15); }
+  100% { opacity: 0; transform: scale(1.4); }
+}
+.ward-burst {
+  position: absolute;
+  inset: -4px;
+  border: 2px solid rgba(200,180,255,0.9);
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 8;
+  animation: ward-flash 0.5s ease-out forwards;
+}
+
+/* Warden tile — ominous pulse */
+@keyframes warden-tile-pulse {
+  0%,100% { box-shadow: 0 0 6px 1px rgba(120,20,180,0.25); border-color: #5a0e3a; }
+  50%     { box-shadow: 0 0 16px 4px rgba(120,20,180,0.55); border-color: #9a20aa; }
+}
+.tile.boss { animation: warden-tile-pulse 2.5s ease-in-out infinite; }
+
+/* Map dims on warden approach */
+@keyframes map-void-dim {
+  0%   { filter: brightness(1) saturate(1); }
+  100% { filter: brightness(0.3) saturate(0.3); }
+}
+@keyframes map-void-undim {
+  0%   { filter: brightness(0.3) saturate(0.3); }
+  100% { filter: brightness(1) saturate(1); }
+}
+.map-voiding   { animation: map-void-dim   0.8s ease-out forwards; }
+.map-unvoiding { animation: map-void-undim 0.6s ease-out forwards; }
+
+/* Warden death — tile burst */
+@keyframes warden-die {
+  0%   { opacity: 1; transform: scale(1) rotate(0deg); filter: brightness(1); }
+  20%  { opacity: 1; transform: scale(2.2) rotate(-8deg); filter: brightness(3) saturate(0); }
+  55%  { opacity: 0.7; transform: scale(3.8) rotate(12deg); filter: brightness(0.4) hue-rotate(240deg); }
+  100% { opacity: 0; transform: scale(5.5) rotate(-5deg); filter: brightness(0); }
+}
+.warden-die { animation: warden-die 0.9s ease-out forwards; }
+
+/* Void particles after warden death */
+@keyframes void-particle {
+  0%   { opacity: 0.9; transform: translate(0,0) scale(1); }
+  100% { opacity: 0;   transform: translate(var(--vx), var(--vy)) scale(0.2); }
+}
+.void-particle {
+  position: fixed;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--vcolor, #9030cc);
+  pointer-events: none;
+  z-index: 250;
+  animation: void-particle var(--vdur) ease-out forwards;
+}
+
 /* Fire tile ember glow */
 .tile.fire-lit {
   box-shadow: inset 0 0 6px rgba(180,80,20,0.35);
@@ -980,13 +1068,14 @@ body {
 </head>
 <body>
 <div id="damage-overlay"></div>
+<div id="void-overlay"></div>
 
 <!-- ==================== LOGIN SCREEN ==================== -->
 <div class="screen active" id="screen-login">
   <div class="login-sigil">🏰</div>
   <div class="login-title">SHIFTING <span>REALM</span></div>
   <div class="login-sub">THE DARKNESS WAITS · WILL YOU SURVIVE</div>
-  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v65</div>
+  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v66</div>
   <div class="login-divider"></div>
   <div class="who-are-you">Who ventures forth?</div>
   <div class="player-select">
@@ -1090,10 +1179,9 @@ body {
       <div class="ks-resources" id="ks-resources"></div>
     </div>
     <div id="dir-debug-section" style="display:none;margin-top:12px;padding:10px;border:1px solid #2a1a0a;background:rgba(20,10,5,0.5)">
-      <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:0.15em;color:var(--iron-light);margin-bottom:8px;text-align:center">DEBUG</div>
+      <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:0.15em;color:var(--iron-light);margin-bottom:6px;text-align:center">DEBUG</div>
       <div style="display:flex;flex-direction:column;gap:6px">
-        <button class="btn-player" onclick="debugGrantTotem()" style="border-color:#1a4a1a;color:#60aa60">🗿 Grant Totem (this player)</button>
-        <button class="btn-player" onclick="debugGrantBothTotems()" style="border-color:#1a4a5a;color:#60aaaa">🗿🗿 Grant Both Totems</button>
+        <button class="btn-player" onclick="debugGrantWarden()" style="border-color:#1a4a1a;color:#60aa60">🗿 Grant Totem (Warden access)</button>
         <button class="btn-player" id="debug-godmode-btn" onclick="debugToggleGodMode()" style="border-color:#4a3a0a;color:#aaaa40">⚡ God Mode: OFF</button>
       </div>
     </div>
@@ -1124,8 +1212,6 @@ body {
     </div>
     <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--iron);width:100%;max-width:280px;text-align:center">
       <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:0.15em;color:var(--iron-light);margin-bottom:8px" id="debug-label">DEBUG</div>
-      <button class="btn-player" onclick="debugGrantTotem()" style="border-color:#1a4a1a;color:#60aa60;width:100%;margin-bottom:6px" id="debug-totem-btn">🗿 Grant Totem (this player)</button>
-      <button class="btn-player" onclick="debugGrantBothTotems()" style="border-color:#1a4a5a;color:#60aaaa;width:100%;margin-bottom:6px" id="debug-both-totems-btn">🗿🗿 Grant Both Totems</button>
       <button class="btn-player" onclick="debugResetRealm()" style="border-color:#5a1010;color:#aa4040;width:100%" id="debug-reset-btn">⚠ Reset Day (clears all progress)</button>
     </div>
   </div>
@@ -1712,8 +1798,6 @@ async function login(name) {
       G.realmSeed   = Math.floor(Math.random() * 999999);
       G.day         = (shared.day || 0) + 1;
       await sbSaveShared();
-      // Clear warden state — tied to the realm, resets with it
-      await sbPatchWarden({ warden_ready: {}, warden_battle: null, warden_defeated: null });
     } else {
       G.claimedDirs = shared.claimed_dirs || {};
       G.playedToday = shared.played_today || {};
@@ -1929,9 +2013,22 @@ const REST_SPOTS = [
   { name:'Fallen Tower',      icon:'🗼', label:'⚔ GUARDED RUIN',  restore:5, desc:'A toppled watchtower. Something has made a nest in the rubble. Drive it out and you can use it as shelter.', actionLabel:'Clear the rubble dweller, claim the ruin', guardEnemy: 'morrowhip' },
 ];
 
+// Seeded RNG — mulberry32. Call seedRng(G.realmSeed) before map gen.
+let _rng = null;
+function seedRng(seed) {
+  let s = seed >>> 0;
+  _rng = () => {
+    s += 0x6D2B79F5;
+    let t = Math.imul(s ^ s >>> 15, 1 | s);
+    t ^= t + Math.imul(t ^ t >>> 7, 61 | t);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function rng() { return _rng ? _rng() : Math.random(); }
+
 function weightedPick(arr) {
   const total = arr.reduce((s,x)=>s+x.w,0);
-  let r = Math.random()*total;
+  let r = rng()*total;
   for(const x of arr) { r-=x.w; if(r<=0) return x.type; }
   return arr[0].type;
 }
@@ -1950,6 +2047,10 @@ function castlePos(dir) {
 }
 
 function generateMap() {
+  // Seed RNG from realmSeed + direction so all players get identical maps
+  const dirOffset = { north:0, south:1000, east:2000, west:3000 };
+  seedRng(G.realmSeed + (dirOffset[G.direction] || 0));
+
   const cp = castlePos(G.direction);
   G.castlePos = cp;
 
@@ -1994,7 +2095,7 @@ function generateMap() {
 
   G.map[idx(cp.r,cp.c)] = { type:'castle', visited:true, depleted:false, restData:null, restCleared:false };
 
-  const restTotal = 2 + Math.floor(Math.random()*2);
+  const restTotal = 2 + Math.floor(rng()*2);
   const restCandidates = [];
   for(let r=0;r<10;r++) for(let c=0;c<10;c++) {
     if(Math.abs(r-cp.r)+Math.abs(c-cp.c) >= 4) restCandidates.push({r,c});
@@ -2007,7 +2108,7 @@ function generateMap() {
     if(tooClose) continue;
     const i = idx(pos.r,pos.c);
     G.map[i].type = 'rest';
-    G.map[i].restData = REST_SPOTS[Math.floor(Math.random()*REST_SPOTS.length)];
+    G.map[i].restData = REST_SPOTS[Math.floor(rng()*REST_SPOTS.length)];
     restPositions.push(pos);
   }
 
@@ -2016,7 +2117,7 @@ function generateMap() {
     if(Math.abs(r-cp.r)+Math.abs(c-cp.c) >= 7) wardenPool.push(idx(r,c));
   }
   if(wardenPool.length) {
-    const wi = wardenPool[Math.floor(Math.random()*wardenPool.length)];
+    const wi = wardenPool[Math.floor(rng()*wardenPool.length)];
     G.map[wi].type = 'enemy-warden';
     G.map[wi].restData = null;
   }
@@ -2026,7 +2127,7 @@ function generateMap() {
 
 function shuffle(arr) {
   for(let i=arr.length-1;i>0;i--) {
-    const j=Math.floor(Math.random()*(i+1));
+    const j=Math.floor(rng()*(i+1));
     [arr[i],arr[j]]=[arr[j],arr[i]];
   }
   return arr;
@@ -2368,25 +2469,19 @@ function showBestiary(enemyId, onClose, opts) {
 }
 
 async function handleWardenEncounter() {
-  const partnerName = G.player === 'Scott' ? 'Denielle' : 'Scott';
-  const myTotem     = !!G.buildings['totem'];
-  const pRow        = await sbLoadPlayer(partnerName);
-  const partnerTotem = pRow ? !!pRow.totem_built : false;
-  const bothTotems  = myTotem && partnerTotem;
-  const seenBefore  = !!localStorage.getItem('sr_seen_warden');
-  const seenBothMsg = !!localStorage.getItem('sr_seen_warden_both');
-
+  const myTotem    = !!G.buildings['totem'];
+  const seenBefore = !!localStorage.getItem(`sr_seen_warden_${G.player}`);
   const retreatToPrev = () => { G.playerPos = {...G.prevPos}; renderMap(); };
 
-  // ── CASE 1: No totem — first ever sight of the Warden ────────
+  // ── No totem — first sight ────────────────────────────────────
   if(!myTotem && !seenBefore) {
-    // Show bestiary with RETREAT button, then "not ready" narrative
+    localStorage.setItem(`sr_seen_warden_${G.player}`, '1');
     showBestiary('warden', () => {
       showNarrativeScreen({
         icon: '🕯️',
         eyebrow: '— The Pale Warden —',
         title: 'Not Yet',
-        body: 'Something vast stirs in the dark. It notices you — and dismisses you in the same moment. You are not ready for this. Not even close.\n\nFind a way to become harder to dismiss.',
+        body: 'Something vast stirs in the dark. It notices you — and dismisses you in the same moment.\n\nYou are not ready for this. Build a Ward Totem and come back.',
         btnText: 'RETREAT',
         zIndex: 600,
       }, retreatToPrev);
@@ -2394,77 +2489,60 @@ async function handleWardenEncounter() {
     return;
   }
 
-  // ── CASE 2: No totem — seen before ───────────────────────────
+  // ── No totem — seen before ────────────────────────────────────
   if(!myTotem) {
     showNarrativeScreen({
       icon: '🕯️',
       eyebrow: '— The Pale Warden —',
       title: 'Not Yet',
-      body: 'It is still there. Still waiting. Still not impressed by you.\n\nYou need to build a Ward Totem before this changes.',
+      body: 'Still there. Still waiting. Still not impressed.\n\nBuild a Ward Totem and return.',
       btnText: 'RETREAT',
       zIndex: 600,
     }, retreatToPrev);
     return;
   }
 
-  // ── CASE 3: My totem built, partner's isn't ───────────────────
-  if(!bothTotems) {
-    // Show bestiary first if they haven't seen it yet
-    const showScreen = () => showNarrativeScreen({
-      icon: '🕯️',
-      eyebrow: '— The Pale Warden —',
-      title: 'One Ward Is Not Enough',
-      body: `Your totem hums at your back. You feel its power — real, strange, yours. And it is not enough.\n\nSomething holds. A resistance you cannot push through alone. ${partnerName}'s totem must also stand before this creature will yield.`,
-      btnText: 'WITHDRAW',
-      zIndex: 600,
-    }, retreatToPrev);
-
-    if(!seenBefore) {
-      showBestiary('warden', showScreen, { btnText: 'APPROACH', skipIfSeen: false });
-    } else {
-      showScreen();
-    }
-    return;
-  }
-
-  // ── CASE 4: Both totems — first time reaching this state ──────
-  if(!seenBothMsg) {
-    localStorage.setItem('sr_seen_warden_both', '1');
-    const showReadyUp = () => showWardenReadyPrompt();
-    if(!seenBefore) {
+  // ── Totem built — first approach ─────────────────────────────
+  if(!seenBefore) {
+    localStorage.setItem(`sr_seen_warden_${G.player}`, '1');
+    vfxWardenApproach(G.playerPos.r * 10 + G.playerPos.c, () => {
       showBestiary('warden', () => {
         showNarrativeScreen({
           icon: '🕯️',
           eyebrow: '— The Pale Warden —',
-          title: 'This Is What You Heard About',
-          body: `You feel both totems coursing through you — yours and ${partnerName}'s, combined into something that hums at a frequency the dark understands.\n\nThe Warden is here. Massive. Waiting. You have your skills, your gear, each other. Perhaps that is enough.\n\nPerhaps.`,
+          title: 'Now It Sees You',
+          body: 'The Ward Totem hums at your back. The Warden turns its full attention on you for the first time.\n\nIt is not afraid. But neither are you.',
           buffs: [
-            { icon: '🗿', text: 'Both ward totems standing' },
-            { icon: '⚔', text: 'Your combined strength may be enough' },
+            { icon: '🗿', text: 'Ward Totem standing — you are seen' },
           ],
-          btnText: 'FACE IT TOGETHER',
+          btnText: 'FACE IT',
           zIndex: 600,
-        }, showReadyUp);
+        }, () => startWardenSoloCombat());
       }, { btnText: 'APPROACH', skipIfSeen: false });
-    } else {
-      showNarrativeScreen({
-        icon: '🕯️',
-        eyebrow: '— The Pale Warden —',
-        title: 'This Is What You Heard About',
-        body: `You feel both totems coursing through you — yours and ${partnerName}'s, combined into something that hums at a frequency the dark understands.\n\nThe Warden is here. Massive. Waiting. You have your skills, your gear, each other. Perhaps that is enough.\n\nPerhaps.`,
-        buffs: [
-          { icon: '🗿', text: 'Both ward totems standing' },
-          { icon: '⚔', text: 'Your combined strength may be enough' },
-        ],
-        btnText: 'FACE IT TOGETHER',
-        zIndex: 600,
-      }, showReadyUp);
-    }
+    });
     return;
   }
 
-  // ── CASE 5: Both totems — repeat visit, skip straight to ready-up ──
-  showWardenReadyPrompt();
+  // ── Totem built — repeat visit ────────────────────────────────
+  vfxWardenApproach(G.playerPos.r * 10 + G.playerPos.c, () => {
+    showNarrativeScreen({
+      icon: '🕯️',
+      eyebrow: '— The Pale Warden —',
+      title: 'It Remembers You',
+      body: 'The Warden has not moved. It does not need to. It simply waits — as it always has.',
+      btnText: 'ENGAGE',
+      zIndex: 600,
+    }, () => startWardenSoloCombat());
+  });
+}
+
+function startWardenSoloCombat() {
+  const warden = ENEMIES.find(e => e.id === 'warden');
+  const tileIdx = G.map.findIndex((t,i) => {
+    const r = Math.floor(i/10), c = i%10;
+    return r === G.playerPos.r && c === G.playerPos.c;
+  });
+  startCombat(warden, tileIdx, true); // permanentLootLoss = true
 }
 
 async function triggerTile(i) {
@@ -2639,7 +2717,7 @@ async function returnToHole() {
 function goToDoneScreen() {
   document.getElementById('done-name-display').textContent = G.player;
   // Show/hide debug section based on flag
-  ['debug-label','debug-totem-btn','debug-both-totems-btn','debug-reset-btn'].forEach(id => {
+  ['debug-label','debug-reset-btn'].forEach(id => {
     const el = document.getElementById(id);
     if(el) el.style.display = DEBUG_MODE ? '' : 'none';
   });
@@ -3043,7 +3121,7 @@ function combatAct(action) {
 
   if(action==='attack') {
     dmg = Math.max(1, atk + Math.floor(Math.random()*4) - 1 - c.enemy.def);
-    if(c.wardActive) { clog('Ward reflects! Damage halved','log-e'); dmg=Math.floor(dmg/2); c.wardActive=false; }
+    if(c.wardActive) { clog('Ward reflects! Damage halved','log-e'); dmg=Math.floor(dmg/2); c.wardActive=false; vfxWardenWard(); }
     clog(`You strike for ${dmg} damage`,'log-p');
     G.ultimateCharge = Math.min(3, G.ultimateCharge+1);
   } else if(action==='ability') {
@@ -3109,7 +3187,12 @@ function enemyTurn() {
       G.playerHP=Math.max(0,G.playerHP-d1-d2);
       updateStats(); updateCombatHP();
       if(G.playerHP<=0){combatLose();} return;
-    } else if(e.id==='warden') { clog('The Pale Warden is simply there. It hits you for full damage.','log-e'); c.wardActive=true; edamage=e.atk; }
+    } else if(e.id==='warden') {
+      clog('The Pale Warden is simply there. It hits you for full damage.','log-e');
+      c.wardActive=true;
+      edamage=e.atk;
+      vfxWardenWard();
+    }
   } else {
     edamage = Math.max(1, e.atk - Math.floor(Math.random()*3));
     clog(`${e.name} attacks for ${edamage} damage`,'log-e');
@@ -3118,7 +3201,8 @@ function enemyTurn() {
   G.playerHP = Math.max(0, G.playerHP - edamage);
   updateStats();
   updateCombatHP();
-  if(edamage > 0) { clog(`${e.name} hits for ${edamage} damage`, 'log-e'); vfxDamage(); }
+  const isWarden = e.id === 'warden';
+  if(edamage > 0) { clog(`${e.name} hits for ${edamage} damage`, 'log-e'); isWarden ? vfxWardenHit() : vfxDamage(); }
   if(G.playerHP<=0) { combatLose(); return; }
 }
 
@@ -3179,7 +3263,11 @@ function combatWin() {
     return;
   }
 
-  if(tileIdx >= 0) { G.map[tileIdx].depleted = true; vfxEnemyDie(getTileEl(tileIdx)); }
+  const isWarden = c.enemy.id === 'warden';
+  if(tileIdx >= 0) {
+    G.map[tileIdx].depleted = true;
+    isWarden ? vfxWardenDeath(tileIdx) : vfxEnemyDie(getTileEl(tileIdx));
+  }
   document.getElementById('combat-action-area').style.display='none';
   document.getElementById('combat-result-area').style.display='';
   document.getElementById('c-result-title').innerHTML=`<span class="result-win">VICTORY</span>`;
@@ -3684,6 +3772,14 @@ function updateResourceStrip() {
 // ================================================================
 // DEBUG
 // ================================================================
+async function debugGrantWarden() {
+  if(!DEBUG_MODE) return;
+  // Grant totem and jump straight to the warden encounter
+  G.buildings['totem'] = true;
+  await sbSavePlayer();
+  toast('🗿 Totem granted — find the Warden tile');
+}
+
 function debugToggleGodMode() {
   if(!DEBUG_MODE) return;
   G.godMode = !G.godMode;
@@ -3699,39 +3795,6 @@ function debugToggleGodMode() {
   } else {
     toast('God Mode OFF');
   }
-}
-
-async function debugGrantTotem() {
-  if(!DEBUG_MODE) return;
-  G.buildings['totem'] = true;
-  await sbSavePlayer();
-  toast(`🗿 Totem granted to ${G.player}`);
-  goToDoneScreen();
-}
-
-async function debugGrantBothTotems() {
-  if(!DEBUG_MODE) return;
-  // Grant to current player immediately
-  G.buildings['totem'] = true;
-  await sbSavePlayer();
-  // Grant to partner via direct upsert
-  const partnerName = G.player === 'Scott' ? 'Denielle' : 'Scott';
-  const partnerId = partnerName.toLowerCase();
-  try {
-    const pRow = await sbLoadPlayer(partnerName);
-    const partnerBuildings = pRow?.buildings || {};
-    partnerBuildings['totem'] = true;
-    await fetch(`${SB_URL}/rest/v1/sr_players`, {
-      method: 'POST',
-      headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=representation' },
-      body: JSON.stringify({ id: partnerId, buildings: partnerBuildings, totem_built: true, updated_at: new Date().toISOString() }),
-    });
-    toast(`🗿🗿 Both totems granted`);
-  } catch(e) {
-    toast('⚠ Partner totem failed — try again');
-    console.error(e);
-  }
-  goToDoneScreen();
 }
 
 async function debugResetRealm() {
@@ -3803,7 +3866,7 @@ async function debugResetRealm() {
     const res = await fetch(`${SB_URL}/rest/v1/sr_kingdom?id=eq.main`, {
       method: 'PATCH',
       headers: SB_HEADERS,
-      body: JSON.stringify({...payload, warden_ready: {}, warden_battle: null, warden_defeated: null}),
+      body: JSON.stringify(payload),
     });
     saveOk = res.ok;
     if(!saveOk) {
@@ -3933,6 +3996,109 @@ function vfxSparks(tileEl, count) {
       s.addEventListener('animationend', () => s.remove());
     }, i * 60);
   }
+}
+
+// ── WARDEN VFX ───────────────────────────────────────────────
+
+// Purple void flash + heavy shake on warden hit
+function vfxWardenHit() {
+  const ov = document.getElementById('void-overlay');
+  ov.classList.remove('flash');
+  void ov.offsetWidth;
+  ov.classList.add('flash');
+
+  const explore = document.getElementById('screen-explore');
+  explore.classList.remove('void-shake', 'screen-shake');
+  void explore.offsetWidth;
+  explore.classList.add('void-shake');
+  explore.addEventListener('animationend', () => explore.classList.remove('void-shake'), { once: true });
+}
+
+// Ward ability flash on the enemy combatant icon
+function vfxWardenWard() {
+  const enemyCol = document.querySelector('.combatant:last-child');
+  if(!enemyCol) return;
+  const burst = document.createElement('div');
+  burst.className = 'ward-burst';
+  enemyCol.style.position = 'relative';
+  enemyCol.appendChild(burst);
+  burst.addEventListener('animationend', () => burst.remove());
+}
+
+// Map dims to near-black, warden tile flares — call before narrative
+function vfxWardenApproach(tileIdx, onComplete) {
+  const grid = document.getElementById('map-grid');
+  if(!grid) { onComplete?.(); return; }
+
+  // Dim the whole map grid
+  grid.classList.remove('map-voiding', 'map-unvoiding');
+  void grid.offsetWidth;
+  grid.classList.add('map-voiding');
+
+  // Flash the warden tile itself
+  const tileEl = getTileEl(tileIdx);
+  if(tileEl) {
+    tileEl.style.transition = 'box-shadow 0.4s ease, filter 0.4s ease';
+    tileEl.style.boxShadow = '0 0 30px 8px rgba(160,30,220,0.9)';
+    tileEl.style.filter = 'brightness(2.5) saturate(2)';
+  }
+
+  setTimeout(() => {
+    onComplete?.();
+    // Undim after a beat (narrative screen has opened by now)
+    setTimeout(() => {
+      grid.classList.remove('map-voiding');
+      void grid.offsetWidth;
+      grid.classList.add('map-unvoiding');
+      grid.addEventListener('animationend', () => grid.classList.remove('map-unvoiding'), { once: true });
+      if(tileEl) {
+        tileEl.style.boxShadow = '';
+        tileEl.style.filter = '';
+        tileEl.style.transition = '';
+      }
+    }, 800);
+  }, 700);
+}
+
+// Big void death burst on warden tile + particle shower
+function vfxWardenDeath(tileIdx) {
+  const tileEl = getTileEl(tileIdx);
+  if(tileEl) {
+    const span = document.createElement('span');
+    span.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2em;z-index:6;pointer-events:none';
+    span.textContent = '👁️';
+    span.classList.add('warden-die');
+    tileEl.appendChild(span);
+    span.addEventListener('animationend', () => span.remove());
+  }
+
+  // Void particle shower from tile
+  const rect = tileEl ? tileEl.getBoundingClientRect() : { left: window.innerWidth/2, top: window.innerHeight/2, width: 0, height: 0 };
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const colors = ['#9030cc', '#cc30aa', '#5010aa', '#e060ff', '#300060', '#cc80ff'];
+
+  for(let i = 0; i < 22; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div');
+      p.className = 'void-particle';
+      const angle = (Math.PI * 2 * i / 22) + (Math.random() * 0.4);
+      const dist = 40 + Math.random() * 80;
+      const vx = Math.cos(angle) * dist;
+      const vy = Math.sin(angle) * dist - (Math.random() * 30);
+      const dur = (0.5 + Math.random() * 0.7) + 's';
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      p.style.cssText = `left:${cx}px;top:${cy}px;--vx:${vx}px;--vy:${vy}px;--vdur:${dur};--vcolor:${color};width:${3+Math.random()*4}px;height:${3+Math.random()*4}px`;
+      document.body.appendChild(p);
+      p.addEventListener('animationend', () => p.remove());
+    }, i * 25);
+  }
+
+  // Full-screen void flash on death
+  const ov = document.getElementById('void-overlay');
+  ov.classList.remove('flash');
+  void ov.offsetWidth;
+  ov.classList.add('flash');
 }
 
 // Continuous fire sparks — runs every few seconds on lit tiles
