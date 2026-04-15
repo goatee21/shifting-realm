@@ -58,56 +58,167 @@ body {
 .screen.active { opacity: 1; pointer-events: all; }
 
 /* ===================== LOGIN SCREEN ===================== */
+/* ===================== LOGIN SCREEN ===================== */
 #screen-login {
   align-items: center;
   justify-content: center;
-  background: var(--dark);
-  background-image: radial-gradient(ellipse at 50% 30%, rgba(196,80,26,0.06) 0%, transparent 60%);
-  padding: 32px 24px;
+  gap: 0;
+  padding: 0;
+  background: #020101;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  height: 100dvh;
 }
 
+/* Void background — layered darkness */
+#screen-login::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 120% 60% at 50% 110%, rgba(140,20,10,0.45) 0%, transparent 65%),
+    radial-gradient(ellipse 80% 40% at 50% 100%, rgba(80,8,4,0.6) 0%, transparent 50%),
+    radial-gradient(ellipse 200% 30% at 50% 0%, rgba(0,0,0,0.9) 0%, transparent 70%);
+  z-index: 0;
+}
+
+/* Noise grain overlay */
+#screen-login::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 200px;
+  opacity: 0.5;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.login-top {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  text-align: center;
+  padding: 0 28px;
+  flex-shrink: 0;
+  margin-bottom: -8px;
+}
+
+.login-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 28px 0;
+  flex-shrink: 0;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* The castle — distant, burning */
 .login-sigil {
-  font-size: 56px;
-  margin-bottom: 16px;
-  filter: drop-shadow(0 0 20px rgba(196,80,26,0.4));
-  animation: pulse-glow 3s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 38dvh;
+  pointer-events: none;
+  user-select: none;
+  flex-shrink: 0;
 }
-@keyframes pulse-glow {
-  0%,100% { filter: drop-shadow(0 0 12px rgba(196,80,26,0.3)); }
-  50% { filter: drop-shadow(0 0 28px rgba(196,80,26,0.6)); }
+
+.login-rune {
+  width: clamp(90px, 28vw, 150px);
+  height: auto;
+  color: #8a1a0a;
+  filter:
+    drop-shadow(0 0 12px rgba(180,30,10,0.7))
+    drop-shadow(0 0 30px rgba(120,15,5,0.5))
+    drop-shadow(0 0 60px rgba(80,8,4,0.3));
+  animation: rune-breathe 5s ease-in-out infinite;
+  transform-origin: center center;
 }
+@keyframes rune-breathe {
+  0%,100% {
+    color: #6a1208;
+    filter: drop-shadow(0 0 8px rgba(160,20,8,0.6)) drop-shadow(0 0 24px rgba(100,10,4,0.4));
+    transform: scale(1);
+  }
+  50% {
+    color: #aa2010;
+    filter: drop-shadow(0 0 18px rgba(200,40,15,0.85)) drop-shadow(0 0 45px rgba(140,20,8,0.55)) drop-shadow(0 0 80px rgba(80,8,4,0.3));
+    transform: scale(1.03);
+  }
+}
+
+/* Scratched horizontal rule */
+.login-scratch {
+  width: 100%;
+  max-width: 300px;
+  height: 1px;
+  margin-bottom: 20px;
+  position: relative;
+  background: linear-gradient(90deg, transparent, rgba(140,20,10,0.6) 30%, rgba(180,30,10,0.8) 50%, rgba(140,20,10,0.6) 70%, transparent);
+}
+.login-scratch::before, .login-scratch::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  width: 4px; height: 5px;
+  background: rgba(180,30,10,0.6);
+}
+.login-scratch::before { left: 30%; }
+.login-scratch::after { right: 28%; }
 
 .login-title {
   font-family: 'Cinzel', serif;
   font-weight: 900;
-  font-size: 36px;
-  letter-spacing: 0.3em;
-  color: var(--bone);
-  margin-bottom: 4px;
+  font-size: clamp(32px, 10vw, 42px);
+  letter-spacing: 0.25em;
+  color: #d4b898;
+  margin-bottom: 6px;
+  text-align: center;
+  text-shadow:
+    0 0 40px rgba(180,30,10,0.4),
+    0 2px 0 rgba(0,0,0,0.8);
+  animation: title-flicker 8s ease-in-out infinite;
 }
-.login-title span { color: var(--ember); }
-.login-sub {
-  font-family: 'Cinzel', serif;
-  font-size: 9px;
-  letter-spacing: 0.3em;
-  color: var(--ash);
-  margin-bottom: 40px;
+@keyframes title-flicker {
+  0%,89%,91%,93%,100% { opacity: 1; }
+  90% { opacity: 0.85; }
+  92% { opacity: 0.95; }
+}
+.login-title span {
+  color: #c03010;
+  text-shadow:
+    0 0 20px rgba(180,30,10,0.8),
+    0 0 60px rgba(140,20,10,0.4),
+    0 2px 0 rgba(0,0,0,0.9);
 }
 
-.login-divider {
-  width: 120px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--iron), transparent);
-  margin: 0 auto 32px;
+.login-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 0.35em;
+  color: rgba(100,60,50,0.9);
+  margin-bottom: 28px;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .who-are-you {
   font-family: 'Cinzel', serif;
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  color: var(--ash);
-  margin-bottom: 16px;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: rgba(130,80,60,0.8);
+  margin-bottom: 14px;
   text-transform: uppercase;
+  text-align: center;
 }
 
 .player-select {
@@ -119,36 +230,87 @@ body {
 }
 
 .btn-player {
-  padding: 14px 24px;
-  border: 1px solid var(--iron);
-  background: var(--dark-3);
-  color: var(--bone);
+  padding: 15px 24px;
+  border: 1px solid rgba(100,40,30,0.6);
+  border-left: 2px solid rgba(160,30,15,0.7);
+  background: rgba(12,4,3,0.85);
+  color: #c8a880;
   font-family: 'Cinzel', serif;
   font-size: 13px;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.2em;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s;
   position: relative;
   overflow: hidden;
+  text-align: left;
 }
 .btn-player::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, transparent 50%, rgba(196,80,26,0.05));
+  background: linear-gradient(90deg, rgba(140,20,10,0.08), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.25s;
 }
-.btn-player:hover { border-color: var(--ember); background: var(--dark-4); }
-.btn-player:active { transform: scale(0.97); }
-.btn-player .player-icon { font-size: 20px; margin-right: 10px; }
+.btn-player::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(160,30,15,0.5), transparent);
+}
+.btn-player:hover {
+  border-left-color: rgba(200,40,15,0.9);
+  border-color: rgba(160,40,20,0.8);
+  background: rgba(25,8,5,0.95);
+  color: #dfc090;
+}
+.btn-player:hover::before { opacity: 1; }
+.btn-player:active { transform: scale(0.98); }
+.btn-player .player-icon { font-size: 16px; margin-right: 12px; opacity: 0.7; }
 
 .login-lore {
-  margin-top: 40px;
-  font-size: 15px;
-  color: var(--ash-light);
+  margin-top: 24px;
+  font-size: 13px;
+  color: rgba(90,60,50,0.85);
   font-style: italic;
   text-align: center;
-  max-width: 260px;
-  line-height: 1.7;
+  max-width: 240px;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+
+/* Dripping blood lines — CSS only */
+.login-drips {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.drip {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(120,15,8,0.6), rgba(80,8,4,0.3), transparent);
+  border-radius: 0 0 2px 2px;
+  animation: drip-fall linear infinite;
+}
+.drip::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -1px;
+  width: 3px; height: 3px;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: rgba(120,15,8,0.5);
+}
+@keyframes drip-fall {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  10%  { opacity: 1; }
+  85%  { opacity: 0.6; }
+  100% { transform: translateY(100vh); opacity: 0; }
 }
 
 /* ===================== DIRECTION SCREEN ===================== */
@@ -858,7 +1020,7 @@ body {
 /* RETURN PROMPT */
 .return-bar {
   position: absolute;
-  top: 60px;
+  top: 0;
   left: 0; right: 0;
   background: rgba(100,15,15,0.97);
   border-bottom: 1px solid #8a2020;
@@ -867,7 +1029,7 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 90;
-  transform: translateY(-48px);
+  transform: translateY(-100%);
   transition: transform 0.3s ease;
   pointer-events: none;
 }
@@ -998,6 +1160,10 @@ body {
 .bc-w-ultimate { border-color:var(--gold);color:var(--gold-light); }
 .bc-w-ultimate:hover { background:rgba(154,114,40,0.2); }
 .bc-w-ultimate:disabled { opacity:0.3;cursor:not-allowed; }
+.bc-w-brace   { border-color:#2a4060; color:#5a8aaa; }
+.bc-w-brace:hover { background:rgba(42,64,96,0.35); color:#8abada; }
+.bc-w-brace:disabled { opacity:0.3; cursor:not-allowed; }
+.bc-w-brace.bracing { border-color:#4a9acc; color:#8adaff; background:rgba(42,100,160,0.25); }
 .bc-w-flee    { border-color:#2a2030; color:#6a5a7a; font-size:10px; }
 .bc-w-flee:hover { background:rgba(42,32,48,0.4); color:#9a8aaa; }
 .w-log-p { color:#c8b89a; }
@@ -1117,6 +1283,116 @@ body {
   0%,100% { opacity: 0.5; }
   50%      { opacity: 1; }
 }
+
+/* ===================== ACT 2 PULSE ===================== */
+@keyframes becoming-ripple {
+  0% { width:10px;height:10px;opacity:0.8; }
+  100% { width:120px;height:120px;opacity:0;transform:translate(-50%,-50%); }
+}
+
+/* ===================== HUNT SCREEN ===================== */
+.btn-hunt-act {
+  padding: 8px 4px;
+  border: 1px solid rgba(80,0,20,0.5);
+  background: rgba(15,0,5,0.8);
+  color: #8a6060;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 56px;
+  justify-content: center;
+}
+.btn-hunt-act:hover { border-color: rgba(160,20,40,0.7); color: #c8b89a; }
+.btn-hunt-act:active { transform: scale(0.95); }
+.btn-hunt-act:disabled { opacity: 0.3; cursor: not-allowed; }
+.btn-hunt-act.on-cooldown { border-color: rgba(40,20,20,0.4); color: rgba(100,60,60,0.5); }
+
+/* Hero unit in hunt field */
+.hunt-hero {
+  position: absolute;
+  text-align: center;
+  transition: top 1.2s linear;
+  pointer-events: none;
+  z-index: 5;
+}
+.hunt-hero-icon { font-size: 22px; display: block; }
+.hunt-hero-hp {
+  height: 2px;
+  background: rgba(200,180,100,0.8);
+  width: 32px;
+  margin: 2px auto 0;
+  transition: width 0.3s;
+}
+.hunt-hero-name {
+  font-family: Cinzel, serif;
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  color: rgba(180,160,120,0.7);
+  white-space: nowrap;
+}
+
+/* Becoming screen resource pill */
+.becoming-res {
+  background: rgba(15,3,5,0.8);
+  border: 1px solid rgba(80,20,20,0.5);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.becoming-res-icon { font-size: 16px; }
+.becoming-res-info { flex: 1; }
+.becoming-res-label { font-family: Cinzel, serif; font-size: 7px; letter-spacing: 0.15em; color: rgba(140,80,80,0.8); }
+.becoming-res-val { font-family: Cinzel, serif; font-size: 16px; color: #c8b89a; }
+
+/* Body system row */
+.body-system {
+  background: rgba(15,3,5,0.8);
+  border: 1px solid rgba(80,20,20,0.4);
+  padding: 10px 12px;
+  position: relative;
+  overflow: hidden;
+}
+.body-system.complete { border-color: rgba(160,40,40,0.7); }
+.body-system.complete::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(160,40,40,0.6), transparent);
+}
+.body-system-name { font-family: Cinzel, serif; font-size: 11px; font-weight: 600; color: #c8b89a; margin-bottom: 4px; }
+.body-system-desc { font-size: 12px; color: #5a4040; font-style: italic; margin-bottom: 8px; }
+.body-system-bar { height: 2px; background: rgba(40,10,10,0.8); margin-bottom: 6px; }
+.body-system-fill { height: 100%; background: linear-gradient(90deg, #6a0010, #cc2030); transition: width 0.6s ease; }
+.body-system-cost { font-family: Cinzel, serif; font-size: 9px; letter-spacing: 0.08em; color: rgba(140,80,80,0.7); margin-bottom: 6px; }
+.btn-body-act {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid rgba(120,20,20,0.5);
+  background: rgba(40,0,5,0.6);
+  color: #c8b89a;
+  font-family: Cinzel, serif;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-transform: uppercase;
+}
+.btn-body-act:hover { border-color: rgba(200,30,30,0.7); background: rgba(60,0,10,0.6); }
+.btn-body-act:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* Hunt log line */
+.hunt-log-line {
+  font-family: 'Crimson Text', serif;
+  font-size: 12px;
+  color: rgba(140,100,80,0.8);
+  font-style: italic;
+  line-height: 1.5;
+  text-align: center;
+}
+.hunt-log-line.bad { color: rgba(180,60,60,0.8); }
+.hunt-log-line.good { color: rgba(160,140,80,0.8); }
 </style>
 </head>
 <body>
@@ -1125,58 +1401,116 @@ body {
 
 <!-- ==================== LOGIN SCREEN ==================== -->
 <div class="screen active" id="screen-login">
-  <div class="login-sigil">🏰</div>
-  <div class="login-title">SHIFTING <span>REALM</span></div>
-  <div class="login-sub">THE DARKNESS WAITS · WILL YOU SURVIVE</div>
-  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-top:4px">v71</div>
-  <div class="login-divider"></div>
-  <div class="who-are-you">Who ventures forth?</div>
-  <div class="player-select">
-    <button class="btn-player" onclick="login('Denielle')">
-      <span class="player-icon">🌙</span> Denielle
-    </button>
-    <button class="btn-player" onclick="login('Scott')">
-      <span class="player-icon">⚔️</span> Scott
-    </button>
+
+  <!-- Animated drip lines -->
+  <div class="login-drips" id="login-drips"></div>
+
+  <!-- Title at top -->
+  <div class="login-top">
+    <div class="login-title">SHIFTING <span>REALM</span></div>
+    <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:0.15em;color:rgba(80,40,30,0.6);margin-top:6px">v112</div>
   </div>
-  <div class="login-lore">The darkness waits. Venture out. Come back with something.</div>
+
+  <!-- The Rune -->
+  <div class="login-sigil">
+    <svg class="login-rune" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+      <!-- Main vertical spine -->
+      <line x1="60" y1="8" x2="60" y2="132" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/>
+      <!-- Upper left branch -->
+      <line x1="60" y1="32" x2="28" y2="58" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
+      <!-- Upper right branch — shorter, asymmetric -->
+      <line x1="60" y1="32" x2="84" y2="52" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
+      <!-- Right branch cross-tick -->
+      <line x1="84" y1="52" x2="96" y2="46" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+      <!-- Left branch continues down -->
+      <line x1="28" y1="58" x2="22" y2="80" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+      <!-- Lower left branch -->
+      <line x1="60" y1="72" x2="24" y2="96" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
+      <!-- Lower right branch -->
+      <line x1="60" y1="72" x2="90" y2="90" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
+      <!-- Right branch tick down -->
+      <line x1="90" y1="90" x2="98" y2="104" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+      <!-- Horizontal bar — off center, slightly tilted -->
+      <line x1="36" y1="55" x2="86" y2="51" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+      <!-- Second horizontal — lower -->
+      <line x1="30" y1="94" x2="76" y2="88" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+      <!-- Foot splinter left -->
+      <line x1="60" y1="118" x2="44" y2="132" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
+      <!-- Foot right — stubbed -->
+      <line x1="60" y1="118" x2="72" y2="128" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
+      <!-- Small notch on spine -->
+      <line x1="55" y1="95" x2="65" y2="95" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+    </svg>
+  </div>
+
+  <!-- All content anchored to bottom -->
+  <div class="login-inner">
+    <div class="login-sub">The darkness awaits</div>
+
+    <div class="login-scratch"></div>
+
+    <div class="who-are-you">Name your survivor</div>
+    <div class="player-select">
+      <input id="login-name-input" type="text" placeholder="Enter your name" maxlength="20"
+        style="width:100%;padding:13px 16px;background:rgba(10,8,6,0.8);border:1px solid rgba(58,53,48,0.8);color:#c8b89a;font-family:Cinzel,serif;font-size:13px;letter-spacing:0.1em;outline:none;-webkit-appearance:none;"
+        onkeydown="if(event.key==='Enter')loginSubmit()"
+      />
+      <button class="btn-player" onclick="loginSubmit()" style="margin-top:8px">
+        Enter the dark →
+      </button>
+    </div>
+    <div class="login-lore" id="login-lore-text">Something is out there. It knows you are coming.</div>
+  </div>
 </div>
 
 </div>
 
 <!-- ==================== INTRO SCREEN ==================== -->
-<div class="screen" id="screen-intro">
-  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:32px 24px;text-align:center;background:radial-gradient(ellipse at 50% 20%, rgba(196,80,26,0.08) 0%, transparent 60%)">
-    <div style="font-size:52px;margin-bottom:20px;filter:drop-shadow(0 0 20px rgba(196,80,26,0.5))">🏰</div>
-    <div style="font-family:Cinzel,serif;font-weight:900;font-size:22px;letter-spacing:0.25em;color:var(--bone);margin-bottom:6px">WELCOME TO</div>
-    <div style="font-family:Cinzel,serif;font-weight:900;font-size:28px;letter-spacing:0.2em;margin-bottom:24px">SHIFTING <span style="color:var(--ember)">REALM</span></div>
+<div class="screen" id="screen-intro" style="background:#020101;overflow-y:auto;">
 
-    <div style="width:100%;max-width:300px;border:1px solid var(--iron);padding:20px;background:var(--dark-3);margin-bottom:24px;text-align:left;position:relative">
-      <div style="position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:2px solid var(--ember);border-left:2px solid var(--ember)"></div>
-      <div style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-bottom:2px solid var(--ember);border-right:2px solid var(--ember)"></div>
-      <p style="font-size:15px;line-height:1.8;color:var(--bone);margin-bottom:14px">You and your companion survive together. The dark shifts each night. The camp — little more than a scrape in the earth — endures.</p>
-      <p style="font-size:15px;line-height:1.8;color:var(--bone);margin-bottom:14px">Each night the nightmare resets — new terrain, new dangers. What you scratch out of the dark endures.</p>
-      <p style="font-size:15px;line-height:1.8;color:var(--bone)">The dark is vast. You will explore it one step at a time — each step costs <span style="color:var(--gold-light)">1 stamina</span>. Do not stray too far from camp.</p>
+  <!-- Drip effect reused -->
+  <div style="position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 110%, rgba(140,20,10,0.18) 0%, transparent 60%)"></div>
+
+  <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;padding:48px 28px;text-align:center;">
+
+    <!-- Rune divider line -->
+    <div style="width:40px;height:1px;background:linear-gradient(90deg,transparent,rgba(180,40,20,0.6),transparent);margin-bottom:24px"></div>
+
+    <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:0.35em;color:rgba(180,60,40,0.7);margin-bottom:12px;text-transform:uppercase">A Warning</div>
+
+    <div style="font-family:Cinzel,serif;font-weight:900;font-size:26px;letter-spacing:0.18em;color:#c8b89a;margin-bottom:6px;text-shadow:0 0 40px rgba(180,40,20,0.3)">THE DARK</div>
+    <div style="font-family:Cinzel,serif;font-weight:900;font-size:26px;letter-spacing:0.18em;color:#c8b89a;margin-bottom:32px;text-shadow:0 0 40px rgba(180,40,20,0.3)">DOES NOT FORGIVE</div>
+
+    <!-- Lore paragraphs -->
+    <div style="width:100%;max-width:290px;text-align:left;margin-bottom:32px;display:flex;flex-direction:column;gap:16px">
+      <p style="font-family:'Crimson Text',serif;font-size:16px;line-height:1.85;color:#8a7d6b;font-style:italic">The dark shifts each night. The camp — little more than a scrape in the earth — endures.</p>
+      <p style="font-family:'Crimson Text',serif;font-size:16px;line-height:1.85;color:#8a7d6b;font-style:italic">Scratch resources from the dark. Build what you can. What you raise does not fall when the realm resets — only the terrain changes.</p>
+      <p style="font-family:'Crimson Text',serif;font-size:16px;line-height:1.85;color:#8a7d6b;font-style:italic">Wander too far and your stamina will fail you. Fall in combat and your pack drops where you died. Retrieve it — or lose it to the dark.</p>
     </div>
 
-    <div style="width:100%;max-width:300px;display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
-      <div style="display:flex;align-items:center;gap:10px;background:var(--dark-3);border:1px solid var(--iron);padding:10px 14px">
-        <span style="font-size:18px">🗡️</span>
-        <span style="font-size:13px;color:var(--ash);font-style:italic">Each player scouts one direction per day</span>
+    <!-- Three rules -->
+    <div style="width:100%;max-width:290px;display:flex;flex-direction:column;gap:1px;margin-bottom:36px;border:1px solid rgba(58,53,48,0.6)">
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:12px 14px;background:rgba(12,10,8,0.8);border-bottom:1px solid rgba(58,53,48,0.4)">
+        <span style="font-size:14px;margin-top:2px;flex-shrink:0">⚡</span>
+        <span style="font-family:'Crimson Text',serif;font-size:14px;color:#5a5248;line-height:1.6">Each step costs stamina. Two steps to push into the unknown. Watch the count.</span>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;background:var(--dark-3);border:1px solid var(--iron);padding:10px 14px">
-        <span style="font-size:18px">🏰</span>
-        <span style="font-size:13px;color:var(--ash);font-style:italic">Return to camp to deposit what you find</span>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:12px 14px;background:rgba(12,10,8,0.8);border-bottom:1px solid rgba(58,53,48,0.4)">
+        <span style="font-size:14px;margin-top:2px;flex-shrink:0">🕳️</span>
+        <span style="font-family:'Crimson Text',serif;font-size:14px;color:#5a5248;line-height:1.6">Return to camp to bank what you carry. Leave empty-handed and it counts for nothing.</span>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;background:var(--dark-3);border:1px solid var(--iron);padding:10px 14px">
-        <span style="font-size:18px">💀</span>
-        <span style="font-size:13px;color:var(--ash);font-style:italic">Collapse in combat or run out of stamina — your pack drops where you fell. Get back before the dark resets</span>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:12px 14px;background:rgba(12,10,8,0.8)">
+        <span style="font-size:14px;margin-top:2px;flex-shrink:0">💀</span>
+        <span style="font-family:'Crimson Text',serif;font-size:14px;color:#5a5248;line-height:1.6">The dark resets at midnight. Whatever you haven't retrieved is gone.</span>
       </div>
     </div>
 
-    <button class="btn-player" onclick="closeIntro()" style="max-width:300px;width:100%;border-color:var(--ember);color:var(--bone)">
-      BEGIN THE FIRST DAY →
+    <!-- CTA -->
+    <button onclick="closeIntro()" style="width:100%;max-width:290px;padding:14px;background:transparent;border:1px solid rgba(180,50,30,0.5);color:#c8b89a;font-family:Cinzel,serif;font-size:11px;letter-spacing:0.25em;cursor:pointer;transition:all 0.2s;text-transform:uppercase" onmouseover="this.style.borderColor='rgba(196,80,26,0.8)';this.style.background='rgba(196,80,26,0.06)'" onmouseout="this.style.borderColor='rgba(180,50,30,0.5)';this.style.background='transparent'">
+      Enter the dark
     </button>
+
+    <div style="width:40px;height:1px;background:linear-gradient(90deg,transparent,rgba(180,40,20,0.4),transparent);margin-top:24px"></div>
+
   </div>
 </div>
 
@@ -1236,39 +1570,31 @@ body {
       <div style="display:flex;flex-direction:column;gap:6px">
         <button class="btn-player" onclick="debugGrantWarden()" style="border-color:#1a4a1a;color:#60aa60">🗿 Grant Totem (Warden access)</button>
         <button class="btn-player" id="debug-godmode-btn" onclick="debugToggleGodMode()" style="border-color:#4a3a0a;color:#aaaa40">⚡ God Mode: OFF</button>
+        <button class="btn-player" onclick="debugGoAct2()" style="border-color:#4a0a4a;color:#aa40aa">🧬 Jump to Act 2</button>
       </div>
     </div>
   </div>
 </div>
 
 <!-- ==================== DONE SCREEN ==================== -->
-<div class="screen" id="screen-done">
+<div class="screen" id="screen-done" style="background:#020101;align-items:center;justify-content:center;">
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:32px 24px;text-align:center;">
-    <div style="font-size:48px;margin-bottom:16px;filter:drop-shadow(0 0 12px rgba(196,80,26,0.4))">🏕️</div>
-    <div style="font-family:Cinzel,serif;font-size:22px;font-weight:900;letter-spacing:0.2em;color:var(--bone);margin-bottom:6px" id="done-name-display">Scott</div>
-    <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:0.25em;color:var(--ember);margin-bottom:24px">RESTING AT CAMP</div>
+    <div style="font-size:40px;margin-bottom:20px;filter:drop-shadow(0 0 16px rgba(196,80,26,0.4))">🕳️</div>
+    <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:0.3em;color:var(--ember);margin-bottom:8px">THE DAY IS DONE</div>
+    <div style="font-family:Cinzel,serif;font-size:22px;font-weight:900;letter-spacing:0.15em;color:var(--bone);margin-bottom:6px" id="done-name-display">Survivor</div>
     <div style="font-size:14px;color:var(--ash);font-style:italic;max-width:260px;line-height:1.7;margin-bottom:32px">
-      Rest at camp. What you brought back is safe. The nightmare resets at midnight.
+      The realm shifts at midnight. What you carried back endures. Rest. The nightmare returns at dawn.
     </div>
-    <div style="width:100%;max-width:280px;display:flex;flex-direction:column;gap:10px;">
-      <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.2em;color:var(--ash);margin-bottom:4px">OTHER SURVIVOR</div>
-      <button class="btn-player" onclick="switchPlayer('Denielle')" id="done-btn-denielle">
-        <span class="player-icon">🌙</span> Denielle
-      </button>
-      <button class="btn-player" onclick="switchPlayer('Scott')" id="done-btn-scott">
-        <span class="player-icon">⚔️</span> Scott
-      </button>
-    </div>
-    <div style="margin-top:24px">
-      <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--iron-light);margin-bottom:8px">KINGDOM TODAY</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center" id="done-resources"></div>
-    </div>
-    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--iron);width:100%;max-width:280px;text-align:center">
-      <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:0.15em;color:var(--iron-light);margin-bottom:8px" id="debug-label">DEBUG</div>
-      <button class="btn-player" onclick="debugResetRealm()" style="border-color:#5a1010;color:#aa4040;width:100%" id="debug-reset-btn">⚠ Reset Day (clears all progress)</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:32px" id="done-resources"></div>
+    <button class="btn-player" onclick="showScreen('screen-direction')" style="max-width:280px;width:100%;border-color:var(--iron)">
+      Wait for dawn →
+    </button>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(58,53,48,0.4);width:100%;max-width:280px;text-align:center">
+      <button class="btn-player" onclick="debugResetRealm()" style="border-color:#5a1010;color:#aa4040;width:100%;font-size:10px">⚠ Reset (clears all progress)</button>
     </div>
   </div>
 </div>
+
 <div class="screen" id="screen-explore">
   <div class="explore-header">
     <div class="explore-top">
@@ -1383,9 +1709,10 @@ body {
     <!-- Action buttons -->
     <div id="w-action-area" style="padding:8px 16px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;flex-shrink:0;position:relative;z-index:1">
       <button class="btn-warden bc-w-attack" onclick="wardenAct('attack')">⚔ STRIKE</button>
-      <button class="btn-warden bc-w-flee" onclick="wardenAct('flee')">↩ FLEE</button>
+      <button class="btn-warden bc-w-brace" id="w-bc-brace" onclick="wardenAct('brace')">🛡 BRACE</button>
       <button class="btn-warden bc-w-ability" id="w-bc-ability" onclick="wardenAct('ability')" style="display:none">✦ DOUBLE STRIKE</button>
       <button class="btn-warden bc-w-ultimate" id="w-bc-ultimate" onclick="wardenAct('ultimate')" disabled style="display:none">★ (0/3)</button>
+      <button class="btn-warden bc-w-flee" onclick="wardenAct('flee')" style="grid-column:span 2;font-size:9px;opacity:0.5">↩ RETREAT (costs 1 stamina)</button>
     </div>
 
     <!-- Victory / Defeat result -->
@@ -1593,11 +1920,11 @@ const DIR_FLAVOR = {
 };
 
 const ENEMIES = [
-  { id:'skrim',     name:'Skrim',         short:'SKRIM',    icon:'🦂', tier:'Scorpion-dead · barbed tail, armored hide',  hp:10, atk:4, def:2, loot:{type:'bone',       min:3, max:7}  },
-  { id:'morrowhip', name:'Morrowhip',     short:'MWHIP',    icon:'🦇', tier:'Bat-thing · fast, attacks twice, goes for eyes', hp:8,  atk:5, def:1, loot:{type:'hide',       min:2, max:5}  },
+  { id:'skrim',     name:'Skrim',         short:'SKRIM',    icon:'🦂', tier:'Scorpion-dead · barbed tail, armored hide',  hp:10, atk:4, def:2, loot:{type:'bone',       min:2, max:5}  },
+  { id:'morrowhip', name:'Morrowhip',     short:'MWHIP',    icon:'🦇', tier:'Bat-thing · fast, attacks twice, goes for eyes', hp:8,  atk:5, def:1, loot:{type:'hide',       min:1, max:3}  },
   { id:'hollowed',  name:'The Hollowed',  short:'HOLLWD',   icon:'👤', tier:'No face · no sound · wrong',                hp:14, atk:7, def:1, loot:{type:'bloodstone',  min:1, max:2}  },
-  { id:'cinderhound',name:'Cinderhound', short:'CHOUND',   icon:'🐕', tier:'Ash-dog · leaves burns, thick hide',         hp:20, atk:6, def:4, loot:{type:'bone',       min:5, max:12} },
-  { id:'warden',    name:'The Pale Warden', short:'WARDEN', icon:'🕯️', tier:'⚠ Apex · Massive · Inevitable',            hp:35, atk:10,def:5, loot:{type:'bloodstone',  min:3, max:5}  },
+  { id:'cinderhound',name:'Cinderhound', short:'CHOUND',   icon:'🐕', tier:'Ash-dog · leaves burns, thick hide',         hp:20, atk:6, def:4, loot:{type:'bone',       min:3, max:9} },
+  { id:'warden',    name:'The Pale Warden', short:'WARDEN', icon:'🕯️', tier:'⚠ Apex · Massive · Inevitable',            hp:90, atk:10,def:5, loot:{type:'bloodstone',  min:3, max:5}  },
 ];
 
 const RESOURCES = [
@@ -1683,112 +2010,71 @@ const EVENTS = [
 ];
 
 const BUILDINGS = [
-  { id:'pit',        name:'The Pit',        icon:'⛏️', desc:'Dig out and shore up your camp. Widen it. Reinforce the walls. This is the anchor of everything.', effect:'Unlocks all else', cost:{wood:2}, phase:1 },
-  { id:'fire',       name:'Fire',           icon:'🔥', desc:'Fire gives light and warmth. Stoke daily with 2 wood for +2 stamina. The light carries far out here. Things notice.', effect:'+2 stamina if lit', cost:{wood:3}, phase:1 },
-  { id:'boneshelter',name:'Bone Shelter',   icon:'🦴', desc:'Walls of bone and hide scraped together. Less terrible than the pit. Barely.', effect:'Structural anchor', cost:{bone:8, hide:4}, phase:1 },
-  { id:'crudesack',  name:'Crude Pack',     icon:'🎒', desc:'Some framing and additional hide might make something more useful than what you are dragging around. A real pack. Something with structure.', effect:'Carry 10→50', cost:{hide:10, bone:5}, phase:1 },
+  { id:'pit',        name:'The Pit',        icon:'⛏️', desc:'Scrape out more room. Deepen it. That is all. But it is a start.', effect:'Unlocks all else', cost:{stone:2}, phase:1 },
+  { id:'firepit',    name:'Fire Pit',       icon:'🪨', desc:'A ring of stones dug into the earth. Cold for now. You\'ll need wood to light it.', effect:'Unlocks Fire', cost:{stone:2}, phase:1 },
+  { id:'fire',       name:'Light the Fire', icon:'🔥', desc:'Feed the pit with wood and strike a spark. Once it burns, it burns.', effect:'Lights the fire — permanently', cost:{wood:2}, phase:1 },
+  { id:'boneshelter',name:'Bone Shelter',   icon:'🦴', desc:'You build over the pit — bone walls, a hide roof. Still barely enough. But it is no longer a hole. It is a place.', effect:'+5 max stamina · upgrades the pit', cost:{bone:8, hide:4}, phase:1 },
   { id:'processing', name:'Processing Area',icon:'🔩', desc:'Bones and stones arranged into something almost useful. Unlocks crafting.', effect:'Unlocks crafting', cost:{bone:20, stone:15, hide:8}, phase:1 },
+  { id:'crudesack',  name:'Crude Pack',     icon:'🎒', desc:'Some framing and additional hide might make something more useful than what you are dragging around. A real pack. Something with structure.', effect:'Carry 10→50', cost:{hide:10, bone:5}, phase:1 },
   { id:'totem',      name:'Ward Totem',     icon:'🗿', desc:'Built at the edge of the dark. Each survivor must raise their own. Something will notice.', effect:'Phase 1 completion', cost:{bone:5, hide:3, bloodstone:2}, phase:1 },
 ];
 
 // ================================================================
 // SUPABASE
 // ================================================================
-const SB_URL = 'https://zirwytdvkrotxgbadeij.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inppcnd5dGR2a3JvdHhnYmFkZWlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzMzIzOTEsImV4cCI6MjA4NzkwODM5MX0.cpLz0Vbi0CW5kepS65wl9Tb1SDBf4_qSBNtns2USGnI';
-const SB_HEADERS = {
-  'Content-Type': 'application/json',
-  'apikey': SB_KEY,
-  'Authorization': `Bearer ${SB_KEY}`,
-  'Prefer': 'return=representation',
-};
+// ================================================================
+// SAVE / LOAD — localStorage
+// ================================================================
+const SAVE_KEY = 'shifting_realm_save';
 
-// ── Load shared row (day/seed/directions) ──────────────────────
-async function sbLoadShared() {
-  try {
-    const res = await fetch(`${SB_URL}/rest/v1/sr_kingdom?id=eq.main`, { headers: SB_HEADERS });
-    const rows = await res.json();
-    return (rows && rows.length) ? rows[0] : null;
-  } catch(e) { console.error('sbLoadShared failed', e); return null; }
-}
-
-// ── Load player row ────────────────────────────────────────────
-async function sbLoadPlayer(name) {
-  try {
-    const id = name.toLowerCase();
-    const res = await fetch(`${SB_URL}/rest/v1/sr_players?id=eq.${id}`, { headers: SB_HEADERS });
-    const rows = await res.json();
-    return (rows && rows.length) ? rows[0] : null;
-  } catch(e) { console.error('sbLoadPlayer failed', e); return null; }
-}
-
-// ── Load both rows at once ─────────────────────────────────────
-async function sbLoad(name) {
-  const [shared, player] = await Promise.all([
-    sbLoadShared(),
-    name ? sbLoadPlayer(name) : Promise.resolve(null)
-  ]);
-  return { shared, player };
-}
-
-// ── Save shared row ────────────────────────────────────────────
-async function sbSaveShared() {
-  const payload = {
-    day: (G.day && G.day <= 999) ? G.day : 1,
-    realm_seed: G.realmSeed,
-    claimed_dirs: G.claimedDirs,
-    played_today: G.playedToday,
-    realm_day_key: todayKey(),
-    updated_at: new Date().toISOString(),
+function saveGame() {
+  if(G.godMode) return; // never save during god mode
+  const data = {
+    player:           G.player,
+    day:              G.day,
+    realmSeed:        G.realmSeed,
+    kingdom:          G.kingdom,
+    buildings:        G.buildings,
+    playerMaxHP:      G.playerMaxHP,
+    maxStamina:       G.maxStamina,
+    deaths:           G.deaths,
+    hasBag:           G.hasBag,
+    hasDoubleStrike:  G.hasDoubleStrike,
+    hasUltimate:      G.hasUltimate,
+    introSeen:        G.introSeen,
+    hasShard:         G.hasShard,
+    ngPlus:           G.ngPlus,
+    act:              G.act,
+    wardenHP:         G.wardenHP,
+    learnedBrace:     G.learnedBrace,
+    realm_day_key:    todayKey(),
   };
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch(e) { console.warn('save failed', e); }
+}
+
+function loadGame() {
   try {
-    await fetch(`${SB_URL}/rest/v1/sr_kingdom?id=eq.main`, {
-      method: 'PATCH', headers: SB_HEADERS, body: JSON.stringify(payload),
-    });
-  } catch(e) { console.error('sbSaveShared failed', e); }
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(!raw) return null;
+    const data = JSON.parse(raw);
+    // Sanity check — discard god mode saves
+    const res = data.kingdom || {};
+    if(Object.values(res).some(v => v > 50)) {
+      console.warn('Discarding god mode save');
+      localStorage.removeItem(SAVE_KEY);
+      return null;
+    }
+    return data;
+  } catch(e) { return null; }
 }
 
-// ── Save player row (upsert) ───────────────────────────────────
-async function sbSavePlayer() {
-  const id = G.player.toLowerCase();
-  const payload = {
-    id,
-    resources:         G.kingdom,
-    buildings:         G.buildings,
-    totem_built:       !!G.buildings['totem'],
-    deaths:            G.deaths,
-    max_hp:            G.playerMaxHP,
-    max_stamina:       G.maxStamina,
-    has_bag:           G.hasBag,
-    has_double_strike: G.hasDoubleStrike,
-    has_ultimate:      G.hasUltimate,
-    intro_seen:        G.introSeen,
-    updated_at:        new Date().toISOString(),
-  };
-  try {
-    await fetch(`${SB_URL}/rest/v1/sr_players`, {
-      method: 'POST',
-      headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=representation' },
-      body: JSON.stringify(payload),
-    });
-  } catch(e) { console.error('sbSavePlayer failed', e); }
-}
-
-// ── Convenience: save both ─────────────────────────────────────
-async function sbSave() {
-  await Promise.all([sbSaveShared(), sbSavePlayer()]);
-}
-
-// Today's date string — used to detect midnight reset
 function todayKey() {
   const d = new Date();
   return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
 }
 
-function setSyncing(on) {
-  const dot = document.getElementById('sync-dot');
-  if(dot) dot.style.display = on ? 'inline-block' : 'none';
-}
+function setSyncing(on) {} // no-op
+
 
 // ================================================================
 // GAME STATE
@@ -1826,9 +2112,19 @@ const G = {
   hasUltimate: false,
   introSeen: false,
 
-  // Shared state (stored in sr_kingdom main row)
-  claimedDirs: {},
-  playedToday: {},
+  // Act tracking
+  act: 1, // 1=Hero, 2=Becoming, 3=Hunt
+  hasShard: false, // The Trembling Shard
+  ngPlus: 0, // New Game+ count
+
+  // Act 2 — The Becoming
+  becoming: { blood:0, bone:0, flesh:0, ichor:0 },
+  bodyParts: {},
+
+  // Act 3 — The Hunt
+  huntWave: 0,
+  huntHunger: 100,
+  heroesEaten: 0,
 
   // Debug
   godMode: false,
@@ -1847,6 +2143,11 @@ const G = {
 
   // Loot piles left on death — array of {r, c, tileIdx, pack:{...}}
   lootPiles: [],
+
+  // Persistent warden HP — survives across battles until zero
+  wardenHP: null,
+  learnedBrace: false, // unlocked after first warden loss
+  _showBraceRevealOnRespawn: false, // null = not yet engaged; number = current HP
 };
 
 // ================================================================
@@ -1903,57 +2204,51 @@ function playerAtk() {
 // ================================================================
 // LOGIN
 // ================================================================
+function loginSubmit() {
+  const input = document.getElementById('login-name-input');
+  const name = (input ? input.value.trim() : '') || 'Survivor';
+  login(name);
+}
+
 async function login(name) {
   G.player = name;
 
-  const loreEl = document.getElementById('screen-login').querySelector('.login-lore');
+  const loreEl = document.getElementById('login-lore-text');
   loreEl.textContent = 'Connecting to the realm...';
 
-  const { shared, player } = await sbLoad(name);
+  const saved = loadGame();
   const today = todayKey();
 
-  if(!shared && !player) {
-    loreEl.textContent = '⚠ Offline — cannot reach the realm';
-    setTimeout(() => {
-      loreEl.textContent = 'The nightmare recurs each night. The camp endures. Venture out, gather what you can, and come back.';
-    }, 2000);
-  }
-
-  // ── Load shared state (day, seed, directions) ──────────────────
-  if(shared) {
-    if(shared.realm_day_key !== today && shared.realm_day_key !== '') {
-      // New day — reset daily tracking, new seed, increment day
-      G.claimedDirs = {};
-      G.playedToday = {};
-      G.realmSeed   = Math.floor(Math.random() * 999999);
-      G.day         = (shared.day || 0) + 1;
-      await sbSaveShared();
+  if(saved) {
+    // New day detection
+    if(saved.realm_day_key !== today) {
+      G.realmSeed = Math.floor(Math.random() * 999999);
+      G.day       = (saved.day || 0) + 1;
     } else {
-      G.claimedDirs = shared.claimed_dirs || {};
-      G.playedToday = shared.played_today || {};
-      G.realmSeed   = shared.realm_seed   || 0;
-      G.day         = shared.realm_day_key === '' ? 1 : (shared.day || 1);
+      G.realmSeed = saved.realmSeed || Math.floor(Math.random() * 999999);
+      G.day       = saved.day || 1;
     }
+    G.kingdom         = saved.kingdom         || { wood:0, stone:0, bone:0, hide:0, bloodstone:0 };
+    G.buildings       = saved.buildings       || {};
+    G.playerMaxHP     = saved.playerMaxHP     || 5;
+    G.maxStamina      = saved.maxStamina      || 10;
+    G.deaths          = saved.deaths          || 0;
+    G.hasBag          = !!saved.hasBag;
+    G.hasDoubleStrike = !!saved.hasDoubleStrike;
+    G.hasUltimate     = !!saved.hasUltimate;
+    G.introSeen       = !!saved.introSeen;
+    G.hasShard        = !!saved.hasShard;
+    G.ngPlus          = saved.ngPlus          || 0;
+    G.act             = saved.act             || 1;
+    G.wardenHP        = saved.wardenHP        !== undefined ? saved.wardenHP : null;
+    G.learnedBrace    = !!saved.learnedBrace;
   } else {
     G.realmSeed = Math.floor(Math.random() * 999999);
-  }
-
-  // ── Load player state ──────────────────────────────────────────
-  if(player) {
-    G.kingdom         = player.resources       || { wood:0, stone:0, bone:0, hide:0, bloodstone:0 };
-    G.buildings       = player.buildings       || {};
-    G.playerMaxHP     = player.max_hp          || 5;
-    G.maxStamina      = player.max_stamina     || 10;
-    G.deaths          = player.deaths          || 0;
-    G.hasBag          = !!player.has_bag;
-    G.hasDoubleStrike = !!player.has_double_strike;
-    G.hasUltimate     = !!player.has_ultimate;
-    G.introSeen       = !!player.intro_seen;
-  } else {
     G.kingdom = { wood:0, stone:0, bone:0, hide:0, bloodstone:0 };
     G.buildings = {}; G.playerMaxHP = 5; G.deaths = 0;
     G.hasBag = false; G.hasDoubleStrike = false;
     G.hasUltimate = false; G.introSeen = false;
+    G.hasShard = false; G.ngPlus = 0; G.act = 1;
   }
 
   if(!G.day || G.day < 1 || G.day > 365) G.day = 1;
@@ -1978,27 +2273,24 @@ async function login(name) {
   updateDirCards();
   renderKingdomSummary();
 
-  document.getElementById('screen-login').querySelector('.login-lore').textContent =
+  document.getElementById('login-lore-text').textContent =
     'The nightmare recurs each night. The camp endures. Venture out, gather what you can, and come back.';
 
   // Show intro on very first login (tracked in player row)
   if(!G.introSeen && G.day <= 1) {
     G.introSeen = true;
-    sbSavePlayer();
+    saveGame();
     showScreen('screen-intro');
     return;
   }
 
-  // Check if this player already picked a direction today but hasn't finished —
-  // restore their map and drop them back at camp with a narrative explanation
-  const myDir = Object.entries(G.claimedDirs).find(([dir, who]) => who === name);
-  if(myDir && !G.playedToday[name]) {
-    const dir = myDir[0];
+  // (single player — no direction claim restoration needed)
+  if(false) {
+    const dir = null;
     G.direction = dir;
     G.carryMax = carryMax();
     G.pack = { wood:0, stone:0, bone:0, hide:0, bloodstone:0 };
-    const fireBonus = G.buildings['fire'] && G.playedToday.fire_stoked ? 2 : 0;
-    G.stamina = G.maxStamina + fireBonus;
+    G.stamina = G.maxStamina;
     G.playerHP = G.playerMaxHP;
     G.abilityCD = 0;
     G.ultimateCharge = 0;
@@ -2061,13 +2353,8 @@ function updateDirCards() {
     const hint = document.getElementById(`hint-${dir}`);
     const flavors = DIR_FLAVOR[dir];
     const flavor = flavors[G.day % flavors.length];
-    if(G.claimedDirs[dir]) {
-      card.classList.add('taken');
-      hint.innerHTML = `<span class="dir-taken-by">Claimed by ${G.claimedDirs[dir]}</span>`;
-    } else {
-      card.classList.remove('taken');
-      hint.textContent = flavor;
-    }
+    card.classList.remove('taken');
+    hint.textContent = flavor;
   });
 }
 
@@ -2083,18 +2370,13 @@ function renderKingdomSummary() {
 // DIRECTION PICK
 // ================================================================
 function chooseDirection(dir) {
-  if(G.claimedDirs[dir]) return;
-
-  G.claimedDirs[dir] = G.player;
   G.direction = dir;
-  setSyncing(true);
-  sbSave().then(()=>setSyncing(false));
+  
+  saveGame();
 
   // Reset exploration state
   G.pack = { wood:0, stone:0, bone:0, hide:0, bloodstone:0 };
-  // Fire bonus: +2 stamina if stoked
-  const fireBonus = G.buildings['fire'] && G.playedToday.fire_stoked ? 2 : 0;
-  G.stamina = G.maxStamina + fireBonus;
+  G.stamina = G.maxStamina;
   G.playerHP = G.playerMaxHP;
   G.abilityCD = 0;
   G.ultimateCharge = 0;
@@ -2124,8 +2406,8 @@ function chooseDirection(dir) {
 // ================================================================
 const TILE_WEIGHTS = [
   { type:'empty',           w:28 },
-  { type:'resource-wood',   w:12 },
-  { type:'resource-stone',  w:10 },
+  { type:'resource-wood',   w:15 },
+  { type:'resource-stone',  w:16 },
   { type:'resource-bone',   w:8 },
   { type:'resource-hide',   w:7 },
   { type:'resource-bloodstone',w:3 },
@@ -2193,8 +2475,8 @@ function generateMap() {
 
   const MID_WEIGHTS = [
     { type:'empty',            w:45 },
-    { type:'resource-wood',    w:8  },
-    { type:'resource-stone',   w:7  },
+    { type:'resource-wood',    w:11  },
+    { type:'resource-stone',   w:14  },
     { type:'resource-bone',    w:4  },
     { type:'resource-hide',    w:3  },
     { type:'resource-bloodstone', w:1  },
@@ -2205,8 +2487,8 @@ function generateMap() {
   ];
   const OUTER_WEIGHTS = [
     { type:'empty',            w:35 },
-    { type:'resource-wood',    w:5  },
-    { type:'resource-stone',   w:5  },
+    { type:'resource-wood',    w:8  },
+    { type:'resource-stone',   w:10  },
     { type:'resource-bone',    w:6  },
     { type:'resource-hide',    w:6  },
     { type:'resource-bloodstone', w:3  },
@@ -2324,7 +2606,7 @@ function tileIcon(tile, r, c) {
   if(tile.type==='rest') return tile.restData ? tile.restData.icon : '🌿';
   if(tile.depleted) return '';
   const icons = {
-    castle: (G.buildings['fire'] && G.playedToday.fire_stoked) ? '🔥' : '🕳️','resource-wood':'🪵','resource-stone':'🪨',
+    castle: G.buildings['fire'] ? '🔥' : '🕳️','resource-wood':'🪵','resource-stone':'🪨',
     'resource-bone':'🦴','resource-hide':'🟫','resource-bloodstone':'🔴',
     'enemy-skrim':'🦂','enemy-cinderhound':'🐕','enemy-hollowed':'👤','enemy-morrowhip':'🦇',
     'enemy-warden':'👁️','event':'✦'
@@ -2467,18 +2749,18 @@ function moveTo(r,c,i,staminaPaid) {
     updateStats();
     updateResourceStrip();
     if(deposited) {
-      toast('You leave what you gathered at the hole.');
+      toast(`You leave what you gathered at the ${G.buildings['boneshelter'] ? 'shelter' : 'hole'}.`);
       checkBuildPrompt();
     } else {
       toast('Back at camp. You rest a moment.');
     }
-    setSyncing(true);
-    sbSave().then(()=>setSyncing(false));
+    
+    saveGame();
     return;
   }
 
   // Fire auto-deposit — any fire-lit tile deposits your pack
-  if(G.buildings['fire'] && G.playedToday.fire_stoked && packTotal() > 0) {
+  if(G.buildings['fire'] && packTotal() > 0) {
     if(isInFireRadius(r, c)) {
       const deposited = {...G.pack};
       Object.keys(G.pack).forEach(k => {
@@ -2489,8 +2771,8 @@ function moveTo(r,c,i,staminaPaid) {
       updateStats();
       const items = Object.entries(deposited).filter(([k,v])=>v>0).map(([k,v])=>`${v} ${k}`).join(', ');
       toast(`🔥 You deposit your items at the edge of camp — ${items}`);
-      setSyncing(true);
-      sbSave().then(()=>setSyncing(false));
+      
+      saveGame();
       checkBuildPrompt();
     }
   }
@@ -2555,13 +2837,7 @@ const BESTIARY = {
     art: '🐕',
     desc: 'Built like a dog, made of ash and compacted heat. The burns it leaves do not hurt at first. That is the dangerous part.',
     warning: 'Thick hide. Burns on contact. Fire does not deter it.',
-  },
-  warden: {
-    name: 'The Pale Warden',
-    art: '🕯️',
-    desc: 'Massive. Slow. It has been here longer than anything else. Nobody knows what it is guarding. Nobody who found out came back to say.',
-    warning: '⚠ If you fall here your pack is gone for good. No marker. No recovery.',
-  },
+  }
 };
 
 function showBestiary(enemyId, onClose, opts) {
@@ -2751,8 +3027,9 @@ function closeEvent() {
 // ================================================================
 const BUILDING_STORIES = {
   pit:         { icon:'⛏️', title:'A Scratch in the Earth',  body:'A scratch in the earth. Barely enough to curl into. The sounds outside do not stop. But they have not found you yet.' },
+  firepit:     { icon:'🪨', title:'A Ring of Stones',         body:'You drag the stones into a ring and pack the earth flat inside it. Cold and dark still. But ready. One step away from fire.' },
   fire:        { icon:'🔥', title:'The First Flame',          body:'The flame takes. The dark pulls back — just slightly. You did not realize how cold you were until just now. Something out there noticed the light.' },
-  boneshelter: { icon:'🦴', title:'Walls of a Sort',          body:'The walls go up crooked and slow. It will not keep everything out. Nothing will. But it is a structure. A thing that says you are still here.' },
+  boneshelter: { icon:'🦴', title:'Walls of a Sort',          body:'The walls go up crooked and slow. It will not keep everything out. Nothing will. But it is a structure. A thing that says you are still here. You feel steadier inside it — like something in your body finally unclenches.' },
   crudesack:   { icon:'🎒', title:'A Crude Pack',              body:'Framed hide, rough stitching, sinew that might hold. It is not much. But it is a pack — a real one. You can carry more now, and more means more nights where you come back with something.' },
   processing:  { icon:'🔩', title:'The First Tool',           body:'You clear a place for working the things you drag back. Ideas come — crude, half-formed. Tools. Weapons. A way, perhaps, to push back against the night.' },
   totem:       { icon:'🗿', title:'The Ward is Set',          body:'As you press the bloodstones into its eye sockets something shifts in your chest. Your body surges with strange energy. You feel — for the first time — that you might actually have a chance against what waits out there.' },
@@ -2807,13 +3084,18 @@ function showDoubleStrikeUnlock() {
 }
 
 function isInFireRadius(r, c) {
-  if(!G.buildings['fire'] || !G.playedToday.fire_stoked) return false;
+  if(!G.buildings['fire']) return false;
   const cp = G.castlePos;
   return Math.abs(r - cp.r) + Math.abs(c - cp.c) <= 2;
 }
 
 function checkReturnBar() {
   const bar = document.getElementById('return-bar');
+  // Only show when actively exploring with a generated map
+  if(!G.map || !G.map.length || !document.getElementById('screen-explore').classList.contains('active')) {
+    bar.classList.remove('show');
+    return;
+  }
   const cp = G.castlePos || {r:9,c:4};
   const dist = Math.abs(G.playerPos.r-cp.r)+Math.abs(G.playerPos.c-cp.c);
   if(dist > 0 && G.stamina <= dist && G.stamina > 0) {
@@ -2838,60 +3120,27 @@ async function returnToHole() {
   G.stamina = G.maxStamina;
   updateStats();
   updateResourceStrip();
-  setSyncing(true);
-  await sbSave();
-  setSyncing(false);
+  
+  saveGame();
+  
   // Return to direction screen — no lock
   showScreen('screen-direction');
   updateDirCards();
   renderKingdomSummary();
-  toast('You make it back. You leave what you gathered at the hole.');
+  toast(`You make it back. You leave what you gathered at the ${G.buildings['boneshelter'] ? 'shelter' : 'hole'}.`);
 }
 
 function goToDoneScreen() {
   document.getElementById('done-name-display').textContent = G.player;
-  // Show/hide debug section based on flag
-  ['debug-label','debug-reset-btn'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.style.display = DEBUG_MODE ? '' : 'none';
-  });
-  // Show kingdom resources
   const resEl = document.getElementById('done-resources');
-  resEl.innerHTML = ['wood','stone','bone','hide','bloodstone'].map(k => {
-    const r = RESOURCES.find(x=>x.id===k);
-    return `<div style="display:flex;align-items:center;gap:4px;background:var(--dark-3);border:1px solid var(--iron);padding:4px 8px;font-family:Cinzel,serif;font-size:12px">
-      ${r.icon} <b>${G.kingdom[k]||0}</b>
-    </div>`;
-  }).join('');
-  // Grey out players who've already played
-  ['Denielle','Scott'].forEach(name => {
-    const btn = document.getElementById(`done-btn-${name.toLowerCase()}`);
-    if(btn) {
-      if(G.playedToday[name]) {
-        btn.disabled = true;
-        btn.style.opacity = '0.35';
-        btn.style.cursor = 'not-allowed';
-        btn.innerHTML = `<span class="player-icon">${name==='Denielle'?'🌙':'⚔️'}</span> ${name} <span style="font-size:9px;color:var(--ember);margin-left:6px">DONE</span>`;
-      } else {
-        btn.disabled = false;
-        btn.style.opacity = '1';
-        btn.style.cursor = 'pointer';
-        btn.innerHTML = `<span class="player-icon">${name==='Denielle'?'🌙':'⚔️'}</span> ${name}`;
-      }
-    }
-  });
+  resEl.innerHTML = RESOURCES.map(r =>
+    `<div style="display:flex;align-items:center;gap:4px;background:rgba(20,10,10,0.8);border:1px solid rgba(58,40,40,0.5);padding:4px 8px;font-family:Cinzel,serif;font-size:12px">
+      ${r.icon} <b>${G.kingdom[r.id]||0}</b>
+    </div>`
+  ).join('');
   showScreen('screen-done');
 }
 
-function switchPlayer(name) {
-  if(G.playedToday[name]) return; // Already played, should not be clickable but safety check
-  G.player = name;
-  // Show direction screen for this player
-  document.getElementById('dir-player-name').textContent = name;
-  updateDirCards();
-  renderKingdomSummary();
-  showScreen('screen-direction');
-}
 
 function depositPack() {
   // Legacy stub
@@ -2959,7 +3208,7 @@ function respawnAtCastle() {
     G.hasBag = true;
     G.carryMax = carryMax();
     G.playerHP = G.playerMaxHP;
-    sbSavePlayer();
+    saveGame();
     setTimeout(() => {
       showNarrativeScreen({
         icon: '🎒',
@@ -2978,11 +3227,11 @@ function respawnAtCastle() {
     G.playerHP = G.playerMaxHP;
     // max_hp saved via sbSavePlayer below
     setTimeout(() => { showHPGrowth(oldMax, G.playerMaxHP, deaths); }, 600);
-    sbSavePlayer();
+    saveGame();
   } else if(isDoubleStrikeDeath) {
     G.hasDoubleStrike = true;
     G.playerHP = G.playerMaxHP;
-    sbSavePlayer();
+    saveGame();
     setTimeout(showDoubleStrikeUnlock, 600);
   } else {
     G.playerHP = G.playerMaxHP;
@@ -2993,6 +3242,21 @@ function respawnAtCastle() {
   updateStats();
   document.getElementById('return-bar').classList.remove('show');
   toast('You come to. Still at camp. Still breathing.');
+  if(G._showBraceRevealOnRespawn) {
+    G._showBraceRevealOnRespawn = false;
+    setTimeout(showBraceReveal, 800);
+  }
+}
+
+function showBraceReveal() {
+  showNarrativeScreen({
+    icon: '🛡️',
+    eyebrow: '— SOMETHING LEARNED —',
+    title: 'Brace',
+    body: 'You survived it once. Barely. In the moment before it hit — there was a stillness. A warning. You can use that. When the Warden draws itself up, brace. Take the blow on your terms.',
+    btnText: 'I UNDERSTAND',
+    zIndex: 600,
+  });
 }
 
 // ================================================================
@@ -3090,10 +3354,10 @@ function collectLootPile(tileIdx) {
 function showCollect(rData, amt, tileIdx) {
   const space = G.carryMax - packTotal();
 
-  // Pack completely full — skip collect panel, go straight to swap
+  // Pack completely full — deplete tile first, then show swap so player can choose what to keep
   if(space <= 0) {
     G.map[tileIdx].depleted = true;
-    showPackSwap(rData.id, amt, tileIdx, () => {});
+    showPackSwap(rData.id, amt, tileIdx, () => { renderMap(); });
     return;
   }
 
@@ -3107,10 +3371,15 @@ function showCollect(rData, amt, tileIdx) {
   document.getElementById('col-desc').textContent = rData.desc;
 
   const warn = document.getElementById('col-warn');
+  const collectBtn = document.querySelector('#ov-collect .btn-action.primary');
   if(actual < amt) {
     warn.style.display = '';
     warn.textContent = `Pack too full for all ${amt} — can only carry ${actual}`;
-  } else { warn.style.display = 'none'; }
+    if(collectBtn) collectBtn.textContent = 'TAKE WHAT YOU CAN';
+  } else {
+    warn.style.display = 'none';
+    if(collectBtn) collectBtn.textContent = 'TAKE IT';
+  }
 
   document.getElementById('ov-collect').classList.add('active');
 }
@@ -3374,13 +3643,35 @@ function updateUlt() {
   else{btn.disabled=true;btn.textContent=`★ (${G.ultimateCharge}/3)`;}
 }
 
+// Returns array of {type, amt} — primary loot plus small bonus drops of common materials
+function mixLoot(enemy) {
+  const l = enemy.loot;
+  const primary = { type: l.type, amt: l.min + Math.floor(Math.random() * (l.max - l.min + 1)) };
+  const results = [primary];
+  const common = ['bone','hide','wood','stone'].filter(t => t !== l.type);
+  // 1–2 bonus drops, each 1–3 of a random common material
+  const bonusCount = 1 + Math.floor(Math.random() * 2);
+  const picks = common.sort(() => Math.random() - 0.5).slice(0, bonusCount);
+  picks.forEach(type => results.push({ type, amt: 1 + Math.floor(Math.random() * 3) }));
+  return results;
+}
+
 function combatWin() {
   if(burnInterval){clearInterval(burnInterval);burnInterval=null;}
   const c=G.combat;
-  const l=c.enemy.loot;
-  const amt=l.min+Math.floor(Math.random()*(l.max-l.min+1));
-  const { actual, overflow } = addToPack(l.type, amt);
+  const drops = mixLoot(c.enemy);
   const tileIdx = c.tileIdx;
+
+  // Apply all drops, track results
+  let lootLines = [];
+  const overflowMap = {};
+  drops.forEach(({type, amt}) => {
+    const { actual, overflow } = addToPack(type, amt);
+    if(actual > 0) lootLines.push(`+${actual} ${type}`);
+    if(overflow > 0) overflowMap[type] = (overflowMap[type]||0) + overflow;
+  });
+  const anyOverflow = Object.values(overflowMap).some(v => v > 0);
+  const lootStr = lootLines.join(' · ');
 
   // If this was a rest spot guard fight
   if(G.pendingRestClaim !== undefined && G.pendingRestClaim >= 0) {
@@ -3392,12 +3683,11 @@ function combatWin() {
     document.getElementById('combat-action-area').style.display='none';
     document.getElementById('combat-result-area').style.display='';
     document.getElementById('c-result-title').innerHTML=`<span class="result-win">VICTORY</span>`;
-    const overflowNote = overflow > 0 ? ` · pack full, ${overflow} left behind` : '';
-    document.getElementById('c-result-sub').textContent=`+${actual} ${l.type} · ${rd.name} claimed · +${rd.restore} stamina${overflowNote}`;
+    const overflowNote = anyOverflow ? ` · pack full, some left behind` : '';
+    document.getElementById('c-result-sub').textContent=`${lootStr} · ${rd.name} claimed · +${rd.restore} stamina${overflowNote}`;
     G.pendingRestClaim = undefined;
     renderMap();
-    // Show swap after combat closes if overflow
-    if(overflow > 0) G._pendingCombatOverflow = { type: l.type, overflow, tileIdx: -1 };
+    if(anyOverflow) G._pendingCombatOverflow = { overflowMap, tileIdx: -1 };
     return;
   }
 
@@ -3408,11 +3698,11 @@ function combatWin() {
   document.getElementById('combat-action-area').style.display='none';
   document.getElementById('combat-result-area').style.display='';
   document.getElementById('c-result-title').innerHTML=`<span class="result-win">VICTORY</span>`;
-  if(overflow > 0) {
-    document.getElementById('c-result-sub').textContent=`+${actual} ${l.type} added · pack full, ${overflow} left — adjust load`;
-    G._pendingCombatOverflow = { type: l.type, overflow, tileIdx: -1 };
+  if(anyOverflow) {
+    document.getElementById('c-result-sub').textContent=`${lootStr} · pack full, some left — adjust load`;
+    G._pendingCombatOverflow = { overflowMap, tileIdx: -1 };
   } else {
-    document.getElementById('c-result-sub').textContent=`+${actual} ${l.type} added to your pack`;
+    document.getElementById('c-result-sub').textContent=`${lootStr}`;
   }
   renderMap();
 }
@@ -3433,9 +3723,9 @@ function closeCombat() {
   document.getElementById('ov-combat').classList.remove('active');
   G.combat=null;
   if(G._pendingCombatOverflow) {
-    const { type, overflow, tileIdx } = G._pendingCombatOverflow;
+    const { overflowMap, tileIdx } = G._pendingCombatOverflow;
     G._pendingCombatOverflow = null;
-    setTimeout(() => showPackSwapMulti({ [type]: overflow }, tileIdx, () => {}), 200);
+    setTimeout(() => showPackSwapMulti(overflowMap, tileIdx, () => {}), 200);
   }
 }
 
@@ -3445,14 +3735,25 @@ function closeCombat() {
 let wardenAmbientInterval = null;
 
 function startWardenBattle(enemy, tileIdx, permanentLootLoss) {
+  // Persistent HP: initialize on first encounter, carry forward between fights
+  if(G.wardenHP === null) G.wardenHP = enemy.hp;
+
+  // Partial heal between battles — recovers ~20% (min 5, max 15) each time player retreats
+  // (heal is applied in wardenLose, not here — so on first encounter no heal)
+
   G.combat = {
     enemy: {...enemy},
-    enemyHP: enemy.hp,
+    enemyHP: G.wardenHP,
     tileIdx,
     burnTurns: 0,
     wardActive: false,
     permanentLootLoss: !!permanentLootLoss,
-    phase: 1,
+    phase: G.wardenHP <= Math.floor(enemy.hp / 2) ? 2 : 1,
+    turnCount: 0,       // tracks rhythm
+    telegraphed: false, // heavy hit incoming next enemy turn
+    braceActive: false, // player is braced
+    braceCD: 0,         // cooldown turns
+    taughtBrace: false, // has the warden taught brace yet
   };
   G.abilityCD = 0;
   G.ultimateCharge = 0;
@@ -3460,32 +3761,49 @@ function startWardenBattle(enemy, tileIdx, permanentLootLoss) {
   const ov = document.getElementById('ov-warden');
   const wrap = document.getElementById('warden-battle-wrap');
   wrap.classList.remove('warden-phase2');
+  if(G.combat.phase === 2) wrap.classList.add('warden-phase2');
 
-  document.getElementById('w-e-hp').textContent = enemy.hp;
+  const hpPct = Math.round((G.wardenHP / enemy.hp) * 100);
+  document.getElementById('w-e-hp').textContent = G.wardenHP;
   document.getElementById('w-e-maxhp').textContent = enemy.hp;
-  document.getElementById('w-e-bar').style.width = '100%';
+  document.getElementById('w-e-bar').style.width = `${hpPct}%`;
   document.getElementById('w-p-hp').textContent = G.playerHP;
   document.getElementById('w-p-maxhp').textContent = G.playerMaxHP;
   document.getElementById('w-p-bar').style.width = `${(G.playerHP/G.playerMaxHP)*100}%`;
-  document.getElementById('w-phase-label').textContent = 'GUARDIAN OF THE REALM';
+
+  const isWounded = G.wardenHP < enemy.hp;
+  const isPhase2 = G.combat.phase === 2;
+  document.getElementById('w-phase-label').textContent = isPhase2
+    ? 'ENRAGED — PHASE II'
+    : isWounded ? 'WOUNDED — BUT STILL STANDING' : 'GUARDIAN OF THE REALM';
   document.getElementById('w-enemy-icon').textContent = '👁️';
 
   const log = document.getElementById('w-combat-log');
   log.innerHTML = '';
-  wlog('The Pale Warden fills your vision. Everything else falls away.', 'w-log-s');
-  wlog('It does not speak. It does not need to.', 'w-log-s');
+  if(G.wardenHP === enemy.hp) {
+    wlog('The Pale Warden fills your vision. Everything else falls away.', 'w-log-s');
+    wlog('It does not speak. It does not need to.', 'w-log-s');
+  } else if(isPhase2) {
+    wlog(`You wounded it. ${hpPct}% remains — and it remembers you.`, 'w-log-s');
+    wlog('The rage in it is something older than pain.', 'w-log-e');
+  } else {
+    wlog(`You drove it back. It healed — but the wounds you left are still there.`, 'w-log-s');
+    wlog(`${hpPct}% remains. Finish what you started.`, 'w-log-p');
+  }
 
   document.getElementById('w-action-area').style.display = '';
   document.getElementById('w-result-area').style.display = 'none';
 
   const abilityBtn = document.getElementById('w-bc-ability');
   const ultimateBtn = document.getElementById('w-bc-ultimate');
+  const braceBtn = document.getElementById('w-bc-brace');
   abilityBtn.style.display = G.hasDoubleStrike ? '' : 'none';
   abilityBtn.disabled = false;
   abilityBtn.textContent = '✦ DOUBLE STRIKE';
   ultimateBtn.style.display = G.hasUltimate ? '' : 'none';
   ultimateBtn.disabled = true;
   ultimateBtn.textContent = '★ (0/3)';
+  if(braceBtn) { braceBtn.disabled = false; braceBtn.textContent = '🛡 BRACE'; braceBtn.classList.remove('bracing'); braceBtn.style.display = G.learnedBrace ? '' : 'none'; }
 
   ov.classList.add('active');
   startWardenAmbient();
@@ -3503,6 +3821,8 @@ function wlog(text, cls) {
 function updateWardenHP() {
   const c = G.combat;
   if(!c) return;
+  // Sync persistent HP
+  G.wardenHP = c.enemyHP;
   document.getElementById('w-e-hp').textContent = c.enemyHP;
   document.getElementById('w-e-bar').style.width = `${(c.enemyHP / c.enemy.hp) * 100}%`;
   document.getElementById('w-p-hp').textContent = G.playerHP;
@@ -3515,7 +3835,7 @@ function updateWardenHP() {
     document.getElementById('w-phase-label').textContent = 'ENRAGED — PHASE II';
     document.getElementById('w-enemy-icon').textContent = '👁️';
     wlog('─── The Warden tears itself open. Something worse looks out. ───', 'w-log-phase');
-    vfxWardenHit(); // Shake the screen on phase transition
+    vfxWardenHit();
     setTimeout(() => vfxWardenHit(), 300);
   }
 }
@@ -3523,8 +3843,8 @@ function updateWardenHP() {
 function updateWardenUlt() {
   const btn = document.getElementById('w-bc-ultimate');
   if(!btn) return;
-  if(G.ultimateCharge >= 3) { btn.disabled = false; btn.textContent = '★ UNLEASH'; }
-  else { btn.disabled = true; btn.textContent = `★ (${G.ultimateCharge}/3)`; }
+  if(G.ultimateCharge >= 2) { btn.disabled = false; btn.textContent = '★ UNLEASH'; }
+  else { btn.disabled = true; btn.textContent = `★ (${G.ultimateCharge}/2)`; }
 }
 
 function wardenAct(action) {
@@ -3532,14 +3852,28 @@ function wardenAct(action) {
   if(!c) return;
 
   if(action === 'flee') {
-    if(G.stamina <= 0) { wlog('No stamina — there is no escape.', 'w-log-e'); return; }
+    if(G.stamina <= 0) { wlog("No stamina — there is no escape.", 'w-log-e'); return; }
     G.stamina--;
     updateStats();
-    wlog('You wrench yourself free and fall back into the dark...', 'w-log-s');
+    wlog("You wrench yourself free and fall back into the dark...", 'w-log-s');
     stopWardenAmbient();
     setTimeout(() => document.getElementById('ov-warden').classList.remove('active'), 900);
     setTimeout(() => { G.combat = null; }, 950);
     return;
+  }
+
+  if(action === 'brace') {
+    if(c.braceCD > 0) { wlog(`Brace is recovering — ${c.braceCD} more turns.`, 'w-log-e'); return; }
+    c.braceActive = true;
+    const bb = document.getElementById('w-bc-brace');
+    if(bb) { bb.textContent = '🛡 BRACED'; bb.classList.add('bracing'); bb.disabled = true; }
+    if(c.telegraphed) {
+      wlog("You raise everything you have against it. The blow lands — but you hold.", 'w-log-p');
+    } else {
+      wlog("You brace. Nothing comes. The moment passes.", 'w-log-s');
+    }
+    setTimeout(wardenEnemyTurn, 400);
+    return; // bracing is a full action — no attack this turn
   }
 
   const atk = playerAtk();
@@ -3547,9 +3881,9 @@ function wardenAct(action) {
 
   if(action === 'attack') {
     dmg = Math.max(1, atk + Math.floor(Math.random() * 4) - 1 - c.enemy.def);
-    if(c.wardActive) { wlog('The Ward reflects. Your blow glances off for half damage.', 'w-log-e'); dmg = Math.floor(dmg/2); c.wardActive = false; vfxWardenWard(); }
-    wlog(`You drive steel into it — ${dmg} damage.`, 'w-log-p');
-    G.ultimateCharge = Math.min(3, G.ultimateCharge + 1);
+    if(c.wardActive) { wlog("The Ward reflects. Your blow glances off for half damage.", 'w-log-e'); dmg = Math.floor(dmg/2); c.wardActive = false; vfxWardenWard(); }
+    wlog(`You throw yourself into it — ${dmg} damage.`, 'w-log-p');
+    G.ultimateCharge = Math.min(2, G.ultimateCharge + 1);
   } else if(action === 'ability') {
     if(G.abilityCD > 0) return;
     dmg = Math.max(1, Math.floor(atk * 1.8) - c.enemy.def);
@@ -3557,9 +3891,9 @@ function wardenAct(action) {
     G.abilityCD = 3;
     const ab = document.getElementById('w-bc-ability');
     ab.disabled = true; ab.textContent = `✦ CD(${G.abilityCD})`;
-    G.ultimateCharge = Math.min(3, G.ultimateCharge + 1);
+    G.ultimateCharge = Math.min(2, G.ultimateCharge + 1);
   } else if(action === 'ultimate') {
-    if(G.ultimateCharge < 3) return;
+    if(G.ultimateCharge < 2) return;
     dmg = Math.max(1, Math.floor(atk * 3) - c.enemy.def);
     wlog(`★ UNLEASH — ${dmg} devastating damage!`, 'w-log-s');
     G.ultimateCharge = 0;
@@ -3571,12 +3905,19 @@ function wardenAct(action) {
 
   if(c.enemyHP <= 0) { wardenWin(); return; }
 
-  // Cooldown tick
+  // Cooldown ticks
   if(G.abilityCD > 0) {
     G.abilityCD--;
     const ab = document.getElementById('w-bc-ability');
     if(G.abilityCD === 0) { ab.disabled = false; ab.textContent = '✦ DOUBLE STRIKE'; }
     else { ab.textContent = `✦ CD(${G.abilityCD})`; }
+  }
+  if(c.braceCD > 0) {
+    c.braceCD--;
+    if(c.braceCD === 0) {
+      const bb = document.getElementById('w-bc-brace');
+      if(bb) { bb.disabled = false; bb.textContent = '🛡 BRACE'; bb.classList.remove('bracing'); bb.style.display = G.deaths > 0 ? '' : 'none'; }
+    }
   }
 
   setTimeout(wardenEnemyTurn, 400);
@@ -3587,36 +3928,82 @@ function wardenEnemyTurn() {
   if(!c || c.enemyHP <= 0) return;
   const e = c.enemy;
   const phase2 = c.phase === 2;
-  const useAbility = Math.random() < (phase2 ? 0.45 : 0.28);
-  let edamage = 0;
+  c.turnCount++;
 
-  if(useAbility) {
-    if(phase2) {
-      // Phase 2 — Cleave (hits harder, no ward)
-      const base = e.atk + 3;
-      edamage = Math.max(2, base - Math.floor(Math.random() * 2));
-      wlog(`The Warden cleaves — ${edamage} damage rips through you.`, 'w-log-e');
+  // ── RESOLVE TELEGRAPHED HEAVY STRIKE ─────────────────────────
+  if(c.telegraphed) {
+    c.telegraphed = false;
+    const heavyBase = phase2 ? 20 : 16;
+    let edamage = heavyBase;
+
+    if(c.braceActive) {
+      // Brace absorbs most of the hit
+      edamage = Math.floor(heavyBase * 0.2);
+      c.braceActive = false;
+      c.braceCD = 3;
+      const bb = document.getElementById('w-bc-brace');
+      if(bb) { bb.disabled = true; bb.textContent = `🛡 CD(${c.braceCD})`; bb.classList.remove('bracing'); }
+      wlog(`The blow lands — ${edamage} damage. The brace held.`, 'w-log-p');
+      vfxWardenHit();
     } else {
-      // Phase 1 — Ward
-      wlog('The Warden closes itself. A pale light seals it.', 'w-log-e');
-      c.wardActive = true;
-      vfxWardenWard();
-      edamage = e.atk; // Still hits alongside ward
+      // Unbraced — full hit
+      // First time: teach the player what brace does
+      if(!c.taughtBrace) {
+        c.taughtBrace = true;
+        wlog(`${edamage} damage. It hits like a wall collapsing.`, 'w-log-e');
+        setTimeout(() => {
+          wlog("There was a warning. You saw it coming. There must be a way to hold against that.", 'w-log-s');
+        }, 600);
+      } else {
+        wlog(`The heavy blow lands — ${edamage} damage. You should have braced.`, 'w-log-e');
+      }
+      vfxWardenHit();
+      setTimeout(() => vfxWardenHit(), 200);
     }
-  } else {
-    edamage = Math.max(1, e.atk + (phase2 ? 2 : 0) - Math.floor(Math.random() * 3));
-    const hits = [
-      'The Warden reaches through you.', 'It moves. You were not ready.',
-      'A blow that feels like cold water in your lungs.',
-      'It finds a gap you did not know you had.',
-      'You are briefly somewhere else. Then you are back, bleeding.',
-    ];
-    wlog(hits[Math.floor(Math.random() * hits.length)], 'w-log-e');
+
+    G.playerHP = Math.max(0, G.playerHP - edamage);
+    updateStats(); updateWardenHP();
+    if(G.playerHP <= 0) { wardenLose(); }
+    return;
   }
 
+  // ── TELEGRAPH HEAVY STRIKE every 3rd turn ────────────────────
+  if(c.turnCount % 3 === 0) {
+    c.telegraphed = true;
+    const warningLines = phase2
+      ? ["It opens wider. Something enormous is building inside it.", "The air pressure drops. It is about to release something."]
+      : ["It draws itself up. Something is gathering.", "It goes still. That is the worst sign."];
+    wlog(warningLines[Math.floor(Math.random() * warningLines.length)], 'w-log-e');
+    if(G.learnedBrace) {
+      wlog("⚠ BRACE NOW or take the full blow.", 'w-log-s');
+    } else {
+      wlog("If only you knew how to hold against it.", 'w-log-s');
+    }
+    return; // No damage this turn — just the telegraph
+  }
+
+  // ── NORMAL ATTACK ─────────────────────────────────────────────
+  // Phase 1: atk 7 base. Phase 2: atk 9 base
+  const baseAtk = phase2 ? 9 : 7;
+  let edamage = Math.max(1, baseAtk - Math.floor(Math.random() * 3));
+
+  // Ward: phase 1 ability — seals itself for one hit
+  if(!phase2 && c.turnCount % 5 === 0) {
+    wlog("The Warden closes itself. A pale light seals it.", 'w-log-e');
+    c.wardActive = true;
+    vfxWardenWard();
+  }
+
+  const hits = [
+    "The Warden reaches through you.", "It moves. You were not ready.",
+    "A blow that feels like cold water in your lungs.",
+    "It finds a gap you did not know you had.",
+    "You are briefly somewhere else. Then you are back, bleeding.",
+  ];
+  wlog(hits[Math.floor(Math.random() * hits.length)], 'w-log-e');
+
   G.playerHP = Math.max(0, G.playerHP - edamage);
-  updateStats();
-  updateWardenHP();
+  updateStats(); updateWardenHP();
   if(edamage > 0) vfxWardenHit();
   if(G.playerHP <= 0) { wardenLose(); }
 }
@@ -3624,33 +4011,69 @@ function wardenEnemyTurn() {
 function wardenWin() {
   if(burnInterval) { clearInterval(burnInterval); burnInterval = null; }
   stopWardenAmbient();
+  G.wardenHP = null; // Warden is dead — reset for next realm
   const c = G.combat;
-  const l = c.enemy.loot;
-  const amt = l.min + Math.floor(Math.random() * (l.max - l.min + 1));
-  const { actual, overflow } = addToPack(l.type, amt);
+  const drops = mixLoot(c.enemy);
   if(c.tileIdx >= 0) { G.map[c.tileIdx].depleted = true; vfxWardenDeath(c.tileIdx); }
 
+  let lootLines = [];
+  const overflowMap = {};
+  drops.forEach(({type, amt}) => {
+    const { actual, overflow } = addToPack(type, amt);
+    if(actual > 0) lootLines.push(`+${actual} ${type}`);
+    if(overflow > 0) overflowMap[type] = (overflowMap[type]||0) + overflow;
+  });
+  const anyOverflow = Object.values(overflowMap).some(v => v > 0);
+
+  // Check for shard drop
+  if(!G.hasShard) {
+    G.hasShard = true;
+    lootLines.unshift('✦ THE TREMBLING SHARD');
+  }
+
+  // Show a narrative then trigger the warp
   document.getElementById('w-action-area').style.display = 'none';
   document.getElementById('w-result-area').style.display = '';
-  document.getElementById('w-result-title').innerHTML = `<span style="color:var(--gold-light);text-shadow:0 0 20px rgba(200,160,80,0.6)">THE WARDEN FALLS</span>`;
-  document.getElementById('w-result-sub').textContent = actual > 0
-    ? `+${actual} ${l.type} recovered from its remains${overflow > 0 ? ` · pack full, ${overflow} left behind` : ''}`
-    : `It leaves nothing behind. The realm is lighter.`;
-
-  if(overflow > 0) G._pendingCombatOverflow = { type: l.type, overflow, tileIdx: -1 };
+  // Give button a unique ID so we can target it reliably
+  document.getElementById('w-result-area').innerHTML = `
+    <div class="result-title" style="color:#cc2020;text-shadow:0 0 20px rgba(200,0,20,0.8);font-family:Cinzel,serif;font-size:18px;letter-spacing:0.1em;text-align:center;margin-bottom:6px">THE WARDEN FALLS</div>
+    <div style="font-family:'Crimson Text',serif;font-size:13px;color:#8a6060;font-style:italic;text-align:center;margin-bottom:14px">${lootLines.length ? lootLines.join(' · ') : 'It leaves nothing. But something remains.'}</div>
+    <button id="warden-warp-btn" class="btn-action primary" style="width:100%;padding:12px">Something is happening →</button>
+  `;
+  document.getElementById('warden-warp-btn').onclick = () => {
+    document.getElementById('ov-warden').classList.remove('active');
+    stopWardenAmbient();
+    G.combat = null;
+    setTimeout(() => triggerWarp(), 400);
+  };
   renderMap();
 }
 
 function wardenLose() {
   if(burnInterval) { clearInterval(burnInterval); burnInterval = null; }
   stopWardenAmbient();
-  const isPerm = G.combat && G.combat.permanentLootLoss;
+  const isFirstWardenLoss = !G.learnedBrace;
+  if(isFirstWardenLoss) G.learnedBrace = true;
+  saveGame();
+
+  // Partial heal — Warden recovers 15–20% of MAX hp, but never above 85% of max
+  const enemy = G.combat.enemy;
+  const healAmt = Math.floor(enemy.hp * (0.15 + Math.random() * 0.05));
+  const healCap = Math.floor(enemy.hp * 0.85);
+  G.wardenHP = Math.min(healCap, (G.wardenHP || 0) + healAmt);
+
+  // Don't deplete the tile — player must return and fight again
+  const tileIdx = G.combat.tileIdx;
+  if(tileIdx >= 0 && G.map[tileIdx]) {
+    G.map[tileIdx].depleted = false;
+  }
+
   document.getElementById('ov-warden').classList.remove('active');
   G.combat = null;
+  const hpPct = Math.round((G.wardenHP / enemy.hp) * 100);
   setTimeout(() => {
-    triggerDeath(isPerm
-      ? 'The Pale Warden does not release what it has taken. You wake at camp with nothing.'
-      : 'You collapse. Your pack spills where you fell. The nightmare continues.');
+    G._showBraceRevealOnRespawn = isFirstWardenLoss;
+    triggerDeath(`You couldn't bring it down. The Warden healed — ${hpPct}% of its strength restored. Your wounds remain on it. Return and finish the fight.`);
   }, 400);
 }
 
@@ -3658,9 +4081,9 @@ function closeWardenBattle() {
   document.getElementById('ov-warden').classList.remove('active');
   G.combat = null;
   if(G._pendingCombatOverflow) {
-    const { type, overflow, tileIdx } = G._pendingCombatOverflow;
+    const { overflowMap, tileIdx } = G._pendingCombatOverflow;
     G._pendingCombatOverflow = null;
-    setTimeout(() => showPackSwapMulti({ [type]: overflow }, tileIdx, () => {}), 200);
+    setTimeout(() => showPackSwapMulti(overflowMap, tileIdx, () => {}), 200);
   }
 }
 
@@ -3766,10 +4189,12 @@ function closeRest() {
 // ================================================================
 function getUnlockedBuildings() {
   // Buildings unlock sequentially — only show up to first unbuilt + all built
-  const order = ['pit','fire','boneshelter','crudesack','processing','totem'];
+  const order = ['pit','firepit','fire','boneshelter','processing','crudesack','totem'];
   const result = [];
   for(const id of order) {
     const b = BUILDINGS.find(x=>x.id===id);
+    // Pit is hidden once shelter is built — shelter replaces it
+    if(id === 'pit' && G.buildings['boneshelter']) continue;
     result.push(b);
     if(!G.buildings[id]) break; // Stop after first unbuilt
   }
@@ -3777,51 +4202,27 @@ function getUnlockedBuildings() {
 }
 
 function checkPhase1Complete() {
-  // Both totems built = phase 1 complete
-  return G.buildings.totem && G.buildings.totem_denielle ||
-         (G.buildings['totem_scott'] && G.buildings['totem_denielle']);
+  // Single player — just your totem
+  return !!G.buildings['totem'];
 }
 
 
 function showCampTotemStatus() {
-  const myKey = `totem_${G.player.toLowerCase()}`;
-  const partnerName = G.player === 'Scott' ? 'Denielle' : 'Scott';
-  const partnerKey = `totem_${partnerName.toLowerCase()}`;
-  const myTotem = !!G.buildings[myKey];
-  const partnerTotem = !!G.buildings[partnerKey];
-  const bothDone = myTotem && partnerTotem;
-
-  if(!myTotem) {
-    // No totem — just show kingdom
+  if(!G.buildings['totem']) {
     showKingdom();
     return;
   }
-
-  if(bothDone) {
-    showNarrativeScreen({
-      icon: '🗿',
-      eyebrow: '— The Ward —',
-      title: 'Both Totems Stand',
-      body: 'Two totems watch the dark. Their energies intertwine. The Warden is no longer beyond reach — whatever protected it has fractured.',
-      buffs: [
-        { icon: '🕯️', text: 'The Pale Warden — can be faced' },
-      ],
-      btnText: 'CLOSE',
-      zIndex: 600,
-    });
-  } else {
-    showNarrativeScreen({
-      icon: '🗿',
-      eyebrow: '— The Ward —',
-      title: 'One Totem Stands',
-      body: `Your totem watches the dark. Its eye sockets hold. But you sense it strains alone — another ward raised nearby might complete what this one started. ${partnerName} must build their totem.`,
-      buffs: [
-        { icon: '🕯️', text: `Waiting for ${partnerName}'s totem` },
-      ],
-      btnText: 'CLOSE',
-      zIndex: 600,
-    });
-  }
+  showNarrativeScreen({
+    icon: '🗿',
+    eyebrow: '— The Ward —',
+    title: 'The Totem Stands',
+    body: 'The totem watches the dark. Its eye sockets hold. Whatever shielded the Warden — you feel it fracture. The path is open.',
+    buffs: [
+      { icon: '🕯️', text: 'The Pale Warden — can be faced' },
+    ],
+    btnText: 'CLOSE',
+    zIndex: 600,
+  });
 }
 
 function showKingdom() {
@@ -3848,21 +4249,25 @@ function showKingdom() {
     const row=document.createElement('div');
     row.className=`bld-row${built?' built':''}`;
 
-    // Campfire special rendering
-    if(b.id === 'fire' && built) {
-      const stoked = G.playedToday.fire_stoked;
-      const canStoke = !stoked && (G.kingdom.wood||0) >= 2;
+    // Fire pit + light fire special rendering
+    if(b.id === 'firepit' && built) {
+      const fireLit = !!G.buildings['fire'];
       row.innerHTML=`
-        <div class="bld-icon">${stoked ? '🔥' : '🪵'}</div>
+        <div class="bld-icon">${fireLit ? '🔥' : '🪨'}</div>
         <div class="bld-info">
-          <div class="bld-name">Campfire <span style="font-size:9px;color:${stoked?'var(--gold-light)':'var(--ash)'}">${stoked ? '· BURNING' : '· COLD'}</span></div>
-          <div class="bld-desc">${stoked ? 'The fire crackles. +2 stamina when you head out.' : 'The fire is out. Stoke it with 2 wood for +2 stamina.'}</div>
-          ${!stoked ? '<div class="bld-cost">Stoke: <b>2</b> wood</div>' : ''}
+          <div class="bld-name">Fire Pit <span style="font-size:9px;color:${fireLit?'var(--gold-light)':'var(--ash)'}">${fireLit ? '· BURNING' : '· COLD'}</span></div>
+          <div class="bld-desc">${fireLit ? 'The fire burns. The dark holds back.' : 'The pit is dug. It needs wood and a spark.'}</div>
         </div>
-        ${stoked
-          ? '<div class="built-tag">✦ BURNING</div>'
-          : `<button class="btn-bld" ${canStoke?'':'disabled'} onclick="stokefire()">${canStoke?'🔥 STOKE':'NEED WOOD'}</button>`
-        }
+        <div class="built-tag">✦ BUILT</div>
+      `;
+    } else if(b.id === 'fire' && built) {
+      row.innerHTML=`
+        <div class="bld-icon">🔥</div>
+        <div class="bld-info">
+          <div class="bld-name">Fire <span style="font-size:9px;color:var(--gold-light)">· BURNING</span></div>
+          <div class="bld-desc">The fire burns. Radius effects are active.</div>
+        </div>
+        <div class="built-tag">✦ LIT</div>
       `;
     } else {
       row.innerHTML=`
@@ -3894,56 +4299,60 @@ function buildIt(id) {
   Object.entries(b.cost).forEach(([k,v])=>G.kingdom[k]-=v);
   G.buildings[storeId] = true;
   if(id==='crudesack') { G.carryMax = carryMax(); }
+  if(id==='boneshelter') { G.maxStamina += 5; G.stamina = G.maxStamina; updateStats(); }
+  if(id === 'fire' && !G.buildings['firepit']) { toast('Build the Fire Pit first'); return; }
   if(id==='fire') { G.maxStamina += 5; G.stamina = G.maxStamina; updateStats(); }
-  setSyncing(true);
-  sbSave().then(async () => {
-    setSyncing(false);
-    closeKingdom();
-    if(id === 'totem') {
+  
+  saveGame();
+  closeKingdom();
+    if(id === 'firepit') {
+      showBuildingStory('firepit', () => { showKingdom(); });
+    } else if(id === 'fire') {
+      startFireSparks();
+      renderMap();
+      let giftLine = '';
+      if(Math.random() < 0.2) {
+        const gifts = [{r:'bone',a:2},{r:'hide',a:1},{r:'wood',a:3}];
+        const gift = gifts[Math.floor(Math.random()*gifts.length)];
+        G.kingdom[gift.r] = (G.kingdom[gift.r]||0) + gift.a;
+        giftLine = `Something moved at the edge of the firelight. When it was gone, ${gift.a} ${gift.r} remained.`;
+      }
+      showNarrativeScreen({
+        icon: '🔥',
+        eyebrow: '— Fire Lit —',
+        title: 'The Dark Pulls Back',
+        body: `The flame catches. The nearest tiles glow amber — the fire's reach pushes the dark away.${giftLine ? '<br><br>' + giftLine : ''}`,
+        buffs: [
+          { icon: '❤️', text: 'Max stamina permanently +5' },
+          { icon: '⚡', text: 'Tiles within 2 steps of camp — cost 0 stamina' },
+          { icon: '🎒', text: 'Step into the firelight and your pack deposits automatically' },
+        ],
+        btnText: 'TEND THE FLAME',
+        zIndex: 600,
+      });
+    } else if(id === 'totem') {
       showBuildingStory('totem', async () => {
         G.hasUltimate = true;
-        sbSavePlayer();
-        // Show ultimate unlock, then check partner totem status
-        showUltimateUnlock(async () => {
-          const row = await sbLoad();
-          const bld = row ? (row.buildings || {}) : G.buildings;
-          const partnerName = G.player === 'Scott' ? 'Denielle' : 'Scott';
-          const bothDone = bld['totem_scott'] && bld['totem_denielle'];
-          if(bothDone) {
-            // Second player — both totems up, warden unlocked
-            showNarrativeScreen({
-              icon: '🗿',
-              eyebrow: '— Both Totems Stand —',
-              title: 'The Barrier Breaks',
-              body: `The air changes. Two totems now stand against the dark — yours and ${partnerName}'s. Whatever force protected the Warden, you feel it fracture. The path is open. The Warden can be faced.`,
-              buffs: [
-                { icon: '★', text: 'Dark Surge — active' },
-                { icon: '🕯️', text: 'The Pale Warden — now accessible' },
-              ],
-              btnText: 'FACE THE DARK',
-              zIndex: 700,
-            });
-          } else {
-            // First player — hint that partner needs to build theirs
-            showNarrativeScreen({
-              icon: '🗿',
-              eyebrow: '— The Ward is Incomplete —',
-              title: 'More Are Required',
-              body: `The power is real. You feel it. But something tells you it is not enough alone. Perhaps when more totems stand, their combined energies will be enough to face what waits at the edge of the realm.`,
-              buffs: [
-                { icon: '★', text: 'Dark Surge — unlocked' },
-                { icon: '🕯️', text: `The Warden — locked until ${partnerName} raises their totem` },
-              ],
-              btnText: 'HOLD THE DARK',
-              zIndex: 700,
-            });
-          }
+        G.buildings['totem'] = true;
+        saveGame();
+        showUltimateUnlock(() => {
+          showNarrativeScreen({
+            icon: '🗿',
+            eyebrow: '— The Ward —',
+            title: 'The Barrier Breaks',
+            body: 'The totem stands. Whatever force shielded the Warden — you feel it fracture. The path is open. The Warden can be faced.',
+            buffs: [
+              { icon: '★', text: 'Dark Surge — unlocked' },
+              { icon: '🕯️', text: 'The Pale Warden — now accessible' },
+            ],
+            btnText: 'FACE THE DARK',
+            zIndex: 700,
+          });
         });
       });
     } else {
       showBuildingStory(id, () => { showKingdom(); });
     }
-  });
 }
 
 function closeKingdom() {
@@ -3952,7 +4361,7 @@ function closeKingdom() {
 
 function checkBuildPrompt() {
   // Find the next unbuilt building the player can now afford
-  const unbuilt = getUnlockedBuildings().filter(b => !G.buildings[b.id === 'totem' ? `totem_${G.player.toLowerCase()}` : b.id]);
+  const unbuilt = getUnlockedBuildings().filter(b => !G.buildings[b.id]);
   const affordable = unbuilt.find(b => Object.entries(b.cost).every(([k,v]) => (G.kingdom[k]||0) >= v));
   if(!affordable) return;
   // Small delay so deposit toast shows first
@@ -3969,40 +4378,6 @@ function checkBuildPrompt() {
   }, 1200);
 }
 
-function stokefire() {
-  if(G.playedToday.fire_stoked) { toast('Fire already stoked today'); return; }
-  if((G.kingdom.wood||0) < 2) { toast('Need 2 wood to stoke the fire'); return; }
-  G.kingdom.wood -= 2;
-  G.playedToday.fire_stoked = true;
-
-  // Random gift mechanic
-  let giftLine = '';
-  if(Math.random() < 0.2) {
-    const gifts = [{r:'bone',a:2},{r:'hide',a:1},{r:'wood',a:3}];
-    const gift = gifts[Math.floor(Math.random()*gifts.length)];
-    G.kingdom[gift.r] = (G.kingdom[gift.r]||0) + gift.a;
-    giftLine = `Something moved at the edge of the firelight. When it was gone, ${gift.a} ${gift.r} remained.`;
-  }
-
-  setSyncing(true);
-  sbSave().then(()=>setSyncing(false));
-  closeKingdom();
-  startFireSparks();
-
-  showNarrativeScreen({
-    icon: '🔥',
-    eyebrow: '— Fire Lit —',
-    title: 'The Dark Pulls Back',
-    body: `The flame catches. The nearest tiles glow amber — the fire's reach pushes the dark away.${giftLine ? '<br><br>' + giftLine : ''}`,
-    buffs: [
-      { icon: '❤️', text: 'Max stamina permanently +5' },
-      { icon: '⚡', text: 'Tiles within 2 steps of camp — cost 0 stamina' },
-      { icon: '🎒', text: 'Step into the firelight and your pack deposits automatically' },
-    ],
-    btnText: 'TEND THE FLAME',
-    zIndex: 600,
-  });
-}
 
 
 // ================================================================
@@ -4083,15 +4458,16 @@ function swapItem(from, to, type, amt) {
 function confirmPackSwap() {
   const ps = packSwapState;
   G.pack = ps.tempPack;
-  // Drop remaining ground items as loot pile (only if there's a real tile)
+  // Drop remaining ground items as loot pile
   const hasGround = Object.values(ps.tempGround).some(v => v > 0);
-  if(hasGround && ps.tileIdx >= 0) {
-    const existing = G.lootPiles.find(lp => lp.tileIdx === ps.tileIdx);
-    if(existing) {
-      Object.keys(ps.tempGround).forEach(k => existing.pack[k] = (existing.pack[k]||0) + (ps.tempGround[k]||0));
-    } else {
-      G.lootPiles.push({ tileIdx: ps.tileIdx, pack: {...ps.tempGround} });
-    }
+  const dropTileIdx = ps.tileIdx >= 0 ? ps.tileIdx : idx(G.playerPos.r, G.playerPos.c);
+  if(hasGround) {
+    // Remove any existing pile at this tile and replace with current ground state
+    G.lootPiles = G.lootPiles.filter(lp => lp.tileIdx !== dropTileIdx);
+    G.lootPiles.push({ tileIdx: dropTileIdx, pack: {...ps.tempGround} });
+  } else {
+    // Nothing left on ground — clear any pile at this tile too
+    G.lootPiles = G.lootPiles.filter(lp => lp.tileIdx !== dropTileIdx);
   }
   // Deplete the tile if it's a real map tile
   if(ps.tileIdx >= 0 && G.map[ps.tileIdx]) G.map[ps.tileIdx].depleted = true;
@@ -4107,14 +4483,13 @@ function cancelPackSwap() {
   const ps = packSwapState;
   if(ps.tileIdx >= 0 && G.map[ps.tileIdx]) G.map[ps.tileIdx].depleted = true;
   // Drop all ground items as a loot pile so they can be recovered
-  const hasGround = Object.values(ps.tempGround).some(v => v > 0);
-  if(hasGround && ps.tileIdx >= 0) {
-    const existing = G.lootPiles.find(lp => lp.tileIdx === ps.tileIdx);
-    if(existing) {
-      Object.keys(ps.tempGround).forEach(k => existing.pack[k] = (existing.pack[k]||0) + (ps.tempGround[k]||0));
-    } else {
-      G.lootPiles.push({ tileIdx: ps.tileIdx, pack: {...ps.tempGround} });
-    }
+  const hasGround2 = Object.values(ps.tempGround).some(v => v > 0);
+  const dropTileIdx2 = ps.tileIdx >= 0 ? ps.tileIdx : idx(G.playerPos.r, G.playerPos.c);
+  if(hasGround2) {
+    G.lootPiles = G.lootPiles.filter(lp => lp.tileIdx !== dropTileIdx2);
+    G.lootPiles.push({ tileIdx: dropTileIdx2, pack: {...ps.tempGround} });
+  } else {
+    G.lootPiles = G.lootPiles.filter(lp => lp.tileIdx !== dropTileIdx2);
   }
   document.getElementById('ov-packswap').classList.remove('active');
   packSwapState = null;
@@ -4163,8 +4538,18 @@ async function debugGrantWarden() {
   if(!DEBUG_MODE) return;
   // Grant totem and jump straight to the warden encounter
   G.buildings['totem'] = true;
-  await sbSavePlayer();
+  saveGame();
   toast('🗿 Totem granted — find the Warden tile');
+}
+
+function debugGoAct2() {
+  G.act = 2;
+  G.learnedBrace = true;
+  if(becomingEngineInterval) clearInterval(becomingEngineInterval);
+  if(becomingUIInterval) clearInterval(becomingUIInterval);
+  if(becomingTickerInterval) clearInterval(becomingTickerInterval);
+  initBecoming();
+  showScreen('screen-becoming');
 }
 
 function debugToggleGodMode() {
@@ -4182,6 +4567,7 @@ function debugToggleGodMode() {
   const expBtn = document.getElementById('explore-godmode-btn');
   if(expBtn) { expBtn.style.borderColor = bc; expBtn.style.color = col; expBtn.textContent = G.godMode ? '⚡ GOD: ON' : '⚡ GOD'; }
 
+  G.wardenHP = null; // reset on god mode so first-encounter message is clean
   if(G.godMode) {
     // ── Full endgame loadout ───────────────────────────────────
     // All buildings
@@ -4220,92 +4606,43 @@ function debugToggleGodMode() {
 }
 
 async function debugResetRealm() {
-  // Replace browser confirm() — blocked on some mobile browsers
   const confirmed = await showConfirm('Full reset? Wipes ALL progress — resources, buildings, everything. Fresh start.');
   if(!confirmed) return;
 
-  // Wipe everything in memory
-  G.kingdom    = { wood:0, stone:0, bone:0, hide:0, bloodstone:0 };
-  G.buildings  = {};
-  G.claimedDirs  = {};
-  G.playedToday  = {};
-  G.day          = 1;
-  G.realmSeed    = Math.floor(Math.random() * 999999);
-  G.pack         = { wood:0, stone:0, bone:0, hide:0, bloodstone:0 };
-  G.lootPiles    = [];
-  G.carryMax     = 2;
-  G.stamina      = G.maxStamina;
-  G.playerHP     = G.playerMaxHP;
+  // Wipe state
+  G.kingdom         = { wood:0, stone:0, bone:0, hide:0, bloodstone:0 };
+  G.buildings       = {};
+  G.day             = 1;
+  G.realmSeed       = Math.floor(Math.random() * 999999);
+  G.pack            = { wood:0, stone:0, bone:0, hide:0, bloodstone:0 };
+  G.lootPiles       = [];
+  G.stamina         = G.maxStamina;
+  G.playerHP        = G.playerMaxHP;
+  G.deaths          = 0;
+  G.playerMaxHP     = 5;
+  G.playerHP        = 5;
+  G.maxStamina      = 10;
+  G.carryMax        = 2;
+  G.hasBag          = false;
+  G.hasDoubleStrike = false;
+  G.hasUltimate     = false;
+  G.introSeen       = false;
+  G.hasShard        = false;
+  G.ngPlus          = 0;
+  G.act             = 1;
+  G.wardenHP        = null;
 
-  // Clear intro flags so both players see the welcome screen again
-  localStorage.removeItem('sr_intro_seen_Denielle');
-  localStorage.removeItem('sr_intro_seen_Scott');
-  // Reset G player state
-  G.deaths = 0; G.playerMaxHP = 5; G.playerHP = 5; G.maxStamina = 10;
-  G.hasBag = false; G.hasDoubleStrike = false;
-  G.hasUltimate = false; G.introSeen = false;
-  G.carryMax = 2;
-  // Clear player rows in Supabase
-  const playerResetPayload = {
-    resources: { wood:0, stone:0, bone:0, hide:0, bloodstone:0 },
-    buildings: {}, totem_built: false,
-    deaths: 0, max_hp: 5, max_stamina: 10, has_bag: false,
-    has_double_strike: false, has_ultimate: false, intro_seen: false,
-  };
-  ['denielle','scott'].forEach(async id => {
-    try {
-      await fetch(`${SB_URL}/rest/v1/sr_players?id=eq.${id}`, {
-        method: 'PATCH', headers: SB_HEADERS, body: JSON.stringify(playerResetPayload),
-      });
-    } catch(e) {}
-  });
-  ['Denielle','Scott'].forEach(n => {
-    // legacy localStorage cleanup
-    localStorage.removeItem(`sr_seen_skrim`);
-    localStorage.removeItem(`sr_seen_morrowhip`);
-    localStorage.removeItem(`sr_seen_hollowed`);
-    localStorage.removeItem(`sr_seen_cinderhound`);
-    localStorage.removeItem(`sr_seen_warden`);
-  localStorage.removeItem(`sr_seen_warden_both`);
-    localStorage.removeItem(`sr_intro_seen_${n}`);
+  // Clear localStorage
+  localStorage.removeItem(SAVE_KEY);
+  ['skrim','morrowhip','hollowed','cinderhound','warden'].forEach(k => {
+    localStorage.removeItem(`sr_seen_${k}`);
   });
 
-  // Force-write clean state to Supabase via PATCH
-  const payload = {
-    resources: G.kingdom,
-    buildings: G.buildings,
-    day: 1,
-    realm_seed: G.realmSeed,
-    claimed_dirs: {},
-    played_today: {},
-    realm_day_key: '',
-    updated_at: new Date().toISOString(),
-  };
-
-  setSyncing(true);
-  let saveOk = false;
-  try {
-    const res = await fetch(`${SB_URL}/rest/v1/sr_kingdom?id=eq.main`, {
-      method: 'PATCH',
-      headers: SB_HEADERS,
-      body: JSON.stringify(payload),
-    });
-    saveOk = res.ok;
-    if(!saveOk) {
-      const errText = await res.text();
-      console.error('Reset save error:', res.status, errText);
-    }
-  } catch(e) { console.error('Reset save failed', e); }
-  setSyncing(false);
-
-  if(saveOk) {
-    toast('✓ Reset saved — reload the page on both phones');
-  } else {
-    toast('⚠ Reset failed to save — check your connection');
-    return;
-  }
-  setTimeout(() => showScreen('screen-login'), 800);
+  saveGame();
+  toast('Reset complete');
+  setTimeout(() => showScreen('screen-login'), 600);
 }
+
 
 // In-page confirmation dialog — works on all mobile browsers unlike confirm()
 function showConfirm(message) {
@@ -4328,25 +4665,13 @@ function showConfirm(message) {
   });
 }
 
-let dirPollInterval = null;
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if(id !== 'screen-explore') stopFireSparks();
 
-  // Poll for updates when on direction screen (so claimed dirs sync between players)
-  if(dirPollInterval) { clearInterval(dirPollInterval); dirPollInterval = null; }
-  if(id === 'screen-direction') {
-    dirPollInterval = setInterval(async () => {
-      const row = await sbLoad();
-      if(row) {
-        G.claimedDirs = row.claimed_dirs || {};
-        G.playedToday = row.played_today || {};
-        updateDirCards();
-      }
-    }, 8000); // Poll every 8 seconds
-  }
+
 }
 // ================================================================
 // VFX
@@ -4527,7 +4852,7 @@ function vfxWardenDeath(tileIdx) {
 let fireSparkInterval = null;
 function startFireSparks() {
   if(fireSparkInterval) clearInterval(fireSparkInterval);
-  if(!G.buildings['fire'] || !G.playedToday.fire_stoked) return;
+  if(!G.buildings['fire']) return;
   fireSparkInterval = setInterval(() => {
     if(document.getElementById('screen-explore').classList.contains('active')) {
       const cp = G.castlePos;
@@ -4554,6 +4879,1278 @@ function getTileEl(tileIdx) {
   return grid && tileIdx >= 0 ? grid.children[tileIdx] : null;
 }
 
+
+// ================================================================
+// TITLE SCREEN DRIPS
+// ================================================================
+function initLoginDrips() {
+  const container = document.getElementById('login-drips');
+  if(!container) return;
+  container.innerHTML = '';
+  const count = 10;
+  for(let i = 0; i < count; i++) {
+    const drip = document.createElement('div');
+    drip.className = 'drip';
+    const left = 5 + Math.random() * 90;
+    const height = 60 + Math.random() * 140;
+    const duration = 6 + Math.random() * 14;
+    const delay = Math.random() * -20;
+    drip.style.cssText = `left:${left}%;height:${height}px;animation-duration:${duration}s;animation-delay:${delay}s;opacity:${0.3+Math.random()*0.5}`;
+    container.appendChild(drip);
+  }
+}
+// Init drips on load
+window.addEventListener('DOMContentLoaded', initLoginDrips);
+
+// ================================================================
+// WARP TRANSITION
+// ================================================================
+async function triggerWarp() {
+  G.act = 2;
+  const warp = document.getElementById('screen-warp');
+  const txt = document.getElementById('warp-text');
+  warp.style.display = 'flex';
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  txt.innerHTML = '';
+  const lines = [
+    'You reached inside it.',
+    'Something reached back.',
+    '',
+    'The realm tears.',
+    '',
+    'You are not what you were.',
+    '',
+    'You are not yet what you will be.',
+  ];
+  for(const line of lines) {
+    await new Promise(r => setTimeout(r, line ? 650 : 280));
+    txt.innerHTML += line ? `<div>${line}</div>` : '<div style="height:14px"></div>';
+  }
+  await new Promise(r => setTimeout(r, 1800));
+  warp.style.background = '#1a0000';
+  await new Promise(r => setTimeout(r, 200));
+  warp.style.background = '#000';
+  await new Promise(r => setTimeout(r, 700));
+  warp.style.display = 'none';
+  initBecoming();
+  showScreen('screen-becoming');
+}
+
+// ================================================================
+// ACT 2 — THE BECOMING (deep incremental engine)
+// ================================================================
+
+// ── Resources ───────────────────────────────────────────────────
+const B = {
+  blood: 0,
+  breath: 0,
+  ichor: 0,
+  marrow: 0,
+};
+
+// ── Engine state ─────────────────────────────────────────────────
+const BE = {
+  // Heart
+  heartClicks: 0,
+  bloodPerClick: 1,
+  autoBeating: false,
+  autoBeatInterval: null,
+  autoBeatMs: 0, // 0 = not yet active
+
+  // Veins
+  veins: 0,
+  maxVeins: 10,
+  bloodPerSec: 0,
+
+  // Spine
+  vertebrae: 0,
+  maxVertebrae: 6,
+  spineMult: 1,
+  vertebraeTimer: null,  // building timer
+  vertebraeBuilding: false,
+  vertebraeBuildMs: 18000, // 18s per vertebra
+
+  // Lungs
+  lungsBuilt: false,
+  breathPerSec: 0,
+
+  // Muscle
+  fibers: 0,
+  maxFibers: 10,
+  fiberMult: 1,
+
+  // Nervous system
+  nerveNodes: 0,
+  maxNerveNodes: 6,
+
+  // Stomach
+  stomachBuilt: false,
+  ichorPerSec: 0,
+
+  // Marrow
+  marrowNodes: 0,
+  maxMarrowNodes: 5,
+  marrowMult: 1,
+
+  // Skin
+  skinBuilt: false,
+
+  // Throat
+  throatBuilt: false,
+  resonanceMult: 1,
+
+  // Brainstem
+  brainBuilt: false,
+
+  // Eye
+  eyeProgress: 0, // 0-100
+  eyeBuilding: false,
+  eyeTimer: null,
+
+  // Unlock flags
+  unlocked: { heart: true, veins: false, spine: false, lungs: false,
+    nervous: false, muscle: false, stomach: false, marrow: false,
+    skin: false, throat: false, brain: false, eye: false },
+  complete: { heart: false, veins: false, spine: false, lungs: false,
+    nervous: false, muscle: false, stomach: false, marrow: false,
+    skin: false, throat: false, brain: false },
+
+  // Timers active (for display)
+  spineTimerRemaining: 0,
+  eyeTimerRemaining: 0,
+};
+
+let becomingEngineInterval = null;
+let becomingUIInterval = null;
+let becomingTickerInterval = null;
+let becomingTickerIdx = 0;
+
+const BECOMING_TICKERS = [
+  "Something drips. You are the source.",
+  "The dark has given you a body. Fill it.",
+  "Each beat costs less than the last.",
+  "You remember being afraid. Faintly.",
+  "The architecture of a predator, assembling.",
+  "Blood knows where it wants to go.",
+  "You are becoming something that does not need to be afraid.",
+  "The body is a machine. You are learning its levers.",
+  "Something outside is still running. Good.",
+  "Almost.",
+  "Almost.",
+];
+
+// ── Cost functions ────────────────────────────────────────────────
+function veinCost(n) {
+  // Flat early so first 5 feel achievable, then steepens
+  const flat = [5, 8, 12, 16, 22];
+  if(n < flat.length) return flat[n];
+  return Math.floor(30 * Math.pow(1.4, n - flat.length + 1));
+}
+function fiberCost(n) { return Math.floor(8 * Math.pow(1.35, n)); }
+function fiberBreathCost(n) { return Math.floor(4 * Math.pow(1.25, n)); }
+function nerveCost(n) { return Math.floor(25 * Math.pow(1.5, n)); }
+function nerveBreathCost(n) { return Math.floor(8 * Math.pow(1.35, n)); }
+function marrowCost(n) { return Math.floor(15 * Math.pow(1.6, n)); }
+function marrowIchorCost(n) { return Math.floor(4 * Math.pow(1.4, n)); }
+function vertebraeCost(n) {
+  const flat = [25, 50];
+  if(n < flat.length) return flat[n];
+  return Math.floor(100 * Math.pow(1.7, n - flat.length + 1));
+}
+
+// ── Init ──────────────────────────────────────────────────────────
+function initBecoming() {
+  // Reset
+  Object.assign(B, { blood:0, breath:0, ichor:0, marrow:0 });
+  Object.assign(BE, {
+    heartClicks:0, bloodPerClick:1, autoBeating:false, autoBeatMs:0,
+    veins:0, bloodPerSec:0,
+    vertebrae:0, spineMult:1, vertebraeBuilding:false, vertebraeTimer:null, spineTimerRemaining:0,
+    lungsBuilt:false, breathPerSec:0,
+    fibers:0, fiberMult:1,
+    nerveNodes:0,
+    stomachBuilt:false, ichorPerSec:0,
+    marrowNodes:0, marrowMult:1,
+    skinBuilt:false, throatBuilt:false, resonanceMult:1,
+    brainBuilt:false,
+    eyeProgress:0, eyeBuilding:false, eyeTimer:null, eyeTimerRemaining:0,
+    unlocked:{ heart:true, veins:false, spine:false, lungs:false,
+      nervous:false, muscle:false, stomach:false, marrow:false,
+      skin:false, throat:false, brain:false, eye:false },
+    complete:{ heart:false, veins:false, spine:false, lungs:false,
+      nervous:false, muscle:false, stomach:false, marrow:false,
+      skin:false, throat:false, brain:false },
+    autoBeatInterval: null,
+  });
+
+  if(becomingEngineInterval) clearInterval(becomingEngineInterval);
+  if(becomingUIInterval) clearInterval(becomingUIInterval);
+  if(becomingTickerInterval) clearInterval(becomingTickerInterval);
+
+  renderBecoming();
+  startBecomingEngine();
+  startBecomingUI();
+  startBecomingTicker();
+}
+
+// ── Engine tick (every 200ms) ─────────────────────────────────────
+function startBecomingEngine() {
+  becomingEngineInterval = setInterval(() => {
+    if(!document.getElementById('screen-becoming').classList.contains('active')) return;
+    const dt = 0.2; // seconds per tick
+    const gm = BE.spineMult * BE.fiberMult * BE.marrowMult * BE.resonanceMult;
+
+    // Passive blood from veins
+    B.blood += BE.bloodPerSec * gm * dt;
+
+    // Passive breath from lungs
+    if(BE.lungsBuilt) B.breath += BE.breathPerSec * gm * dt;
+
+    // Passive ichor from stomach
+    if(BE.stomachBuilt && B.blood >= 0.1 && B.breath >= 0.1) {
+      const ichorRate = 0.05 * (1 + BE.marrowNodes * 0.3) * gm;
+      B.ichor += ichorRate * dt;
+      B.blood  = Math.max(0, B.blood  - 0.02 * dt);
+      B.breath = Math.max(0, B.breath - 0.02 * dt);
+    }
+
+    // Marrow passively from spine
+    if(BE.vertebrae >= 3) {
+      B.marrow += 0.02 * BE.vertebrae * gm * dt;
+    }
+
+    // Cap resources
+    B.blood  = Math.min(99999, B.blood);
+    B.breath = Math.min(9999,  B.breath);
+    B.ichor  = Math.min(9999,  B.ichor);
+    B.marrow = Math.min(9999,  B.marrow);
+
+    // Spine build timer
+    if(BE.vertebraeBuilding && BE.spineTimerRemaining > 0) {
+      BE.spineTimerRemaining -= dt;
+      if(BE.spineTimerRemaining <= 0) {
+        BE.vertebraeBuilding = false;
+        BE.vertebrae++;
+        BE.spineMult = 1 + BE.vertebrae * 0.5;
+        updateAutoBeat();
+        checkUnlocks();
+      }
+    }
+
+    // Eye build timer
+    if(BE.eyeBuilding && BE.eyeTimerRemaining > 0) {
+      BE.eyeTimerRemaining -= dt;
+      BE.eyeProgress = Math.max(BE.eyeProgress,
+        Math.floor((1 - BE.eyeTimerRemaining / 120) * 100));
+      if(BE.eyeTimerRemaining <= 0) {
+        BE.eyeBuilding = false;
+        BE.eyeProgress = 100;
+        setTimeout(triggerEyeOpen, 800);
+      }
+    }
+
+    checkUnlocks();
+  }, 200);
+}
+
+// ── UI tick (every 500ms) — update display numbers only ──────────
+function startBecomingUI() {
+  becomingUIInterval = setInterval(() => {
+    if(!document.getElementById('screen-becoming').classList.contains('active')) return;
+    updateBecomingDisplay();
+  }, 500);
+}
+
+function startBecomingTicker() {
+  becomingTickerInterval = setInterval(() => {
+    const el = document.getElementById('becoming-ticker');
+    if(el) el.textContent = BECOMING_TICKERS[becomingTickerIdx++ % BECOMING_TICKERS.length];
+  }, 9000);
+  const el = document.getElementById('becoming-ticker');
+  if(el) el.textContent = BECOMING_TICKERS[0];
+}
+
+// ── Auto beat ─────────────────────────────────────────────────────
+function updateAutoBeat() {
+  // Unlock auto-beat when nervous system has 3+ nodes
+  if(BE.nerveNodes >= 3 && !BE.autoBeating) {
+    BE.autoBeating = true;
+  }
+  if(!BE.autoBeating) return;
+  // Beat interval shrinks with more nerve nodes: starts at 4s, min 0.4s
+  BE.autoBeatMs = Math.max(400, 4000 - BE.nerveNodes * 450);
+  if(BE.autoBeatInterval) clearInterval(BE.autoBeatInterval);
+  BE.autoBeatInterval = setInterval(() => {
+    if(!document.getElementById('screen-becoming').classList.contains('active')) return;
+    doHeartBeat(false); // auto beat, no pulse animation
+  }, BE.autoBeatMs);
+}
+
+// ── Heart click ───────────────────────────────────────────────────
+function doHeartBeat(isClick) {
+  const gm = BE.spineMult * BE.fiberMult * BE.marrowMult * BE.resonanceMult;
+  const gain = BE.bloodPerClick * gm;
+  B.blood = Math.min(99999, B.blood + gain);
+  BE.heartClicks++;
+
+  if(isClick) {
+    // Visual pulse
+    const icon = document.getElementById('heart-btn-icon');
+    if(icon) {
+      icon.style.transform = 'scale(1.3)';
+      icon.style.filter = 'drop-shadow(0 0 12px rgba(220,0,30,0.9))';
+      setTimeout(() => {
+        icon.style.transform = 'scale(1)';
+        icon.style.filter = 'drop-shadow(0 0 4px rgba(180,0,20,0.5))';
+      }, 120);
+    }
+    // Ripple
+    const btn = document.getElementById('heart-beat-btn');
+    if(btn) becomingRipple(btn);
+  }
+  updateBecomingDisplay();
+}
+
+function becomingRipple(btn) {
+  const r = document.createElement('span');
+  r.style.cssText = `position:absolute;border-radius:50%;background:rgba(220,20,40,0.35);
+    width:8px;height:8px;top:50%;left:50%;transform:translate(-50%,-50%);
+    pointer-events:none;animation:becoming-ripple 0.5s ease-out forwards;z-index:10`;
+  btn.style.position = 'relative';
+  btn.style.overflow = 'hidden';
+  btn.appendChild(r);
+  setTimeout(() => r.remove(), 500);
+}
+
+// ── Check unlocks ─────────────────────────────────────────────────
+function checkUnlocks() {
+  const u = BE.unlocked;
+  const c = BE.complete;
+  let changed = false;
+
+  // Mark completions first
+  if(!c.heart   && BE.heartClicks >= 30)                              { c.heart   = true; changed = true; }
+  if(!c.veins   && BE.veins >= BE.maxVeins)                           { c.veins   = true; changed = true; }
+  if(!c.spine   && BE.vertebrae >= BE.maxVertebrae && !BE.vertebraeBuilding) { c.spine = true; changed = true; }
+  if(!c.lungs   && BE.lungsBuilt && B.breath >= 30)                   { c.lungs   = true; changed = true; }
+  if(!c.nervous && BE.nerveNodes >= BE.maxNerveNodes)                 { c.nervous = true; changed = true; }
+  if(!c.muscle  && BE.fibers >= BE.maxFibers)                         { c.muscle  = true; changed = true; }
+  if(!c.stomach && BE.stomachBuilt && B.ichor >= 20)                  { c.stomach = true; changed = true; }
+  if(!c.marrow  && BE.marrowNodes >= BE.maxMarrowNodes)               { c.marrow  = true; changed = true; }
+  if(!c.skin    && BE.skinBuilt)                                      { c.skin    = true; changed = true; }
+  if(!c.throat  && BE.throatBuilt)                                    { c.throat  = true; changed = true; }
+  if(!c.brain   && BE.brainBuilt)                                     { c.brain   = true; changed = true; }
+
+  // Hard gates — each unlocks ONLY when previous is complete
+  if(!u.veins   && c.heart)                                           { u.veins   = true; changed = true; }
+  if(!u.spine   && c.veins)                                           { u.spine   = true; changed = true; }
+  if(!u.lungs   && c.spine)                                           { u.lungs   = true; changed = true; }
+  if(!u.nervous && c.lungs)                                           { u.nervous = true; changed = true; }
+  if(!u.muscle  && c.nervous)                                         { u.muscle  = true; changed = true; }
+  if(!u.stomach && c.muscle)                                          { u.stomach = true; changed = true; }
+  if(!u.marrow  && c.stomach)                                         { u.marrow  = true; changed = true; }
+  if(!u.skin    && c.marrow)                                          { u.skin    = true; changed = true; }
+  if(!u.throat  && c.skin)                                            { u.throat  = true; changed = true; }
+  if(!u.brain   && c.throat)                                          { u.brain   = true; changed = true; }
+  if(!u.eye     && c.brain)                                           { u.eye     = true; changed = true; }
+
+  if(changed) renderBecoming();
+}
+
+// ── Actions ───────────────────────────────────────────────────────
+function beBuildVein() {
+  const cost = veinCost(BE.veins);
+  if(B.blood < cost || BE.veins >= BE.maxVeins) return;
+  B.blood -= cost;
+  BE.veins++;
+  BE.bloodPerSec = BE.veins * 0.4;
+  checkUnlocks();
+  renderBecoming();
+}
+
+function beStartVertebra() {
+  if(BE.vertebraeBuilding || BE.vertebrae >= BE.maxVertebrae) return;
+  const cost = vertebraeCost(BE.vertebrae);
+  if(B.blood < cost) return;
+  B.blood -= cost;
+  BE.vertebraeBuilding = true;
+  // Build time increases: 18s, 25s, 35s, 50s...
+  BE.spineTimerRemaining = 18 + BE.vertebrae * 8;
+  renderBecoming();
+}
+
+function beBuildLungs() {
+  if(BE.lungsBuilt || B.blood < 80) return;
+  B.blood -= 80;
+  BE.lungsBuilt = true;
+  BE.breathPerSec = 0.3;
+  checkUnlocks();
+  renderBecoming();
+}
+
+function beBuildFiber() {
+  const bc = fiberCost(BE.fibers);
+  const brc = fiberBreathCost(BE.fibers);
+  if(B.blood < bc || B.breath < brc || BE.fibers >= BE.maxFibers) return;
+  B.blood -= bc; B.breath -= brc;
+  BE.fibers++;
+  BE.fiberMult = 1 + BE.fibers * 0.3;
+  BE.bloodPerClick = 1 + Math.floor(BE.fibers * 0.8);
+  checkUnlocks();
+  renderBecoming();
+}
+
+function beBuildNerve() {
+  const bc = nerveCost(BE.nerveNodes);
+  const brc = nerveBreathCost(BE.nerveNodes);
+  if(B.blood < bc || B.breath < brc || BE.nerveNodes >= BE.maxNerveNodes) return;
+  B.blood -= bc; B.breath -= brc;
+  BE.nerveNodes++;
+  updateAutoBeat();
+  checkUnlocks();
+  renderBecoming();
+}
+
+function beBuildStomach() {
+  if(BE.stomachBuilt || B.blood < 200 || B.breath < 40) return;
+  B.blood -= 200; B.breath -= 40;
+  BE.stomachBuilt = true;
+  BE.ichorPerSec = 0.05;
+  checkUnlocks();
+  renderBecoming();
+}
+
+function beBuildMarrow() {
+  const bc = marrowCost(BE.marrowNodes);
+  const ic = marrowIchorCost(BE.marrowNodes);
+  if(B.blood < bc || B.ichor < ic || BE.marrowNodes >= BE.maxMarrowNodes) return;
+  B.blood -= bc; B.ichor -= ic;
+  BE.marrowNodes++;
+  BE.marrowMult = 1 + BE.marrowNodes * 0.5;
+  checkUnlocks();
+  renderBecoming();
+}
+
+function beBuildSkin() {
+  if(BE.skinBuilt || B.blood < 300 || B.ichor < 20) return;
+  B.blood -= 300; B.ichor -= 20;
+  BE.skinBuilt = true;
+  checkUnlocks();
+  renderBecoming();
+}
+
+function beBuildThroat() {
+  if(BE.throatBuilt || B.blood < 500 || B.ichor < 40 || B.marrow < 30) return;
+  B.blood -= 500; B.ichor -= 40; B.marrow -= 30;
+  BE.throatBuilt = true;
+  BE.resonanceMult = 2;
+  checkUnlocks();
+  renderBecoming();
+}
+
+function beBuildBrain() {
+  if(BE.brainBuilt || B.blood < 800 || B.ichor < 80 || B.marrow < 60) return;
+  B.blood -= 800; B.ichor -= 80; B.marrow -= 60;
+  BE.brainBuilt = true;
+  // Brain dramatically speeds up auto-beat
+  if(BE.autoBeating) {
+    BE.autoBeatMs = Math.max(200, BE.autoBeatMs * 0.4);
+    if(BE.autoBeatInterval) clearInterval(BE.autoBeatInterval);
+    BE.autoBeatInterval = setInterval(() => {
+      if(!document.getElementById('screen-becoming').classList.contains('active')) return;
+      doHeartBeat(false);
+    }, BE.autoBeatMs);
+  }
+  checkUnlocks();
+  renderBecoming();
+}
+
+function beOpenEye() {
+  if(BE.eyeBuilding || BE.eyeProgress >= 100) return;
+  if(B.blood < 500 || B.ichor < 100 || B.marrow < 80) return;
+  B.blood -= 500; B.ichor -= 100; B.marrow -= 80;
+  BE.eyeBuilding = true;
+  BE.eyeTimerRemaining = 120; // 2 minute timer
+  BE.eyeProgress = 0;
+  renderBecoming();
+}
+
+// ── Render ────────────────────────────────────────────────────────
+function renderBecoming() {
+  const container = document.getElementById('becoming-systems');
+  if(!container) return;
+  container.innerHTML = '';
+
+  const u = BE.unlocked;
+  const gm = BE.spineMult * BE.fiberMult * BE.marrowMult * BE.resonanceMult;
+
+  // Helper to add a panel
+  function panel(id, html) {
+    const d = document.createElement('div');
+    d.id = `bpanel-${id}`;
+    d.innerHTML = html;
+    container.appendChild(d);
+  }
+
+  function res(icon, label, val, id) {
+    return `<span id="${id}" style="display:inline-flex;align-items:center;gap:4px;margin-right:12px">
+      <span style="font-size:12px">${icon}</span>
+      <span style="font-family:Cinzel,serif;font-size:11px;color:#e0d0b8">${Math.floor(val)}</span>
+      <span style="font-family:Cinzel,serif;font-size:7px;color:#6a5050;letter-spacing:0.1em">${label}</span>
+    </span>`;
+  }
+
+  function buildBtn(id, label, onclick, enabled, costStr) {
+    const col = enabled ? '#e0d0b8' : '#5a4040';
+    const border = enabled ? 'rgba(200,60,40,0.6)' : 'rgba(80,30,30,0.3)';
+    const bg = enabled ? 'rgba(50,4,10,0.85)' : 'rgba(20,3,6,0.5)';
+    return `<button id="${id}" onclick="${onclick}" ${enabled?'':'disabled'}
+      style="width:100%;padding:9px;border:1px solid ${border};background:${bg};
+      color:${col};font-family:Cinzel,serif;font-size:10px;letter-spacing:0.14em;
+      cursor:${enabled?'pointer':'not-allowed'};margin-top:6px;transition:opacity 0.2s">
+      ${label}${costStr ? `<div style="font-size:8px;color:rgba(200,140,100,0.7);margin-top:2px">${costStr}</div>` : ''}
+    </button>`;
+  }
+
+  function stableBar(id, pct, color) {
+    return `<div style="height:3px;background:rgba(30,4,8,0.9);margin:6px 0;border-radius:1px">
+      <div id="${id}" style="height:100%;width:${pct}%;background:${color};border-radius:1px;transition:width 0.3s ease"></div>
+    </div>`;
+  }
+
+  function progressBar(pct, color) { return stableBar("pb-"+Math.random().toString(36).slice(2), pct, color); }
+
+  function sectionHeader(icon, title, subtitle) {
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <span style="font-size:22px;flex-shrink:0">${icon}</span>
+      <div>
+        <div style="font-family:Cinzel,serif;font-size:13px;font-weight:600;color:#e0d0b8">${title}</div>
+        ${subtitle ? `<div style="font-family:'Crimson Text',serif;font-size:12px;color:#8a6860;font-style:italic">${subtitle}</div>` : ''}
+      </div>
+    </div>`;
+  }
+
+  const WRAP = (id, content, complete) =>
+    `<div id="bpanel-${id}" style="padding:13px 14px;border:1px solid ${complete?'rgba(180,60,40,0.5)':'rgba(110,25,35,0.55)'};
+    background:${complete?'rgba(22,3,7,0.95)':'rgba(16,1,5,0.92)'};margin-bottom:8px">
+    ${complete ? `<div style="position:absolute" />` : ''}
+    ${content}
+    </div>`;
+
+  // ── HEART ───────────────────────────────────────────────────────
+  const bps = (BE.bloodPerSec * gm).toFixed(1);
+  const autoLabel = BE.autoBeating
+    ? `Auto-beating every ${(BE.autoBeatMs/1000).toFixed(1)}s`
+    : BE.nerveNodes > 0 ? `${BE.nerveNodes} nerve node${BE.nerveNodes>1?'s':''} — auto-beat soon`
+    : 'Manual only';
+  container.insertAdjacentHTML('beforeend', `
+    <div id="bpanel-heart" style="padding:13px 14px;border:1px solid rgba(200,20,40,0.6);background:rgba(16,1,5,0.95);margin-bottom:8px">
+      ${sectionHeader('🫀', 'The Heart', 'Click to beat. Everything begins here.')}
+      <div style="display:flex;gap:0;margin-bottom:10px;flex-wrap:wrap">
+        ${res('🩸','BLOOD', B.blood, 'bd-blood')}
+        ${res('💨','BREATH', B.breath, 'bd-breath')}
+        ${res('💜','ICHOR', B.ichor, 'bd-ichor')}
+        ${res('🟤','MARROW', B.marrow, 'bd-marrow')}
+      </div>
+      <button id="heart-beat-btn"
+        style="width:100%;padding:16px;border:1px solid rgba(220,30,40,0.7);background:rgba(60,3,10,0.9);
+        color:#f0d0c0;font-family:Cinzel,serif;font-size:14px;letter-spacing:0.2em;cursor:pointer;
+        transition:transform 0.05s;position:relative;overflow:hidden;margin-bottom:8px;-webkit-tap-highlight-color:transparent;"
+        onmousedown="doHeartBeat(true);this.style.transform='scale(0.96)'"
+        onmouseup="this.style.transform='scale(1)'"
+        ontouchstart="doHeartBeat(true);this.style.transform='scale(0.96)';event.preventDefault()"
+        ontouchend="this.style.transform='scale(1)'">
+        <span id="heart-btn-icon" style="font-size:20px;display:block;margin-bottom:4px;transition:all 0.12s;filter:drop-shadow(0 0 4px rgba(180,0,20,0.5))">🫀</span>
+        BEAT
+      </button>
+      <div style="height:2px;background:rgba(30,4,8,0.9);margin:6px 0;border-radius:1px;display:${BE.complete&&BE.complete.heart?'none':'block'}">
+        <div id="heart-prog-bar" style="height:100%;width:${Math.min(100,(BE.heartClicks/30)*100)}%;background:linear-gradient(90deg,#6a0010,#cc1030);border-radius:1px;transition:width 0.3s"></div>
+      </div>
+      <div style="font-family:Cinzel,serif;font-size:8px;color:#7a5050;letter-spacing:0.1em">
+        +${(BE.bloodPerClick * gm).toFixed(1)} blood/click · ${bps}/sec passive · <span id="bd-autostate">${autoLabel}</span>
+      </div>
+    </div>
+  `);
+
+  // ── VEINS ───────────────────────────────────────────────────────
+  if(u.veins) {
+    const cost = veinCost(BE.veins);
+    const canAfford = B.blood >= cost && BE.veins < BE.maxVeins;
+    const done = BE.veins >= BE.maxVeins;
+    container.insertAdjacentHTML('beforeend', `
+      <div id="bpanel-veins" style="padding:13px 14px;border:1px solid rgba(120,20,35,0.55);background:rgba(16,1,5,0.92);margin-bottom:8px">
+        ${sectionHeader('🩸', 'Veins', `${BE.veins}/${BE.maxVeins} built · +${(BE.bloodPerSec*gm).toFixed(1)} blood/sec`)}
+        ${progressBar(BE.veins/BE.maxVeins*100, 'linear-gradient(90deg,#8a0015,#cc1030)')}
+        ${done ? '<div style="font-family:Crimson Text,serif;font-size:12px;color:rgba(200,140,100,0.7);font-style:italic">All veins threaded.</div>'
+          : buildBtn('veins-buy-btn', `BUILD VEIN (${BE.veins+1}/${BE.maxVeins})`, 'beBuildVein()', canAfford, `${cost} blood`)}
+      </div>`);
+  }
+
+  // ── SPINE ───────────────────────────────────────────────────────
+  if(u.spine) {
+    const cost = vertebraeCost(BE.vertebrae);
+    const canAfford = B.blood >= cost && !BE.vertebraeBuilding && BE.vertebrae < BE.maxVertebrae;
+    const done = BE.vertebrae >= BE.maxVertebrae;
+    const spineTimerPct = BE.vertebraeBuilding
+      ? Math.max(0, 100 - (BE.spineTimerRemaining / (18 + BE.vertebrae*8)) * 100) : 0;
+    const buildingHtml = BE.vertebraeBuilding
+      ? `<div id="spine-timer-txt" style="font-family:Cinzel,serif;font-size:9px;color:rgba(200,150,80,0.9);margin-top:6px">
+          ⏳ Fusing... ${Math.ceil(BE.spineTimerRemaining)}s remaining</div>
+         <div style="height:3px;background:rgba(30,4,8,0.9);margin:4px 0;border-radius:1px">
+           <div id="spine-timer-bar" style="height:100%;width:${spineTimerPct}%;background:#cc8030;border-radius:1px;transition:width 0.3s"></div>
+         </div>` : '';
+    container.insertAdjacentHTML('beforeend', `
+      <div id="bpanel-spine" style="padding:13px 14px;border:1px solid rgba(120,20,35,0.55);background:rgba(16,1,5,0.92);margin-bottom:8px">
+        ${sectionHeader('🦴', 'Spine', `<span id="spine-sub">${BE.vertebrae}/${BE.maxVertebrae} vertebrae · ×${BE.spineMult.toFixed(1)} multiplier</span>`)}
+        ${stableBar('spine-prog-bar', BE.vertebrae/BE.maxVertebrae*100, 'linear-gradient(90deg,#aa4020,#ee6030)')}
+        ${buildingHtml}
+        ${done ? '<div style="font-family:Crimson Text,serif;font-size:12px;color:rgba(200,140,100,0.7);font-style:italic">The spine is complete. It holds.</div>'
+          : !BE.vertebraeBuilding ? buildBtn('spine-buy-btn', 'FUSE VERTEBRA', 'beStartVertebra()', canAfford, `${cost} blood · takes ${18+BE.vertebrae*8}s`) : ''}
+      </div>`);
+  }
+
+  // ── LUNGS ───────────────────────────────────────────────────────
+  if(u.lungs) {
+    const canAfford = !BE.lungsBuilt && B.blood >= 80;
+    container.insertAdjacentHTML('beforeend', `
+      <div id="bpanel-lungs" style="padding:13px 14px;border:1px solid rgba(120,20,35,0.55);background:rgba(16,1,5,0.92);margin-bottom:8px">
+        ${sectionHeader('🫁', 'Lungs', BE.lungsBuilt ? `Breathing · +${(BE.breathPerSec*gm).toFixed(2)} breath/sec` : 'Passive breath generation')}
+        ${BE.lungsBuilt
+          ? `<div style="font-family:Crimson Text,serif;font-size:12px;color:rgba(200,140,100,0.7);font-style:italic">The body breathes without being told.</div>`
+          : buildBtn('lungs-buy-btn', 'BUILD LUNGS', 'beBuildLungs()', canAfford, '80 blood')}
+      </div>`);
+  }
+
+  // ── NERVOUS SYSTEM ──────────────────────────────────────────────
+  if(u.nervous) {
+    const bc = nerveCost(BE.nerveNodes), brc = nerveBreathCost(BE.nerveNodes);
+    const canAfford = B.blood >= bc && B.breath >= brc && BE.nerveNodes < BE.maxNerveNodes;
+    const done = BE.nerveNodes >= BE.maxNerveNodes;
+    const autoNote = BE.autoBeating
+      ? `Auto-beating every ${(BE.autoBeatMs/1000).toFixed(1)}s`
+      : BE.nerveNodes >= 3 ? 'Unlocked — building speed'
+      : `${3 - BE.nerveNodes} more node${3-BE.nerveNodes>1?'s':''} to unlock auto-beat`;
+    container.insertAdjacentHTML('beforeend', `
+      <div id="bpanel-nervous" style="padding:13px 14px;border:1px solid rgba(120,20,35,0.55);background:rgba(16,1,5,0.92);margin-bottom:8px">
+        ${sectionHeader('⚡', 'Nervous System', `${BE.nerveNodes}/${BE.maxNerveNodes} nodes · ${autoNote}`)}
+        ${stableBar('nervous-bar', BE.nerveNodes/BE.maxNerveNodes*100, 'linear-gradient(90deg,#602080,#cc40ff)')}
+        ${done ? '<div style="font-family:Crimson Text,serif;font-size:12px;color:rgba(200,140,100,0.7);font-style:italic">It does not need to be told anymore.</div>'
+          : buildBtn('nervous-buy-btn', `GROW NODE (${BE.nerveNodes+1}/${BE.maxNerveNodes})`, 'beBuildNerve()', canAfford, `${bc} blood · ${brc} breath`)}
+      </div>`);
+  }
+
+  // ── MUSCLE ──────────────────────────────────────────────────────
+  if(u.muscle) {
+    const bc = fiberCost(BE.fibers), brc = fiberBreathCost(BE.fibers);
+    const canAfford = B.blood >= bc && B.breath >= brc && BE.fibers < BE.maxFibers;
+    const done = BE.fibers >= BE.maxFibers;
+    container.insertAdjacentHTML('beforeend', `
+      <div id="bpanel-muscle" style="padding:13px 14px;border:1px solid rgba(120,20,35,0.55);background:rgba(16,1,5,0.92);margin-bottom:8px">
+        ${sectionHeader('💪', 'Muscle', `${BE.fibers}/${BE.maxFibers} fibers · ×${BE.fiberMult.toFixed(1)} click power`)}
+        ${stableBar('muscle-bar', BE.fibers/BE.maxFibers*100, 'linear-gradient(90deg,#7a1020,#bb2040)')}
+        ${done ? '<div style="font-family:Crimson Text,serif;font-size:12px;color:rgba(200,140,100,0.7);font-style:italic">The body can move. It is deciding where.</div>'
+          : buildBtn('muscle-buy-btn', `THREAD FIBER (${BE.fibers+1}/${BE.maxFibers})`, 'beBuildFiber()', canAfford, `${bc} blood · ${brc} breath`)}
+      </div>`);
+  }
+
+  // ── STOMACH ─────────────────────────────────────────────────────
+  if(u.stomach) {
+    const canAfford = !BE.stomachBuilt && B.blood >= 200 && B.breath >= 40;
+    container.insertAdjacentHTML('beforeend', `
+      <div id="bpanel-stomach" style="padding:13px 14px;border:1px solid rgba(120,20,35,0.55);background:rgba(16,1,5,0.92);margin-bottom:8px">
+        ${sectionHeader('🫃', 'Stomach', BE.stomachBuilt ? 'Rendering blood+breath → ichor' : 'Converts resources to ichor')}
+        ${BE.stomachBuilt
+          ? `<div style="font-family:Crimson Text,serif;font-size:12px;color:rgba(200,140,100,0.7);font-style:italic">Something renders down into something else.</div>`
+          : buildBtn('stomach-buy-btn', 'BUILD STOMACH', 'beBuildStomach()', canAfford, '200 blood · 40 breath')}
+      </div>`);
+  }
+
+  // ── MARROW ──────────────────────────────────────────────────────
+  if(u.marrow) {
+    const bc = marrowCost(BE.marrowNodes), ic = marrowIchorCost(BE.marrowNodes);
+    const canAfford = B.blood >= bc && B.ichor >= ic && BE.marrowNodes < BE.maxMarrowNodes;
+    const done = BE.marrowNodes >= BE.maxMarrowNodes;
+    container.insertAdjacentHTML('beforeend', `
+      <div id="bpanel-marrow" style="padding:13px 14px;border:1px solid rgba(120,20,35,0.55);background:rgba(16,1,5,0.92);margin-bottom:8px">
+        ${sectionHeader('🌡️', 'Marrow', `${BE.marrowNodes}/${BE.maxMarrowNodes} · ×${BE.marrowMult.toFixed(1)} global mult`)}
+        ${stableBar('marrow-bar', BE.marrowNodes/BE.maxMarrowNodes*100, 'linear-gradient(90deg,#804010,#cc7020)')}
+        ${done ? '<div style="font-family:Crimson Text,serif;font-size:12px;color:rgba(200,140,100,0.7);font-style:italic">The bones are engines now.</div>'
+          : buildBtn('marrow-buy-btn', `ENRICH MARROW (${BE.marrowNodes+1}/${BE.maxMarrowNodes})`, 'beBuildMarrow()', canAfford, `${bc} blood · ${ic} ichor`)}
+      </div>`);
+  }
+
+  // ── SKIN ────────────────────────────────────────────────────────
+  if(u.skin) {
+    const canAfford = !BE.skinBuilt && B.blood >= 300 && B.ichor >= 20;
+    container.insertAdjacentHTML('beforeend', `
+      <div id="bpanel-skin" style="padding:13px 14px;border:1px solid rgba(120,20,35,0.55);background:rgba(16,1,5,0.92);margin-bottom:8px">
+        ${sectionHeader('🫧', 'Skin', BE.skinBuilt ? 'Sealed. A boundary.' : 'Seal the body. Inside from outside.')}
+        ${BE.skinBuilt
+          ? `<div style="font-family:Crimson Text,serif;font-size:12px;color:rgba(200,140,100,0.7);font-style:italic">Everything inside belongs to it now.</div>`
+          : buildBtn('skin-buy-btn', 'SEAL THE SKIN', 'beBuildSkin()', canAfford, '300 blood · 20 ichor')}
+      </div>`);
+  }
+
+  // ── THROAT ──────────────────────────────────────────────────────
+  if(u.throat) {
+    const canAfford = !BE.throatBuilt && B.blood >= 500 && B.ichor >= 40 && B.marrow >= 30;
+    container.insertAdjacentHTML('beforeend', `
+      <div id="bpanel-throat" style="padding:13px 14px;border:1px solid rgba(120,20,35,0.55);background:rgba(16,1,5,0.92);margin-bottom:8px">
+        ${sectionHeader('🔊', 'Throat', BE.throatBuilt ? '×2 global resonance' : 'Not for speaking. For the sound that empties minds.')}
+        ${BE.throatBuilt
+          ? `<div style="font-family:Crimson Text,serif;font-size:12px;color:rgba(200,140,100,0.7);font-style:italic">Something that was not listening is now listening.</div>`
+          : buildBtn('throat-buy-btn', 'OPEN THE THROAT', 'beBuildThroat()', canAfford, '500 blood · 40 ichor · 30 marrow')}
+      </div>`);
+  }
+
+  // ── BRAIN STEM ──────────────────────────────────────────────────
+  if(u.brain) {
+    const canAfford = !BE.brainBuilt && B.blood >= 800 && B.ichor >= 80 && B.marrow >= 60;
+    container.insertAdjacentHTML('beforeend', `
+      <div id="bpanel-brain" style="padding:13px 14px;border:1px solid rgba(120,20,35,0.55);background:rgba(16,1,5,0.92);margin-bottom:8px">
+        ${sectionHeader('🧠', 'Brain Stem', BE.brainBuilt ? 'First awareness. Everything accelerates.' : 'The first flicker of something that knows it exists.')}
+        ${BE.brainBuilt
+          ? `<div style="font-family:Crimson Text,serif;font-size:12px;color:rgba(200,140,100,0.7);font-style:italic">It knows it exists. That is the most dangerous moment.</div>`
+          : buildBtn('brain-buy-btn', 'IGNITE THE BRAIN STEM', 'beBuildBrain()', canAfford, '800 blood · 80 ichor · 60 marrow')}
+      </div>`);
+  }
+
+  // ── EYE ─────────────────────────────────────────────────────────
+  if(u.eye) {
+    const canAfford = !BE.eyeBuilding && BE.eyeProgress < 100 && B.blood >= 500 && B.ichor >= 100 && B.marrow >= 80;
+    const eyeHtml = BE.eyeProgress >= 100
+      ? `<div style="font-family:Crimson Text,serif;font-size:14px;color:rgba(255,80,80,0.9);font-style:italic">Oh.</div>`
+      : BE.eyeBuilding
+        ? `<div id="eye-timer-txt" style="font-family:Cinzel,serif;font-size:9px;color:rgba(200,150,80,0.9);margin-top:6px">
+            Opening... ${Math.ceil(BE.eyeTimerRemaining)}s remaining</div>
+           <div style="height:3px;background:rgba(30,4,8,0.9);margin:4px 0;border-radius:1px">
+             <div id="eye-timer-bar" style="height:100%;width:${BE.eyeProgress}%;background:linear-gradient(90deg,#cc0020,#ff4060);border-radius:1px;transition:width 0.3s"></div>
+           </div>`
+        : buildBtn('eye-buy-btn', 'OPEN THE EYE', 'beOpenEye()', canAfford, '500 blood · 100 ichor · 80 marrow · 2 min');
+    container.insertAdjacentHTML('beforeend', `
+      <div id="bpanel-eye" style="padding:13px 14px;border:1px solid rgba(200,20,40,0.6);background:rgba(16,1,5,0.95);margin-bottom:8px">
+        ${sectionHeader('👁️', 'The Eye', 'The last thing.')}
+        ${eyeHtml}
+      </div>`);
+  }
+
+  // Update SVG
+  updateBecomingSVG();
+}
+
+function updateBecomingDisplay() {
+  const fl = Math.floor;
+  const gm = BE.spineMult * BE.fiberMult * BE.marrowMult * BE.resonanceMult;
+
+  // Resource counts — stable IDs set in renderBecoming header
+  ['blood','breath','ichor','marrow'].forEach(k => {
+    const el = document.getElementById(`bd-${k}`);
+    if(el) { const s = el.querySelectorAll('span'); if(s[1]) s[1].textContent = fl(B[k]); }
+  });
+
+  // Heart progress bar
+  const hpb = document.getElementById('heart-prog-bar');
+  if(hpb) hpb.style.width = Math.min(100,(BE.heartClicks/30)*100) + '%';
+
+  // Auto-beat info line
+  const as = document.getElementById('bd-autostate');
+  if(as) as.textContent = BE.autoBeating
+    ? `Auto-beating every ${(BE.autoBeatMs/1000).toFixed(1)}s`
+    : `${Math.max(0,3-BE.nerveNodes)} nerve nodes until auto-beat`;
+
+  // Per-section live updates via stable IDs
+  // VEINS
+  if(BE.unlocked.veins && BE.veins < BE.maxVeins) {
+    const cost = veinCost(BE.veins);
+    const can = B.blood >= cost;
+    _updateBtn('veins-buy-btn', can, `BUILD VEIN (${BE.veins+1}/${BE.maxVeins})`, `${cost} blood`);
+  }
+
+  // SPINE timer or button
+  if(BE.unlocked.spine) {
+    if(BE.vertebraeBuilding) {
+      const total = 18 + BE.vertebrae * 8;
+      const pct = Math.max(0, 100 - (BE.spineTimerRemaining / total) * 100);
+      _setBar('spine-timer-bar', pct);
+      _setText('spine-timer-txt', `⏳ Fusing... ${Math.ceil(BE.spineTimerRemaining)}s remaining`);
+    } else if(BE.vertebrae < BE.maxVertebrae) {
+      const cost = vertebraeCost(BE.vertebrae);
+      const can = B.blood >= cost;
+      _updateBtn('spine-buy-btn', can, 'FUSE VERTEBRA', `${cost} blood · takes ${18+BE.vertebrae*8}s`);
+    }
+    _setText('spine-sub', `${BE.vertebrae}/${BE.maxVertebrae} vertebrae · ×${BE.spineMult.toFixed(1)} multiplier`);
+  }
+
+  // LUNGS
+  if(BE.unlocked.lungs && !BE.lungsBuilt) {
+    const can = B.blood >= 80;
+    _updateBtn('lungs-buy-btn', can, 'BUILD LUNGS', '80 blood');
+  }
+
+  // MUSCLE
+  if(BE.unlocked.muscle && BE.fibers < BE.maxFibers) {
+    const bc = fiberCost(BE.fibers), brc = fiberBreathCost(BE.fibers);
+    const can = B.blood >= bc && B.breath >= brc;
+    _updateBtn('muscle-buy-btn', can, `THREAD FIBER (${BE.fibers+1}/${BE.maxFibers})`, `${bc} blood · ${brc} breath`);
+    _setBar('muscle-bar', BE.fibers/BE.maxFibers*100);
+  }
+
+  // NERVOUS
+  if(BE.unlocked.nervous && BE.nerveNodes < BE.maxNerveNodes) {
+    const bc = nerveCost(BE.nerveNodes), brc = nerveBreathCost(BE.nerveNodes);
+    const can = B.blood >= bc && B.breath >= brc;
+    _updateBtn('nervous-buy-btn', can, `GROW NODE (${BE.nerveNodes+1}/${BE.maxNerveNodes})`, `${bc} blood · ${brc} breath`);
+    _setBar('nervous-bar', BE.nerveNodes/BE.maxNerveNodes*100);
+  }
+
+  // MARROW
+  if(BE.unlocked.marrow && BE.marrowNodes < BE.maxMarrowNodes) {
+    const bc = marrowCost(BE.marrowNodes), ic = marrowIchorCost(BE.marrowNodes);
+    const can = B.blood >= bc && B.ichor >= ic;
+    _updateBtn('marrow-buy-btn', can, `ENRICH MARROW (${BE.marrowNodes+1}/${BE.maxMarrowNodes})`, `${bc} blood · ${ic} ichor`);
+    _setBar('marrow-bar', BE.marrowNodes/BE.maxMarrowNodes*100);
+  }
+
+  // STOMACH, SKIN, THROAT, BRAIN, EYE — single-purchase buttons
+  if(BE.unlocked.stomach && !BE.stomachBuilt)
+    _updateBtn('stomach-buy-btn', B.blood>=200&&B.breath>=40, 'BUILD STOMACH', '200 blood · 40 breath');
+  if(BE.unlocked.skin && !BE.skinBuilt)
+    _updateBtn('skin-buy-btn', B.blood>=300&&B.ichor>=20, 'SEAL THE SKIN', '300 blood · 20 ichor');
+  if(BE.unlocked.throat && !BE.throatBuilt)
+    _updateBtn('throat-buy-btn', B.blood>=500&&B.ichor>=40&&B.marrow>=30, 'OPEN THE THROAT', '500 blood · 40 ichor · 30 marrow');
+  if(BE.unlocked.brain && !BE.brainBuilt)
+    _updateBtn('brain-buy-btn', B.blood>=800&&B.ichor>=80&&B.marrow>=60, 'IGNITE THE BRAIN STEM', '800 blood · 80 ichor · 60 marrow');
+  if(BE.unlocked.eye && !BE.eyeBuilding && BE.eyeProgress < 100)
+    _updateBtn('eye-buy-btn', B.blood>=500&&B.ichor>=100&&B.marrow>=80, 'OPEN THE EYE', '500 blood · 100 ichor · 80 marrow · 2 min');
+
+  // Eye timer
+  if(BE.eyeBuilding) {
+    _setBar('eye-timer-bar', BE.eyeProgress);
+    _setText('eye-timer-txt', `Opening... ${Math.ceil(BE.eyeTimerRemaining)}s remaining`);
+  }
+}
+
+function _updateBtn(id, canAfford, label, costStr) {
+  const btn = document.getElementById(id);
+  if(!btn) return;
+  btn.disabled = !canAfford;
+  btn.style.color = canAfford ? '#e0d0b8' : '#5a4040';
+  btn.style.borderColor = canAfford ? 'rgba(200,60,40,0.6)' : 'rgba(80,30,30,0.3)';
+  btn.style.background = canAfford ? 'rgba(50,4,10,0.85)' : 'rgba(20,3,6,0.5)';
+  btn.style.cursor = canAfford ? 'pointer' : 'not-allowed';
+  const costDiv = btn.querySelector('div');
+  if(costDiv && costStr) costDiv.textContent = costStr;
+}
+
+function _setBar(id, pct) {
+  const el = document.getElementById(id);
+  if(el) el.style.width = Math.min(100,Math.max(0,pct)) + '%';
+}
+
+function _setText(id, txt) {
+  const el = document.getElementById(id);
+  if(el) el.textContent = txt;
+}
+
+
+
+function updateBecomingSVG() {
+  const show = (id) => { const e=document.getElementById(id); if(e) e.removeAttribute('display'); };
+  const hide = (id) => { const e=document.getElementById(id); if(e) e.setAttribute('display','none'); };
+
+  if(BE.vertebrae > 0) show('svg-spine'); else hide('svg-spine');
+  if(BE.veins > 0) show('svg-veins'); else hide('svg-veins');
+  if(BE.lungsBuilt) show('svg-lungs'); else hide('svg-lungs');
+  if(BE.fibers > 0) show('svg-muscle'); else hide('svg-muscle');
+  if(BE.nerveNodes > 0) show('svg-nervous'); else hide('svg-nervous');
+  if(BE.stomachBuilt) show('svg-stomach'); else hide('svg-stomach');
+  if(BE.marrowNodes > 0) show('svg-marrow'); else hide('svg-marrow');
+  if(BE.skinBuilt) show('svg-skin'); else hide('svg-skin');
+  if(BE.throatBuilt) show('svg-throat'); else hide('svg-throat');
+  if(BE.brainBuilt) show('svg-brainstem'); else hide('svg-brainstem');
+  if(BE.eyeProgress > 0) show('svg-eye'); else hide('svg-eye');
+  // Heart always visible
+  show('svg-heart');
+}
+
+async function triggerEyeOpen() {
+  if(becomingEngineInterval) clearInterval(becomingEngineInterval);
+  if(becomingUIInterval) clearInterval(becomingUIInterval);
+  if(becomingTickerInterval) clearInterval(becomingTickerInterval);
+  if(BE.autoBeatInterval) clearInterval(BE.autoBeatInterval);
+
+  const warp = document.getElementById('screen-warp');
+  const txt = document.getElementById('warp-text');
+  warp.style.display = 'flex';
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  txt.innerHTML = ''; txt.style.color = '#ff2040';
+
+  const lines = ['You look down.','','You see what you have built.','','Oh.','','','The shard slides into place.','','You are ready.'];
+  for(const line of lines) {
+    await new Promise(r=>setTimeout(r, line?800:300));
+    txt.innerHTML += line ? `<div>${line}</div>` : '<div style="height:14px"></div>';
+  }
+  await new Promise(r=>setTimeout(r,2500));
+  warp.style.display='none';
+  G.act=3; initHunt(); showScreen('screen-hunt');
+}
+
+// Stub for old code that may reference these
+function initBecomingOld() { initBecoming(); }
+function renderBecomingSystems() { renderBecoming(); }
+function renderSystemPanel() {}
+function doBecomingClick(id) {}
+function doBecomingUpgrade() {}
+function startBecomingTrickle() {}
+function updateBecomingResources() {}
+
+
+// ================================================================
+// ACT 3 — THE HUNT
+// ================================================================
+const HUNT_HEROES = [
+  {name:'Lantern Bearer',     icon:'🕯️',hp:6,  atk:3, speed:1.4},
+  {name:'The Hollow',         icon:'🪦', hp:8,  atk:4, speed:1.2},
+  {name:'Scarred Pilgrim',    icon:'🩹', hp:12, atk:6, speed:1.0},
+  {name:'Bone Collector',     icon:'🦷', hp:10, atk:5, speed:1.1},
+  {name:'The Screaming Bride',icon:'🕸️', hp:15, atk:8, speed:0.9},
+  {name:'Rust Prophet',       icon:'⚙️', hp:18, atk:7, speed:0.8},
+  {name:'The Flayed King',    icon:'👑', hp:22, atk:10,speed:0.7},
+  {name:'Void Penitent',      icon:'🙏', hp:20, atk:9, speed:0.85},
+  {name:'The Unmade',         icon:'🕳️', hp:30, atk:12,speed:0.6},
+  {name:'Champion of the Pit',icon:'⚔️', hp:35, atk:14,speed:0.65},
+];
+
+const WAVE_LORE = [
+  'A flicker. Something approaches.',
+  'They follow the light to their end.',
+  'More come. They always come.',
+  "The brave ones. That's almost sweet.",
+  "They've heard stories. They came to make one.",
+  'The realm shudders. Something woke them.',
+  'A king in the dark. Means nothing here.',
+  'The truly desperate now. Good.',
+  'Something that knows this place.',
+  'The last. Make it matter.',
+];
+
+let huntState = { heroes:[], abilities:{pulse:0,ward:0,wardActive:false,reach:0,consume:0}, heroMoveTimer:null, nextHeroId:0, waveActive:false, spawning:false };
+
+function initHunt() {
+  G.huntWave=0; G.huntHunger=100; G.heroesEaten=0;
+  huntState = { heroes:[], abilities:{pulse:0,ward:0,wardActive:false,reach:0,consume:0}, heroMoveTimer:null, nextHeroId:0, waveActive:false, spawning:false };
+  const c = document.getElementById('hunt-heroes'); if(c) c.innerHTML='';
+  const l = document.getElementById('hunt-log'); if(l) l.innerHTML='';
+  document.getElementById('hact-reach').style.display = G.hasShard ? '' : 'none';
+  updateHuntStats();
+  setTimeout(startHuntWave, 2000);
+}
+
+function updateHuntStats() {
+  document.getElementById('hunt-wave-num').textContent = G.huntWave;
+  document.getElementById('hunt-hunger-val').textContent = G.huntHunger;
+  document.getElementById('hunt-hunger-bar').style.width = G.huntHunger+'%';
+  document.getElementById('hunt-eaten').textContent = G.heroesEaten;
+}
+
+function startHuntWave() {
+  G.huntWave++;
+  if(G.huntWave > 10) { huntVictory(); return; }
+  const ann = document.getElementById('hunt-wave-announce');
+  document.getElementById('hunt-wave-title').textContent = 'WAVE '+toRoman(G.huntWave);
+  document.getElementById('hunt-wave-sub').textContent = WAVE_LORE[G.huntWave-1];
+  document.getElementById('hunt-wave-num').textContent = G.huntWave;
+  ann.style.opacity='1'; setTimeout(()=>{ ann.style.opacity='0'; },2200);
+  const waveSize = 2 + Math.floor(G.huntWave/2);
+  const tier = Math.min(HUNT_HEROES.length-1, Math.floor((G.huntWave-1)*1.1));
+  huntState.waveActive=true; huntState.spawning=true;
+  let spawned=0;
+  const spawnNext = () => {
+    if(spawned>=waveSize){ huntState.spawning=false; return; }
+    const hIdx = Math.max(0, tier-Math.floor(Math.random()*2));
+    spawnHero(HUNT_HEROES[Math.min(hIdx,HUNT_HEROES.length-1)]);
+    spawned++;
+    setTimeout(spawnNext, 1800);
+  };
+  spawnNext();
+  G.huntHunger = Math.max(0, G.huntHunger - G.huntWave*2);
+  updateHuntStats();
+  if(G.huntHunger<=0){ huntFail(); return; }
+  if(huntState.heroMoveTimer) clearInterval(huntState.heroMoveTimer);
+  huntState.heroMoveTimer = setInterval(moveHeroes, 900);
+}
+
+function spawnHero(heroType) {
+  if(!document.getElementById('screen-hunt').classList.contains('active')) return;
+  const id = huntState.nextHeroId++;
+  const x = 10+Math.random()*80;
+  const el = document.createElement('div');
+  el.className='hunt-hero'; el.id=`hero-${id}`;
+  el.style.left=x+'%'; el.style.top='2%';
+  el.innerHTML=`<span class="hunt-hero-icon">${heroType.icon}</span>
+    <div class="hunt-hero-hp" id="hero-hp-${id}" style="width:32px"></div>
+    <div class="hunt-hero-name">${heroType.name}</div>`;
+  document.getElementById('hunt-heroes').appendChild(el);
+  const hero={id,heroType,hp:heroType.hp,maxHp:heroType.hp,x,y:2,el,alive:true};
+  huntState.heroes.push(hero);
+  hlog(`${heroType.name} enters the dark.`);
+}
+
+function moveHeroes() {
+  if(!document.getElementById('screen-hunt').classList.contains('active')) return;
+  const dead=[];
+  huntState.heroes.forEach(h=>{
+    if(!h.alive) return;
+    h.y += (huntState.abilities.wardActive ? -0.5 : h.heroType.speed*3);
+    h.y = Math.max(2, h.y);
+    h.el.style.top = h.y+'%';
+    if(h.y>=72) {
+      const dmg=h.heroType.atk;
+      G.huntHunger=Math.max(0,G.huntHunger-dmg);
+      hlog(`${h.heroType.name} reaches you — ${dmg} hunger lost.`,'bad');
+      h.alive=false; h.el.style.opacity='0.1';
+      setTimeout(()=>h.el.remove(),500); dead.push(h.id);
+      updateHuntStats();
+      if(G.huntHunger<=0){ huntFail(); return; }
+    }
+  });
+  huntState.heroes = huntState.heroes.filter(h=>!dead.includes(h.id));
+  const alive = huntState.heroes.filter(h=>h.alive).length;
+  if(huntState.waveActive && !huntState.spawning && alive===0) {
+    huntState.waveActive=false;
+    clearInterval(huntState.heroMoveTimer);
+    if(G.huntWave>=10) setTimeout(huntVictory,2000);
+    else setTimeout(startHuntWave, 3000);
+  }
+}
+
+function huntAct(ability) {
+  const now=Date.now(); const cd=huntState.abilities;
+  if(ability==='pulse') {
+    if(cd.pulse>now){toast('Recharging');return;}
+    let hit=0;
+    huntState.heroes.forEach(h=>{
+      if(!h.alive)return;
+      const d=4+Math.floor(Math.random()*4); h.hp-=d; hit++;
+      updateHeroHP(h); if(h.hp<=0) killHero(h);
+    });
+    cd.pulse=now+8000; hlog(`Void Pulse — ${hit} staggered.`,'good');
+  } else if(ability==='ward') {
+    if(cd.ward>now){toast('Recharging');return;}
+    cd.wardActive=true; cd.ward=now+12000;
+    hlog('A pale ward seals you. They cannot reach you.','good');
+    setTimeout(()=>{cd.wardActive=false;},5000);
+  } else if(ability==='reach') {
+    if(!G.hasShard||cd.reach>now){toast('Recharging');return;}
+    const far=huntState.heroes.filter(h=>h.alive).sort((a,b)=>a.y-b.y)[0];
+    if(far){far.y=65;far.el.style.top='65%';hlog(`The Shard pulls ${far.heroType.name} close.`,'good');}
+    cd.reach=now+15000;
+  } else if(ability==='consume') {
+    if(cd.consume>now){toast('Recharging');return;}
+    const close=huntState.heroes.filter(h=>h.alive&&h.y>=50).sort((a,b)=>b.y-a.y)[0];
+    if(!close){hlog('Nothing close enough.');return;}
+    killHero(close,true);
+    G.huntHunger=Math.min(100,G.huntHunger+20);
+    hlog(`You consume ${close.heroType.name}. Hunger sated.`,'good');
+    cd.consume=now+10000; updateHuntStats();
+  }
+  updateCooldownUI();
+}
+
+function killHero(hero, consumed) {
+  if(!hero.alive)return;
+  hero.alive=false; G.heroesEaten++;
+  hero.el.style.opacity='0'; setTimeout(()=>hero.el.remove(),500);
+  if(!consumed) hlog(`${hero.heroType.name} falls.`,'good');
+  updateHuntStats();
+}
+
+function updateHeroHP(hero) {
+  const bar=document.getElementById(`hero-hp-${hero.id}`);
+  if(bar) bar.style.width=Math.max(0,(hero.hp/hero.maxHp)*32)+'px';
+}
+
+function updateCooldownUI() {
+  const now=Date.now(); const cd=huntState.abilities;
+  [['pulse',8000],['ward',12000],['reach',15000],['consume',10000]].forEach(([k])=>{
+    const rem=Math.max(0,Math.ceil((cd[k]-now)/1000));
+    const cdEl=document.getElementById(`hact-${k}-cd`);
+    const btn=document.getElementById(`hact-${k}`);
+    if(cdEl) cdEl.textContent=rem>0?`${rem}s`:'';
+    if(btn) btn.classList.toggle('on-cooldown',rem>0);
+  });
+}
+
+setInterval(()=>{
+  if(document.getElementById('screen-hunt')&&document.getElementById('screen-hunt').classList.contains('active')) updateCooldownUI();
+},1000);
+
+function hlog(text,cls) {
+  const log=document.getElementById('hunt-log'); if(!log)return;
+  const d=document.createElement('div');
+  d.className='hunt-log-line'+(cls?' '+cls:''); d.textContent=text;
+  log.prepend(d);
+  while(log.children.length>3) log.removeChild(log.lastChild);
+}
+
+function toRoman(n){return['I','II','III','IV','V','VI','VII','VIII','IX','X'][n-1]||n;}
+
+function huntVictory(){clearInterval(huntState.heroMoveTimer);showNGP(true);}
+function huntFail(){clearInterval(huntState.heroMoveTimer);showNGP(false);}
+
+// ================================================================
+// NEW GAME PLUS
+// ================================================================
+function showNGP(victory) {
+  G.ngPlus=(G.ngPlus||0)+1;
+  document.getElementById('ngp-eyebrow').textContent=victory?'THE CYCLE CLOSES':'THEY BROKE THROUGH';
+  document.getElementById('ngp-title').textContent=victory?'You Remember':'The Dark Takes You Back';
+  document.getElementById('ngp-body').textContent=victory
+    ?'You held the realm. Consumed enough. But the cycle does not end — it deepens. Something of what you were returns to the dark. Something of what you became comes back with it.'
+    :'They were too many. Or you were not enough. The nightmare unravels — and then re-knits. You wake where you always wake. But you carry something now.';
+  document.getElementById('ngp-bonus').textContent='✦ The Trembling Shard — it stays with you. In the next life it pulses near all enemies, not just the Warden.';
+  showScreen('screen-ngp');
+}
+
+function beginNGP() {
+  G.act=1; G.wardenHP=null;
+  G.pack={wood:0,stone:0,bone:0,hide:0,bloodstone:0};
+  G.lootPiles=[]; G.stamina=G.maxStamina; G.playerHP=G.playerMaxHP;
+  G.kingdom={wood:0,stone:0,bone:0,hide:0,bloodstone:0};
+  G.buildings={}; G.becoming={blood:0,bone:0,flesh:0,ichor:0};
+  G.bodyParts={}; G.huntWave=0; G.heroesEaten=0; G.huntHunger=100;
+  G.realmSeed=Math.floor(Math.random()*999999);
+  G.day=(G.day||1)+1;
+  showScreen('screen-direction');
+}
+
+
 </script>
+
+<!-- ==================== ACT 2: THE BECOMING ==================== -->
+<div class="screen" id="screen-becoming" style="background:#04000a;overflow-y:auto;">
+  <div id="becoming-bg-pulse" style="position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 60%, rgba(80,0,20,0.0) 0%, transparent 70%);transition:background 0.3s ease;"></div>
+  <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;padding:32px 20px 80px;min-height:100dvh;max-width:420px;margin:0 auto;">
+    <div style="width:100%;margin-bottom:24px;text-align:center;">
+      <div style="font-family:Cinzel,serif;font-size:7px;letter-spacing:0.4em;color:rgba(140,20,40,0.7);margin-bottom:8px">— THE BECOMING —</div>
+      <div style="font-family:Cinzel,serif;font-size:22px;font-weight:900;color:#c8b89a;letter-spacing:0.1em" id="becoming-title" style="color:#e8d8c0">Something Assembles</div>
+      <div style="font-family:'Crimson Text',serif;font-size:13px;color:#4a3040;font-style:italic;margin-top:6px;min-height:20px" id="becoming-ticker" style="color:#9a8070"></div>
+    </div>
+    <div style="width:160px;height:240px;margin-bottom:20px;position:relative;flex-shrink:0;">
+      <svg id="body-svg" viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;filter:drop-shadow(0 0 16px rgba(120,0,30,0.5))">
+        <g opacity="0.12" stroke="#6a3040" fill="none" stroke-width="1">
+          <ellipse cx="60" cy="22" rx="16" ry="19"/>
+          <line x1="60" y1="41" x2="60" y2="105"/>
+          <ellipse cx="60" cy="68" rx="20" ry="24"/>
+          <line x1="60" y1="55" x2="26" y2="82"/><line x1="60" y1="55" x2="94" y2="82"/>
+          <line x1="26" y1="82" x2="20" y2="108"/><line x1="94" y1="82" x2="100" y2="108"/>
+          <line x1="60" y1="105" x2="42" y2="160"/><line x1="60" y1="105" x2="78" y2="160"/>
+          <line x1="42" y1="160" x2="38" y2="192"/><line x1="78" y1="160" x2="82" y2="192"/>
+        </g>
+        <g id="svg-heart" display="none"><circle cx="60" cy="68" r="5" fill="#cc0020" opacity="0.9"><animate attributeName="r" values="5;7;5" dur="0.8s" repeatCount="indefinite"/></circle></g>
+        <g id="svg-veins" display="none" stroke="#8a0020" fill="none" stroke-width="1" opacity="0.6"><path d="M60,68 Q40,80 30,95 Q20,110 25,130"/><path d="M60,68 Q80,80 90,95 Q100,110 95,130"/><path d="M60,68 Q50,85 48,105 Q46,125 50,145"/><path d="M60,68 Q70,85 72,105 Q74,125 70,145"/></g>
+        <g id="svg-spine" display="none" stroke="#aa4030" fill="none" stroke-width="2.5" opacity="0.8"><line x1="60" y1="41" x2="60" y2="105"/><line x1="55" y1="55" x2="65" y2="55"/><line x1="54" y1="65" x2="66" y2="65"/><line x1="54" y1="75" x2="66" y2="75"/><line x1="55" y1="85" x2="65" y2="85"/><line x1="55" y1="95" x2="65" y2="95"/></g>
+        <g id="svg-lungs" display="none" stroke="#6a2040" fill="rgba(80,0,30,0.3)" stroke-width="1.5" opacity="0.8"><path d="M60,55 Q40,58 35,70 Q30,85 38,96 Q48,102 55,96 Q60,90 60,85"/><path d="M60,55 Q80,58 85,70 Q90,85 82,96 Q72,102 65,96 Q60,90 60,85"/></g>
+        <g id="svg-muscle" display="none" stroke="#8a1020" fill="rgba(100,5,20,0.25)" stroke-width="1.5" opacity="0.7"><ellipse cx="60" cy="68" rx="18" ry="22"/><ellipse cx="36" cy="78" rx="9" ry="16" transform="rotate(-10,36,78)"/><ellipse cx="84" cy="78" rx="9" ry="16" transform="rotate(10,84,78)"/><ellipse cx="42" cy="145" rx="8" ry="20"/><ellipse cx="78" cy="145" rx="8" ry="20"/></g>
+        <g id="svg-nervous" display="none" stroke="#cc40aa" fill="none" stroke-width="0.8" opacity="0.6"><path d="M60,41 Q52,50 48,62 Q44,74 50,86"/><path d="M60,41 Q68,50 72,62 Q76,74 70,86"/><path d="M60,68 Q55,80 52,95 Q49,110 54,125"/><path d="M60,68 Q65,80 68,95 Q71,110 66,125"/></g>
+        <g id="svg-stomach" display="none" stroke="#7a3010" fill="rgba(60,15,5,0.4)" stroke-width="1.5" opacity="0.8"><path d="M48,90 Q38,95 36,108 Q34,120 42,126 Q54,130 62,122 Q70,114 68,102 Q66,90 56,88 Q52,87 48,90"/></g>
+        <g id="svg-marrow" display="none" stroke="#cc8040" fill="none" stroke-width="1" opacity="0.7"><line x1="60" y1="41" x2="60" y2="105" stroke-width="4" stroke="rgba(180,80,20,0.4)"/><line x1="42" y1="160" x2="38" y2="192" stroke-width="3" stroke="rgba(180,80,20,0.3)"/><line x1="78" y1="160" x2="82" y2="192" stroke-width="3" stroke="rgba(180,80,20,0.3)"/></g>
+        <g id="svg-skin" display="none" stroke="#6a2020" fill="rgba(40,5,10,0.5)" stroke-width="1" opacity="0.6"><ellipse cx="60" cy="22" rx="16" ry="19"/><path d="M40,41 Q30,60 28,90 Q26,120 32,150 Q38,170 42,192"/><path d="M80,41 Q90,60 92,90 Q94,120 88,150 Q82,170 78,192"/></g>
+        <g id="svg-throat" display="none" stroke="#8a1040" fill="rgba(60,0,20,0.4)" stroke-width="1.5" opacity="0.8"><path d="M54,41 Q50,46 50,52 Q50,58 54,60 Q60,62 66,60 Q70,58 70,52 Q70,46 66,41"/><line x1="57" y1="44" x2="57" y2="60"/><line x1="60" y1="43" x2="60" y2="61"/><line x1="63" y1="44" x2="63" y2="60"/></g>
+        <g id="svg-brainstem" display="none" stroke="#aa20cc" fill="rgba(60,0,80,0.4)" stroke-width="1.5" opacity="0.8"><ellipse cx="60" cy="22" rx="14" ry="17"/><line x1="60" y1="39" x2="60" y2="46" stroke-width="2.5"/><path d="M50,18 Q46,12 50,8 Q56,4 60,8" stroke-width="1"/><path d="M70,18 Q74,12 70,8 Q64,4 60,8" stroke-width="1"/></g>
+        <g id="svg-eye" display="none"><ellipse cx="54" cy="20" rx="5" ry="6" fill="none" stroke="#ff2040" stroke-width="1.5"/><circle cx="54" cy="20" r="3" fill="#cc0000"/><circle cx="55" cy="19" r="1" fill="rgba(255,100,100,0.9)"/><ellipse cx="66" cy="20" rx="5" ry="6" fill="none" stroke="#ff2040" stroke-width="1.5"/><circle cx="66" cy="20" r="3" fill="#cc0000"/><circle cx="67" cy="19" r="1" fill="rgba(255,100,100,0.9)"/></g>
+      </svg>
+    </div>
+    <div id="becoming-systems" style="width:100%;display:flex;flex-direction:column;gap:8px;"></div>
+  </div>
+</div>
+
+<!-- ==================== WARP TRANSITION ==================== -->
+<div id="screen-warp" style="position:fixed;inset:0;background:#000;z-index:1000;display:none;align-items:center;justify-content:center;flex-direction:column;">
+  <div id="warp-text" style="font-family:Cinzel,serif;font-size:18px;letter-spacing:0.2em;color:#cc2020;text-align:center;padding:24px;max-width:300px;line-height:1.8;text-shadow:0 0 20px rgba(200,0,0,0.8)"></div>
+</div>
+
+<!-- ==================== ACT 3: THE HUNT ==================== -->
+<div class="screen" id="screen-hunt" style="background:#050002;overflow:hidden;">
+
+  <div style="padding:10px 14px 8px;border-bottom:1px solid rgba(80,0,20,0.5);flex-shrink:0;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.25em;color:rgba(160,20,40,0.8)">— THE HUNT —</div>
+      <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:rgba(140,100,60,0.7)">WAVE <span id="hunt-wave-num">1</span>/10</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <div style="background:rgba(20,0,5,0.8);border:1px solid rgba(80,0,20,0.4);padding:4px 8px">
+        <div style="font-family:Cinzel,serif;font-size:6px;letter-spacing:0.1em;color:rgba(120,60,60,0.7)">HUNGER</div>
+        <div style="height:3px;background:rgba(30,0,5,0.8);margin-top:3px;margin-bottom:2px">
+          <div id="hunt-hunger-bar" style="height:100%;background:linear-gradient(90deg,#6a0010,#cc2030);width:100%;transition:width 0.5s"></div>
+        </div>
+        <div style="font-family:Cinzel,serif;font-size:10px;color:#c8b89a"><span id="hunt-hunger-val">100</span>/100</div>
+      </div>
+      <div style="background:rgba(20,0,5,0.8);border:1px solid rgba(80,0,20,0.4);padding:4px 8px">
+        <div style="font-family:Cinzel,serif;font-size:6px;letter-spacing:0.1em;color:rgba(120,60,60,0.7)">DEVOURED</div>
+        <div style="font-family:Cinzel,serif;font-size:18px;color:#c8b89a"><span id="hunt-eaten">0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- The corridor -->
+  <div style="flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:100px" id="hunt-field">
+    <!-- Warden fixed at bottom center -->
+    <div style="position:absolute;bottom:90px;left:50%;transform:translateX(-50%);z-index:10;text-align:center">
+      <div style="font-size:36px;filter:drop-shadow(0 0 12px rgba(180,0,40,0.8))" id="hunt-warden-icon">👁️</div>
+    </div>
+    <!-- Heroes container -->
+    <div id="hunt-heroes" style="position:absolute;inset:0;pointer-events:none"></div>
+    <!-- Wave announcement -->
+    <div id="hunt-wave-announce" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;opacity:0;transition:opacity 0.5s">
+      <div style="font-family:Cinzel,serif;font-size:14px;letter-spacing:0.25em;color:#c8b89a" id="hunt-wave-title">WAVE I</div>
+      <div style="font-family:'Crimson Text',serif;font-size:13px;color:#8a6060;font-style:italic;margin-top:4px" id="hunt-wave-sub">The first lantern flickers in the dark</div>
+    </div>
+    <!-- Combat log -->
+    <div id="hunt-log" style="position:absolute;bottom:100px;left:0;right:0;padding:4px 14px;max-height:52px;overflow:hidden;pointer-events:none">
+    </div>
+  </div>
+
+  <!-- Ability bar -->
+  <div style="position:absolute;bottom:0;left:0;right:0;padding:8px 10px 12px;border-top:1px solid rgba(80,0,20,0.5);display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;background:rgba(5,0,2,0.95);flex-shrink:0" id="hunt-abilities">
+    <button class="btn-hunt-act" id="hact-pulse" onclick="huntAct('pulse')">
+      <span style="font-size:16px">💢</span>
+      <div style="font-family:Cinzel,serif;font-size:7px;letter-spacing:0.1em;margin-top:2px">PULSE</div>
+      <div style="font-family:Cinzel,serif;font-size:6px;color:rgba(180,120,100,0.7)" id="hact-pulse-cd"></div>
+    </button>
+    <button class="btn-hunt-act" id="hact-ward" onclick="huntAct('ward')">
+      <span style="font-size:16px">🛡</span>
+      <div style="font-family:Cinzel,serif;font-size:7px;letter-spacing:0.1em;margin-top:2px">WARD</div>
+      <div style="font-family:Cinzel,serif;font-size:6px;color:rgba(180,120,100,0.7)" id="hact-ward-cd"></div>
+    </button>
+    <button class="btn-hunt-act" id="hact-reach" onclick="huntAct('reach')" style="display:none">
+      <span style="font-size:16px">🌀</span>
+      <div style="font-family:Cinzel,serif;font-size:7px;letter-spacing:0.1em;margin-top:2px">REACH</div>
+      <div style="font-family:Cinzel,serif;font-size:6px;color:rgba(180,120,100,0.7)" id="hact-reach-cd"></div>
+    </button>
+    <button class="btn-hunt-act" id="hact-consume" onclick="huntAct('consume')">
+      <span style="font-size:16px">🍖</span>
+      <div style="font-family:Cinzel,serif;font-size:7px;letter-spacing:0.1em;margin-top:2px">CONSUME</div>
+      <div style="font-family:Cinzel,serif;font-size:6px;color:rgba(180,120,100,0.7)" id="hact-consume-cd"></div>
+    </button>
+  </div>
+
+</div>
+
+<!-- ==================== ACT END / NGP ==================== -->
+<div class="screen" id="screen-ngp" style="background:#020101;align-items:center;justify-content:center;overflow-y:auto;">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:40px 24px;text-align:center;max-width:320px;margin:0 auto">
+    <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:0.35em;color:rgba(160,20,40,0.8);margin-bottom:16px" id="ngp-eyebrow">THE CYCLE CLOSES</div>
+    <div style="font-family:Cinzel,serif;font-size:24px;font-weight:900;letter-spacing:0.15em;color:#c8b89a;margin-bottom:20px" id="ngp-title">You Remember</div>
+    <div style="font-family:'Crimson Text',serif;font-size:15px;color:#5a4848;font-style:italic;line-height:1.85;margin-bottom:32px" id="ngp-body">
+      Something lingers from the other side.
+    </div>
+    <div style="width:100%;padding:14px;background:rgba(10,5,5,0.8);border:1px solid rgba(80,20,20,0.4);margin-bottom:28px;font-family:Cinzel,serif;font-size:11px;color:rgba(180,140,100,0.9);letter-spacing:0.1em" id="ngp-bonus"></div>
+    <button class="btn-player" onclick="beginNGP()" style="width:100%;border-color:rgba(180,50,30,0.6);color:#c8b89a">
+      Begin again →
+    </button>
+  </div>
+</div>
+
 </body>
 </html>
